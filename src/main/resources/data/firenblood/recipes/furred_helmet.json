@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "fff",
+    "f f"
+  ],
+  "key":
+  {
+    "f":
+    {
+      "item": "firenblood:furleather"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:furred_helmet",
+    "count": 1
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    " b ",
+    "bcb",
+    "   "
+  ],
+  "key":
+  {
+    "b":
+    {
+      "item": "firenblood:padre_effigy"
+    },
+    "c":
+    {
+      "item": "minecraft:dirt"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:mocking_effigy",
+    "count": 1
+  }
+}

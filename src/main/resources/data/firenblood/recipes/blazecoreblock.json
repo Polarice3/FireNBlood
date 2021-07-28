@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "xrx",
+    "rbr",
+    "xrx"
+  ],
+  "key":
+  {
+    "x":
+    {
+      "item": "minecraft:cobblestone"
+    },
+    "b":
+    {
+      "item": "firenblood:blazecore"
+    },
+    "r":
+    {
+      "item": "minecraft:redstone_block"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:blazecoreblock",
+    "count": 1
+  }
+}
