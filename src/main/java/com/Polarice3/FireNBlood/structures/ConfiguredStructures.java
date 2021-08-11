@@ -12,13 +12,15 @@ import net.minecraft.world.gen.feature.StructureFeature;
 
 public class ConfiguredStructures {
     public static StructureFeature<?, ?> CONFIGURED_TAVERN = RegistryStructures.TAVERN.get().withConfiguration(NoFeatureConfig.field_236559_b_);
+/*
     public static StructureFeature<?, ?> CONFIGURED_PROFANEDTOWER = RegistryStructures.PROFANEDTOWER.get().withConfiguration(NoFeatureConfig.field_236559_b_);
+*/
 
     public static void registerConfiguredStructures() {
         Registry<StructureFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_STRUCTURE_FEATURE;
         Registry.register(registry, new ResourceLocation(FireNBlood.MOD_ID, "configured_tavern"), CONFIGURED_TAVERN);
         FlatGenerationSettings.STRUCTURES.put(RegistryStructures.TAVERN.get(), CONFIGURED_TAVERN);
-        Registry.register(registry, new ResourceLocation(FireNBlood.MOD_ID, "configured_profanedtower"), CONFIGURED_PROFANEDTOWER);
-        FlatGenerationSettings.STRUCTURES.put(RegistryStructures.PROFANEDTOWER.get(), CONFIGURED_PROFANEDTOWER);
+/*        Registry.register(registry, new ResourceLocation(FireNBlood.MOD_ID, "configured_profanedtower"), CONFIGURED_PROFANEDTOWER);
+        FlatGenerationSettings.STRUCTURES.put(RegistryStructures.PROFANEDTOWER.get(), CONFIGURED_PROFANEDTOWER);*/
     }
 }

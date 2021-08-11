@@ -3,8 +3,10 @@ package com.Polarice3.FireNBlood.events;
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.entities.hostile.AbstractTaillessEntity;
 import com.Polarice3.FireNBlood.entities.neutral.AbstractProtectorEntity;
+import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
@@ -16,32 +18,39 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
+import net.minecraftforge.event.world.BiomeLoadingEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod.EventBusSubscriber(modid = FireNBlood.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ModClientEvents {
 
-/*    @SubscribeEvent
-    public static void spawnEntities(FMLLoadCompleteEvent event){
-        for (Biome biome : ForgeRegistries.BIOMES){
-            if (biome.getCategory() == Biome.Category.NETHER){
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void spawnEntities(BiomeLoadingEvent event){
+        if (event.getName() != null) {
+            Biome biome = ForgeRegistries.BIOMES.getValue(event.getName());
+            if (biome != null) {
+                if (biome.getCategory() == Biome.Category.NETHER) {
 
-            }
-            else if (biome.getCategory() == Biome.Category.THEEND){
+                } else if (biome.getCategory() == Biome.Category.THEEND) {
 
-            }
-            else {
-                if (biome.getCategory() != Biome.Category.OCEAN){
-
+                } else {
+                    if (biome.getCategory() != Biome.Category.OCEAN) {
+                            event.getSpawns().getSpawner(EntityClassification.MONSTER).add(new MobSpawnInfo.Spawners(ModEntityType.TAILLESS_WRETCH.get(), 1, 1, 2));
+                    }
                 }
             }
         }
-    }*/
+    }
 
     @SubscribeEvent
     public static void onEntitySpawn(EntityJoinWorldEvent event) {

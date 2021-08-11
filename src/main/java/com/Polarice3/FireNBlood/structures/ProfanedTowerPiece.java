@@ -27,7 +27,7 @@ import net.minecraft.world.gen.feature.template.TemplateManager;
 import java.util.List;
 import java.util.Random;
 
-public class ProfanedTowerPiece {
+/*public class ProfanedTowerPiece {
     private static final BlockPos STRUCTURE_OFFSET = new BlockPos(0, 0, 0);
     private static final ResourceLocation PROFANEDTOWER = new ResourceLocation(FireNBlood.MOD_ID,"profanedtower");
 
@@ -79,7 +79,7 @@ public class ProfanedTowerPiece {
         }
 
         public boolean func_230383_a_(ISeedReader p_230383_1_, StructureManager p_230383_2_, ChunkGenerator p_230383_3_, Random p_230383_4_, MutableBoundingBox p_230383_5_, ChunkPos p_230383_6_, BlockPos p_230383_7_) {
-            int i = 256;
+*//*            int i = 256;
             int j = 0;
             BlockPos blockpos = this.template.getSize();
             Heightmap.Type heightmap$type = Heightmap.Type.WORLD_SURFACE_WG;
@@ -99,9 +99,9 @@ public class ProfanedTowerPiece {
             }
 
             int i1 = i - blockpos.getY() / 2 - p_230383_4_.nextInt(3);
-            this.templatePosition = new BlockPos(this.templatePosition.getX(), j, this.templatePosition.getZ());
+            this.templatePosition = new BlockPos(this.templatePosition.getX(), j, this.templatePosition.getZ());*//*
             return super.func_230383_a_(p_230383_1_, p_230383_2_, p_230383_3_, p_230383_4_, p_230383_5_, p_230383_6_, p_230383_7_);
         }
     }
 
-}
+}*/

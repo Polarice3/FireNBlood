@@ -187,6 +187,9 @@ public class FireNBlood
          * registrykey. Then that can be fed into the dictionary to get the biome's types.
          */
         event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_TAVERN);
+/*
+        event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_PROFANEDTOWER);
+*/
     }
 
     private static Method GETCODEC_METHOD;
@@ -229,7 +232,9 @@ public class FireNBlood
              */
             Map<Structure<?>, StructureSeparationSettings> tempMap = new HashMap<>(serverWorld.getChunkProvider().generator.func_235957_b_().func_236195_a_());
             tempMap.putIfAbsent(RegistryStructures.TAVERN.get(), DimensionStructuresSettings.field_236191_b_.get(RegistryStructures.TAVERN.get()));
+/*
             tempMap.putIfAbsent(RegistryStructures.PROFANEDTOWER.get(), DimensionStructuresSettings.field_236191_b_.get(RegistryStructures.PROFANEDTOWER.get()));
+*/
             serverWorld.getChunkProvider().generator.func_235957_b_().field_236193_d_ = tempMap;
         }
     }
