@@ -12,17 +12,17 @@ modId="firenblood" #mandatory
 
 version="1.16.4 - 1.0.0" #mandatory
 
-displayName="Fire N Blood" #mandatory
+displayName="Fire N' Blood" #mandatory
 
 updateJSONURL="http://myurl.me/" #optional
 
 displayURL="http://example.com/" #optional
 
-logoFile="firenblood.png" #optional
+logoFile="Logo.png" #optional
 
 credits="Special thanks to Technovision and TelepathicGrunt for their tutorials and diesieben07 for helping me with a problem!" #optional
 
-authors="Polarice3" #optional
+authors="anogon" #optional
 
 description='''
 My first Mod
