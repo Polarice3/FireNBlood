@@ -182,4 +182,9 @@ public class ModEntityType {
                     .trackingRange(8)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "penance").toString()));
 
+    public static final RegistryObject<EntityType<FakeSeatEntity>> FAKESEAT = ENTITY_TYPES.register("fakeseat",
+            () -> EntityType.Builder.create(FakeSeatEntity::new, EntityClassification.MISC)
+                    .size(0.1F, 0.1F)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "fakeseat").toString()));
+
 }

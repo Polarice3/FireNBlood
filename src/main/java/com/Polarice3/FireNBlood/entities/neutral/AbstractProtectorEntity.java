@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.entities.neutral;
 
+import com.Polarice3.FireNBlood.init.ModEntityType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.*;
@@ -383,9 +384,7 @@ public class AbstractProtectorEntity extends CreatureEntity {
                     --this.hiredTimer;
                 }
             }
-            if (this.hiredTimer == 0){
-                this.remove();
-                this.setHired(false);
+            if (this.hiredTimer == 5){
                 IParticleData iparticledata = ParticleTypes.POOF;
                 for(int i = 0; i < 7; ++i) {
                     double d0 = this.rand.nextGaussian() * 0.02D;
@@ -393,6 +392,10 @@ public class AbstractProtectorEntity extends CreatureEntity {
                     double d2 = this.rand.nextGaussian() * 0.02D;
                     this.world.addParticle(iparticledata, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
                 }
+            }
+            if (this.hiredTimer == 0){
+                this.remove();
+                this.setHired(false);
                 if (!this.world.isRemote && this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES) && this.getOwner() instanceof ServerPlayerEntity) {
                     this.getOwner().sendMessage(new StringTextComponent(this.getDisplayName().getString() + "'s time with you is up!"), Util.DUMMY_UUID);
                 }
@@ -474,6 +477,15 @@ public class AbstractProtectorEntity extends CreatureEntity {
          * Execute a one shot task or start executing a continuous task
          */
         public void startExecuting() {
+/*            if (this.hireable instanceof SavagerEntity) {
+                this.hireable.getNavigator().clearPath();
+                this.hireable.setSleeping(true);
+            } else {
+                FakeSeatEntity fakeseat = new FakeSeatEntity(ModEntityType.FAKESEAT.get(), world);
+                fakeseat.setLocationAndAngles(this.hireable.getPosX(), this.hireable.getPosY(), this.hireable.getPosZ(), this.hireable.rotationYaw, this.hireable.rotationPitch);
+                world.addEntity(fakeseat);
+                this.hireable.startRiding(fakeseat);
+            }*/
             this.hireable.getNavigator().clearPath();
             this.hireable.setSleeping(true);
         }
@@ -482,6 +494,11 @@ public class AbstractProtectorEntity extends CreatureEntity {
          * Reset the task's internal state. Called when this task is interrupted by another one
          */
         public void resetTask() {
+/*            if (this.hireable instanceof SavagerEntity) {
+                this.hireable.setSleeping(false);
+            } else {
+                this.hireable.stopRiding();
+            }*/
             this.hireable.setSleeping(false);
         }
     }

@@ -268,8 +268,8 @@ public class PenanceModel<T extends PenanceEntity> extends SegmentedModel<T> {
         float f7 = 1.0F - f6;
         float f8 = 0;
         float f9 = (float)entityIn.ticksExisted + partialTick;
-        this.Head.rotationPointY = 4.0F;
-        this.Head.rotationPointZ = -12.0F;
+/*        this.Head.rotationPointY = -11.0F;
+        this.Head.rotationPointZ = -12.0F;*/
         this.Body.rotateAngleX = 0.0F;
         this.Head.rotateAngleX = ((float)Math.PI / 6F) + f4;
         this.Head.rotateAngleY = f3 * ((float)Math.PI / 180F);
@@ -284,7 +284,7 @@ public class PenanceModel<T extends PenanceEntity> extends SegmentedModel<T> {
         this.Body.rotateAngleX = f6 * (-(float)Math.PI / 4F) + f7 * this.Body.rotateAngleX;
         float f14 = 0.2617994F * f6;
         float f15 = MathHelper.cos(f9 * 0.6F + (float)Math.PI);
-        this.Leg3A.rotationPointY = 2.0F * f6 + 14.0F * f7;
+        this.Leg3A.rotationPointY = -10.0F * f6 + 14.0F * f7;
         this.Leg3A.rotationPointZ = -6.0F * f6 - 10.0F * f7;
         this.Leg4A.rotationPointY = this.Leg3A.rotationPointY;
         this.Leg4A.rotationPointZ = this.Leg3A.rotationPointZ;

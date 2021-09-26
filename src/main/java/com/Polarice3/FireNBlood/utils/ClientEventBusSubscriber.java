@@ -43,6 +43,8 @@ public class ClientEventBusSubscriber {
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.NEOPHYTE.get(), NeophyteRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.VIZIER.get(), VizierRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.IRK.get(), IrkRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.PENANCE.get(), PenanceRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.FAKESEAT.get(), FakeSeatRenderer::new);
 
     }
 

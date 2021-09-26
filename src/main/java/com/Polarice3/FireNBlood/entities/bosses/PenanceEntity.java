@@ -95,6 +95,11 @@ public class PenanceEntity extends CreatureEntity implements IRangedAttackMob {
         this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(RegistryHandler.WARPED_SPEAR.get()));
     }
 
+    @Override
+    protected boolean isDespawnPeaceful() {
+        return true;
+    }
+
     public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
         WarpedSpearEntity spearEntity = new WarpedSpearEntity(this.world, this, new ItemStack(RegistryHandler.WARPED_SPEAR.get()));
         double d0 = target.getPosX() - this.getPosX();
@@ -137,13 +142,13 @@ public class PenanceEntity extends CreatureEntity implements IRangedAttackMob {
         Entity entity = source.getImmediateSource();
         if (this.isInvulnerableTo(source)) {
             return false;
-        } else if (this.stunTick == 0) {
+        } else if (this.stunTick == 0 && !(entity instanceof SpectralArrowEntity) && !(entity instanceof FireballEntity)) {
             return false;
         } else if (entity instanceof SpectralArrowEntity) {
-            this.stunTick = 600;
+            this.stunTick = 60;
             return super.attackEntityFrom(source, amount);
         } else if (entity instanceof FireballEntity) {
-            this.stunTick = 600;
+            this.stunTick = 60;
             return super.attackEntityFrom(source, amount);
         } else if (entity == this.getRidingEntity()){
             return false;
@@ -169,7 +174,6 @@ public class PenanceEntity extends CreatureEntity implements IRangedAttackMob {
         }
 
         if (this.roarTick == 0){
-            this.addPotionEffect(new EffectInstance(Effects.INVISIBILITY, 20, 0, true, false));
             this.removePotionEffect(Effects.GLOWING);
             this.rearingAmount += (0.8F * this.rearingAmount * this.rearingAmount * this.rearingAmount - this.rearingAmount) * 0.6F - 0.05F;
             if (this.rearingAmount < 0.0F) {
@@ -193,7 +197,6 @@ public class PenanceEntity extends CreatureEntity implements IRangedAttackMob {
         if (this.stunTick > 0) {
             --this.stunTick;
             this.func_213682_eh();
-            this.removePotionEffect(Effects.INVISIBILITY);
             if (this.stunTick == 0) {
                 this.playSound(SoundEvents.ENTITY_SKELETON_HORSE_DEATH, 1.0F, 1.0F);
                 this.roarTick = 20;

@@ -52,6 +52,7 @@ public class RegistryHandler {
     public static final RegistryObject<Item> MOCKING_EFFIGY = ITEMS.register("mocking_effigy", MockingEffigyItem::new);
     public static final RegistryObject<SacredFishItem> SACRED_FISH = ITEMS.register("sacred_fish", SacredFishItem::new);
     public static final RegistryObject<Item> RALLYING_HORN = ITEMS.register("rallying_horn", RallyingHornItem::new);
+    public static final RegistryObject<Item> DARK_SCROLL = ITEMS.register("dark_scroll", DarkScrollItem::new);
     //Tools
     public static final RegistryObject<Item> GOLDEN_MACE = ITEMS.register("golden_mace", GoldenMaceItem::new);
     public static final RegistryObject<Item> DIAMOND_MACE = ITEMS.register("diamond_mace", DiamondMaceItem::new);

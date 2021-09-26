@@ -46,17 +46,13 @@ public class TavernStructure extends Structure<NoFeatureConfig> {
 
     private boolean func_242782_a(ChunkGenerator p_242782_1_, long p_242782_2_, SharedSeedRandom p_242782_4_, int p_242782_5_, int p_242782_6_) {
         StructureSeparationSettings structureseparationsettings = p_242782_1_.func_235957_b_().func_236197_a_(Structure.VILLAGE);
-        StructureSeparationSettings structureseparationsettings2 = p_242782_1_.func_235957_b_().func_236197_a_(RegistryStructures.TAVERN.get());
-        if (structureseparationsettings2 == null) {
-            return true;
+        if (structureseparationsettings == null) {
+            return false;
         } else {
             for(int i = p_242782_5_ - 10; i <= p_242782_5_ + 10; ++i) {
                 for(int j = p_242782_6_ - 10; j <= p_242782_6_ + 10; ++j) {
                     ChunkPos chunkpos = Structure.VILLAGE.getChunkPosForStructure(structureseparationsettings, p_242782_2_, p_242782_4_, i, j);
-                    ChunkPos chunkpos2 = RegistryStructures.TAVERN.get().getChunkPosForStructure(structureseparationsettings2, p_242782_2_, p_242782_4_, i, j);
-                    if (i == chunkpos2.x && j == chunkpos2.z) {
-                        return false;
-                    } else if (i == chunkpos.x && j == chunkpos.z){
+                    if (i == chunkpos.x && j == chunkpos.z) {
                         return true;
                     }
                 }

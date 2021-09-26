@@ -22,6 +22,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.FlatChunkGenerator;
 import net.minecraft.world.gen.feature.structure.Structure;
@@ -169,6 +170,10 @@ public class FireNBlood
             GlobalEntityTypeAttributes.put(ModEntityType.PENANCE.get(), PenanceEntity.setCustomAttributes().create());
         });
 
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.FAKESEAT.get(), FakeSeatEntity.setCustomAttributes().create());
+        });
+
         event.enqueueWork(() -> {
             RegistryStructures.setupStructures();
             ConfiguredStructures.registerConfiguredStructures();
@@ -186,7 +191,11 @@ public class FireNBlood
          * RegistryKey.getOrCreateKey(Registry.BIOME_KEY, event.getName()) to get the biome's
          * registrykey. Then that can be fed into the dictionary to get the biome's types.
          */
-        event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_TAVERN);
+        if (event.getCategory() == Biome.Category.TAIGA
+        || event.getCategory() == Biome.Category.PLAINS
+        || event.getCategory() == Biome.Category.SAVANNA) {
+            event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_TAVERN);
+        }
 /*
         event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_PROFANEDTOWER);
 */

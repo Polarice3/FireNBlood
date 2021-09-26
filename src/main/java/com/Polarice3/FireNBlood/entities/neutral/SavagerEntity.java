@@ -287,6 +287,12 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
                 this.setAttackTarget((LivingEntity) null);
                 this.func_233687_w_(true);
                 this.world.setEntityState(this, (byte) 7);
+                for (int i = 0; i < 7; ++i) {
+                    double d0 = this.rand.nextGaussian() * 0.02D;
+                    double d1 = this.rand.nextGaussian() * 0.02D;
+                    double d2 = this.rand.nextGaussian() * 0.02D;
+                    this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
+                }
                 return ActionResultType.SUCCESS;
             } else {
                 if (!p_230254_1_.abilities.isCreativeMode) {
