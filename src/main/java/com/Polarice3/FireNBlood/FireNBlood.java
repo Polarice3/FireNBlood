@@ -1,6 +1,7 @@
 package com.Polarice3.FireNBlood;
 
 import com.Polarice3.FireNBlood.entities.ally.FriendlyTankEntity;
+import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
 import com.Polarice3.FireNBlood.entities.bosses.PenanceEntity;
 import com.Polarice3.FireNBlood.entities.bosses.VizierEntity;
 import com.Polarice3.FireNBlood.entities.hostile.*;
@@ -156,6 +157,10 @@ public class FireNBlood
 
         DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.NEOPHYTE.get(), NeophyteEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.FRIENDLY_VEX.get(), FriendlyVexEntity.setCustomAttributes().create());
         });
 
         DeferredWorkQueue.runLater(() -> {

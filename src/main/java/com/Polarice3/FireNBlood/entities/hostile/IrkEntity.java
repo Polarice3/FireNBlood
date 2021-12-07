@@ -10,10 +10,8 @@ import net.minecraft.entity.monster.AbstractRaiderEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileHelper;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShootableItem;
@@ -143,6 +141,26 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
 
     }
 
+    @OnlyIn(Dist.CLIENT)
+    public boolean isCharging() {
+        return this.dataManager.get(DATA_CHARGING_STATE);
+    }
+
+    public void setCharging(boolean isCharging) {
+        this.dataManager.set(DATA_CHARGING_STATE, isCharging);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public AbstractIllagerEntity.ArmPose getArmPose() {
+        if (this.isCharging()) {
+            return AbstractIllagerEntity.ArmPose.CROSSBOW_CHARGE;
+        } else if (this.canEquip(Items.CROSSBOW)) {
+            return AbstractIllagerEntity.ArmPose.CROSSBOW_HOLD;
+        } else {
+            return this.isAggressive() ? AbstractIllagerEntity.ArmPose.ATTACKING : AbstractIllagerEntity.ArmPose.NEUTRAL;
+        }
+    }
+
     public boolean attackEntityFrom(DamageSource source, float amount) {
         Entity entity = source.getTrueSource();
         if (entity instanceof IrkEntity){
@@ -195,14 +213,6 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
         this.dataManager.set(IRK_FLAGS, (byte)(i & 255));
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public boolean isCharging() {
-        return this.dataManager.get(DATA_CHARGING_STATE);
-    }
-
-    public void setCharging(boolean isCharging) {
-        this.dataManager.set(DATA_CHARGING_STATE, isCharging);
-    }
 
     public void func_230283_U__() {
         this.idleTime = 0;
@@ -227,17 +237,6 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
         return SoundEvents.ENTITY_VEX_HURT;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public AbstractIllagerEntity.ArmPose getArmPose() {
-        if (this.isCharging()) {
-            return AbstractIllagerEntity.ArmPose.CROSSBOW_CHARGE;
-        } else if (this.canEquip(Items.CROSSBOW)) {
-            return AbstractIllagerEntity.ArmPose.CROSSBOW_HOLD;
-        } else {
-            return this.isAggressive() ? AbstractIllagerEntity.ArmPose.ATTACKING : AbstractIllagerEntity.ArmPose.NEUTRAL;
-        }
     }
 
     public float getBrightness() {

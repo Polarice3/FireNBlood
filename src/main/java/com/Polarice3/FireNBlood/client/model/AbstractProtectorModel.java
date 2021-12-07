@@ -99,7 +99,7 @@ public class AbstractProtectorModel<T extends AbstractProtectorEntity> extends B
         this.bipedHead.rotateAngleX = headPitch * ((float)Math.PI / 180F);
         this.arms.rotationPointZ = -1.0F;
         this.arms.rotateAngleX = -0.75F;
-        if (this.isSitting || entityIn.isEntitySleeping() || entityIn.isDying()) {
+        if (this.isSitting/* || entityIn.isEntitySleeping() || entityIn.isDying()*/) {
             this.bipedRightArm.rotateAngleX = (-(float)Math.PI / 5F);
             this.bipedRightArm.rotateAngleY = 0.0F;
             this.bipedRightArm.rotateAngleZ = 0.0F;

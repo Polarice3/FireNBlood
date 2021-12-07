@@ -4,12 +4,14 @@ import com.Polarice3.FireNBlood.entities.hostile.AbstractTaillessEntity;
 import com.Polarice3.FireNBlood.entities.hostile.IrkEntity;
 import com.Polarice3.FireNBlood.entities.neutral.AbstractProtectorEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
+import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.controller.MovementController;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.merchant.villager.AbstractVillagerEntity;
 import net.minecraft.entity.monster.AbstractIllagerEntity;
 import net.minecraft.entity.monster.AbstractRaiderEntity;
@@ -223,6 +225,15 @@ public class VizierEntity extends SpellcastingIllagerEntity implements IChargeab
     protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
         this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.IRON_SWORD));
         this.setDropChance(EquipmentSlotType.MAINHAND, 0.0F);
+    }
+
+    protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
+        super.dropSpecialItems(source, looting, recentlyHitIn);
+        ItemEntity itementity = this.entityDropItem(RegistryHandler.SOULRUBY.get());
+        if (itementity != null) {
+            itementity.setNoDespawn();
+        }
+
     }
 
     public void applyWaveBonus(int wave, boolean p_213660_2_) {

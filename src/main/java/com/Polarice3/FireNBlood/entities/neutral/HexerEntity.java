@@ -63,6 +63,8 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
     private boolean dying;
     private boolean loyal;
     private int shield;
+    private int despawnDelay;
+    private boolean wandering;
     private RavagerEntity RavagerTarget;
 
     public HexerEntity(EntityType<? extends SpellcastingProtectorEntity> type, World worldIn) {
@@ -178,6 +180,7 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
 
     public void writeAdditional(CompoundNBT compound) {
         super.writeAdditional(compound);
+        compound.putInt("DespawnDelay", this.despawnDelay);
         ListNBT listnbt = new ListNBT();
 
         for(int i = 0; i < this.inventory.getSizeInventory(); ++i) {
@@ -190,6 +193,7 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
         compound.putInt("dyingTimer", this.dyingTimer);
         compound.putInt("loyaltyPoints", this.loyaltyPoints);
         compound.putInt("shield", this.shield);
+        compound.putBoolean("isWanderer", this.wandering);
         compound.putBoolean("isShielded", this.shielded);
         compound.putBoolean("isWeakness", this.weakness);
         compound.putBoolean("isDying", this.dying);
@@ -199,6 +203,9 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
     public void readAdditional(CompoundNBT compound) {
         super.readAdditional(compound);
         ListNBT listnbt = compound.getList("Inventory", 10);
+        if (compound.contains("DespawnDelay", 99)) {
+            this.despawnDelay = compound.getInt("DespawnDelay");
+        }
 
         for(int i = 0; i < listnbt.size(); ++i) {
             ItemStack itemstack = ItemStack.read(listnbt.getCompound(i));
@@ -214,9 +221,41 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
         this.weakness = compound.getBoolean("isWeakness");
         this.dying = compound.getBoolean("isDying");
         this.loyal = compound.getBoolean("isLoyal");
+        this.wandering = compound.getBoolean("isWanderer");
         this.setShield(this.shielded);
         this.setDying(this.dying);
         this.setLoyal(this.loyal);
+    }
+
+    public void setDespawnDelay(int delay) {
+        this.despawnDelay = delay;
+    }
+
+    public boolean isWanderer(){
+        return this.getHexerFlag(9);
+    }
+
+    public void setWanderer(boolean wanderer){
+        this.setHexerFlag(9,wandering);
+    }
+
+    public int getDespawnDelay() {
+        return this.despawnDelay;
+    }
+
+    private void handleDespawn() {
+        if (this.despawnDelay > 0 && --this.despawnDelay == 0) {
+            this.remove();
+        }
+
+    }
+
+    public void livingTick() {
+        super.livingTick();
+        if (!this.world.isRemote && !this.isHired() && this.isWanderer()) {
+            this.handleDespawn();
+        }
+
     }
 
     protected void updateAITasks() {

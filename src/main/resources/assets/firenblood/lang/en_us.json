@@ -19,6 +19,7 @@
   "entity.firenblood.mirage":"Mirage",
   "entity.firenblood.savager":"Savager",
   "entity.firenblood.neophyte":"Neophyte",
+  "entity.firenblood.friendly_vex":"Vex",
   "entity.firenblood.vizier":"Vizier",
   "entity.firenblood.irk":"Irk",
   "entity.firenblood.penance":"Penance",
@@ -51,6 +52,7 @@
   "item.firenblood.flamegun": "Nether Blaster",
   "item.firenblood.padre_effigy": "Padre Effigy",
   "item.firenblood.mocking_effigy": "Mocking Effigy",
+  "item.firenblood.soulruby": "Ruby of Souls",
   "item.firenblood.sacred_fish": "Golden King",
   "item.firenblood.rallying_horn": "Rallying Horn",
   "item.firenblood.furred_helmet": "Furred Cowl",
@@ -60,6 +62,10 @@
   "item.firenblood.golden_mace": "Golden Mace",
   "item.firenblood.diamond_mace": "Diamond Mace",
   "item.firenblood.warped_spear": "Warped Spear",
+  "item.firenblood.dark_scroll": "Dark Scroll",
+  "item.firenblood.staffofvexations": "Staff of Vexations",
+  "item.firenblood.wandofvexing": "Vexing Wand",
+  "item.firenblood.goldtotem": "Totem of Souls",
   "block.firenblood.blazecoreblock": "Tank Core",
   "block.firenblood.porcusshrine": "Shrine of Porcus",
   "effect.firenblood.evileye": "Evil Eye",
@@ -68,5 +74,6 @@
   "potion.firenblood.mining_fatigue": "Mining Fatigue",
   "potion.firenblood.minorharm": "Minor Harming",
   "key.firenblood.category": "Fire N' Blood",
-  "key.firenblood.magic": "Cast Spell"
+  "key.firenblood.magic": "Cast Spell",
+  "info.firenblood.goldtotem.souls": "%d/%d"
 }

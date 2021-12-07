@@ -2,6 +2,7 @@ package com.Polarice3.FireNBlood.init;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.entities.ally.FriendlyTankEntity;
+import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
 import com.Polarice3.FireNBlood.entities.bosses.PenanceEntity;
 import com.Polarice3.FireNBlood.entities.bosses.VizierEntity;
 import com.Polarice3.FireNBlood.entities.hostile.*;
@@ -162,6 +163,13 @@ public class ModEntityType {
                     .size(0.6F, 1.95F)
                     .trackingRange(8)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "neophyte").toString()));
+
+    public static final RegistryObject<EntityType<FriendlyVexEntity>> FRIENDLY_VEX = ENTITY_TYPES.register("friendly_vex",
+            () -> EntityType.Builder.create(FriendlyVexEntity::new, EntityClassification.MONSTER)
+                    .immuneToFire()
+                    .size(0.4F, 0.8F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "friendly_vex").toString()));
 
     public static final RegistryObject<EntityType<VizierEntity>> VIZIER = ENTITY_TYPES.register("vizier",
             () -> EntityType.Builder.create(VizierEntity::new, EntityClassification.MONSTER)

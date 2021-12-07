@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "sas",
+    "gbg",
+    " c "
+  ],
+  "key":
+  {
+    "a":
+    {
+      "item": "minecraft:emerald"
+    },
+    "b":
+    {
+      "item": "minecraft:iron_sword"
+    },
+    "c":
+    {
+      "item": "minecraft:stick"
+    },
+    "s":
+    {
+      "item": "minecraft:nether_wart"
+    },
+    "g":
+    {
+      "item": "minecraft:soul_sand"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:staffofvexing",
+    "count": 1
+  }
+}

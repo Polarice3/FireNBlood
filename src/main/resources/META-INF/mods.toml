@@ -10,17 +10,19 @@ issueTrackerURL="http://my.issue.tracker/" #optional
 
 modId="firenblood" #mandatory
 
-version="1.16.4 - 1.0.1" #mandatory
+version="1.16.4 - 1.0.2" #mandatory
 
 displayName="Fire N' Blood" #mandatory
 
 updateJSONURL="http://myurl.me/" #optional
 
-displayURL="http://example.com/" #optional
+displayURL="https://github.com/Polarice3/FireNBlood" #optional
 
 logoFile="Logo.png" #optional
 
-credits="Special thanks to Technovision and TelepathicGrunt for their tutorials and diesieben07 for helping me with a problem!" #optional
+credits="Special thanks to Technovision and TelepathicGrunt for their tutorials and diesieben07 for helping me with a problem!
+
+Credit to Alex666 for event codes, and Ipsis for certain codes!" #optional
 
 authors="anogon" #optional
 

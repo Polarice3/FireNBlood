@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "waw",
+    "sbs",
+    " c "
+  ],
+  "key":
+  {
+    "a":
+    {
+      "item": "firenblood:soulruby"
+    },
+    "b":
+    {
+      "item": "minecraft:iron_sword"
+    },
+    "c":
+    {
+      "item": "minecraft:log"
+    },
+    "w":
+    {
+      "item": "minecraft:nether_wart"
+    },
+    "s":
+    {
+      "item": "minecraft:soul_sand"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:staffofvexing",
+    "count": 1
+  }
+}

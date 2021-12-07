@@ -71,7 +71,7 @@ public class FriendlyTankEntity extends TameableEntity {
         this.goalSelector.addGoal(6, new FollowOwnerGoal(this, 1.0D, 20.0F, 4.0F, false));
         this.goalSelector.addGoal(8, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, false, false, (p_234199_0_) -> {
-            return p_234199_0_ instanceof IMob && !(p_234199_0_ instanceof CreeperEntity);
+            return p_234199_0_ instanceof IMob && !(p_234199_0_ instanceof CreeperEntity) && !(p_234199_0_ instanceof FriendlyVexEntity);
         }));
         this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));

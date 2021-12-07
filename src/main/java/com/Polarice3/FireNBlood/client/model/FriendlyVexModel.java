@@ -1,19 +1,22 @@
 package com.Polarice3.FireNBlood.client.model;
 
-import com.Polarice3.FireNBlood.entities.hostile.IrkEntity;
+import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.model.ModelHelper;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.monster.AbstractIllagerEntity;
+import net.minecraft.entity.monster.VexEntity;
+import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-public class IrkModel extends BipedModel<IrkEntity> {
+@OnlyIn(Dist.CLIENT)
+public class FriendlyVexModel extends BipedModel<FriendlyVexEntity> {
     private final ModelRenderer leftWing;
     private final ModelRenderer rightWing;
 
-    public IrkModel() {
+    public FriendlyVexModel() {
         super(0.0F, 0.0F, 64, 64);
         this.bipedLeftLeg.showModel = false;
         this.bipedHeadwear.showModel = false;
@@ -34,13 +37,17 @@ public class IrkModel extends BipedModel<IrkEntity> {
     /**
      * Sets this entity's model rotation angles
      */
-    public void setRotationAngles(IrkEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setRotationAngles(FriendlyVexEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         super.setRotationAngles(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-        AbstractIllagerEntity.ArmPose abstractillagerentity$armpose = entityIn.getArmPose();
-        if (abstractillagerentity$armpose == AbstractIllagerEntity.ArmPose.CROSSBOW_HOLD) {
-            ModelHelper.func_239104_a_(this.bipedRightArm, this.bipedLeftArm, this.bipedHead, true);
-        } else if (abstractillagerentity$armpose == AbstractIllagerEntity.ArmPose.CROSSBOW_CHARGE) {
-            ModelHelper.func_239102_a_(this.bipedRightArm, this.bipedLeftArm, entityIn, true);
+        if (entityIn.isCharging()) {
+            if (entityIn.getHeldItemMainhand().isEmpty()) {
+                this.bipedRightArm.rotateAngleX = ((float)Math.PI * 1.5F);
+                this.bipedLeftArm.rotateAngleX = ((float)Math.PI * 1.5F);
+            } else if (entityIn.getPrimaryHand() == HandSide.RIGHT) {
+                this.bipedRightArm.rotateAngleX = 3.7699115F;
+            } else {
+                this.bipedLeftArm.rotateAngleX = 3.7699115F;
+            }
         }
 
         this.bipedRightLeg.rotateAngleX += ((float)Math.PI / 5F);

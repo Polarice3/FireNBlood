@@ -53,10 +53,15 @@ public class RegistryHandler {
     public static final RegistryObject<SacredFishItem> SACRED_FISH = ITEMS.register("sacred_fish", SacredFishItem::new);
     public static final RegistryObject<Item> RALLYING_HORN = ITEMS.register("rallying_horn", RallyingHornItem::new);
     public static final RegistryObject<Item> DARK_SCROLL = ITEMS.register("dark_scroll", DarkScrollItem::new);
+    public static final RegistryObject<Item> SOULRUBY = ITEMS.register("soulruby", ItemBase::new);
+    public static final RegistryObject<GoldTotemItem> GOLDTOTEM = ITEMS.register("goldtotem", GoldTotemItem::new);
+
     //Tools
     public static final RegistryObject<Item> GOLDEN_MACE = ITEMS.register("golden_mace", GoldenMaceItem::new);
     public static final RegistryObject<Item> DIAMOND_MACE = ITEMS.register("diamond_mace", DiamondMaceItem::new);
     public static final RegistryObject<Item> WARPED_SPEAR = ITEMS.register("warped_spear", WarpedSpearItem::new);
+    public static final RegistryObject<Item> STAFFOFVEXATIONS = ITEMS.register("staffofvexations", StaffofVexationsItem::new);
+    public static final RegistryObject<Item> WANDOFVEXING = ITEMS.register("wandofvexing", WandofVexingItem::new);
     //Armors
     public static final RegistryObject<Item> FURRED_HELMET = ITEMS.register("furred_helmet", () ->
             new ArmorItem(ModArmorMaterial.FURRED, EquipmentSlotType.HEAD, new Item.Properties().group(FireNBlood.TAB)));
