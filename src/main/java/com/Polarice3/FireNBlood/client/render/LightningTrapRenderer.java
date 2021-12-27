@@ -1,18 +1,18 @@
 package com.Polarice3.FireNBlood.client.render;
 
-import com.Polarice3.FireNBlood.entities.utilities.FakeSeatEntity;
+import com.Polarice3.FireNBlood.entities.utilities.LightningTrapEntity;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.util.ResourceLocation;
 
-public class FakeSeatRenderer extends EntityRenderer<FakeSeatEntity> {
+public class LightningTrapRenderer extends EntityRenderer<LightningTrapEntity> {
 
-    public FakeSeatRenderer(EntityRendererManager renderManagerIn) {
-        super(renderManagerIn);
+    public LightningTrapRenderer(EntityRendererManager renderManager) {
+        super(renderManager);
     }
 
-    public ResourceLocation getEntityTexture(FakeSeatEntity entity) {
+    public ResourceLocation getEntityTexture(LightningTrapEntity entity) {
         return AtlasTexture.LOCATION_BLOCKS_TEXTURE;
     }
 }

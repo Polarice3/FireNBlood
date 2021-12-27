@@ -31,6 +31,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -184,7 +185,7 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
     }
 
     public boolean attackEntityFrom(DamageSource source, float amount){
-        List<ServantTaillessEntity> list = TaillessDruidEntity.this.world.getTargettableEntitiesWithinAABB(ServantTaillessEntity.class, this.ally, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().grow(32.0D, 32.0D, 32.0D));
+        List<ServantTaillessEntity> list = TaillessDruidEntity.this.world.getTargettableEntitiesWithinAABB(ServantTaillessEntity.class, this.ally, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().grow(32.0D, 8.0D, 32.0D));
         if (list.isEmpty()) {
             return super.attackEntityFrom(source, amount);
         } else {
@@ -193,7 +194,7 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
     }
 
     public boolean isCharged(){
-        List<ServantTaillessEntity> list = TaillessDruidEntity.this.world.getTargettableEntitiesWithinAABB(ServantTaillessEntity.class, this.ally, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().grow(32.0D, 32.0D, 32.0D));
+        List<ServantTaillessEntity> list = TaillessDruidEntity.this.world.getTargettableEntitiesWithinAABB(ServantTaillessEntity.class, this.ally, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().grow(32.0D, 8.0D, 32.0D));
         if (list.isEmpty()) {
             return false;
         } else {
@@ -279,6 +280,17 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
                 this.Fire = 0;
             }
         }
+
+        for(Entity entity : this.world.getEntitiesWithinAABB(LivingEntity.class, this.getBoundingBox().grow(32.0D, 8.0D, 32.0D), field_213690_b)) {
+            if (entity instanceof ServantTaillessEntity) {
+                ((ServantTaillessEntity) entity).addPotionEffect(new EffectInstance(Effects.WEAKNESS, 60, 1));
+                ((ServantTaillessEntity) entity).addPotionEffect(new EffectInstance(Effects.GLOWING, 60));
+                if (this.world.getDifficulty() == Difficulty.EASY){
+                    entity.attackEntityFrom(DamageSource.STARVE, 1.0F);
+                }
+            }
+        }
+
         super.livingTick();
     }
 

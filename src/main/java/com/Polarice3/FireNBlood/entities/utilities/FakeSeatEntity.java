@@ -1,12 +1,14 @@
-package com.Polarice3.FireNBlood.entities.neutral;
+package com.Polarice3.FireNBlood.entities.utilities;
 
 import net.minecraft.entity.CreatureEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
+import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
@@ -14,28 +16,11 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class FakeSeatEntity extends CreatureEntity {
+public class FakeSeatEntity extends Entity {
     private int lifetimer;
 
-    public FakeSeatEntity(EntityType<? extends CreatureEntity> type, World worldIn) {
+    public FakeSeatEntity(EntityType<?> type, World worldIn) {
         super(type, worldIn);
-    }
-
-    public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 200.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 0D)
-                .createMutableAttribute(Attributes.ATTACK_SPEED, 0D)
-                .createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 1.0D);
-    }
-
-    protected void registerGoals() {
-        super.registerGoals();
-    }
-
-    public boolean isPotionApplicable(EffectInstance potioneffectIn) {
-        return false;
     }
 
     public double getMountedYOffset() {
@@ -70,27 +55,22 @@ public class FakeSeatEntity extends CreatureEntity {
         return null;
     }
 
-    protected boolean isMovementBlocked() {
-        return super.isMovementBlocked();
-    }
-
     @Override
     protected void registerData() {
-        super.registerData();
     }
 
     @Override
     public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+
     }
 
     @Override
     public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+
     }
 
     @Override
     public IPacket<?> createSpawnPacket() {
-        return null;
+        return new SSpawnObjectPacket(this);
     }
 }

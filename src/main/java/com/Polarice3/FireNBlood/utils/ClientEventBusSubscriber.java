@@ -46,6 +46,8 @@ public class ClientEventBusSubscriber {
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.IRK.get(), IrkRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.PENANCE.get(), PenanceRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.FAKESEAT.get(), FakeSeatRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.LIGHTNINGTRAP.get(), LightningTrapRenderer::new);
+
 
     }
 

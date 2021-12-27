@@ -13,6 +13,8 @@ import com.Polarice3.FireNBlood.entities.neutral.*;
 import com.Polarice3.FireNBlood.entities.projectiles.EtherealPunchEntity;
 import com.Polarice3.FireNBlood.entities.projectiles.SoulFireballEntity;
 import com.Polarice3.FireNBlood.entities.projectiles.WarpedSpearEntity;
+import com.Polarice3.FireNBlood.entities.utilities.LightningTrapEntity;
+import com.Polarice3.FireNBlood.entities.utilities.FakeSeatEntity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
@@ -194,5 +196,10 @@ public class ModEntityType {
             () -> EntityType.Builder.create(FakeSeatEntity::new, EntityClassification.MISC)
                     .size(0.1F, 0.1F)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "fakeseat").toString()));
+
+    public static final RegistryObject<EntityType<LightningTrapEntity>> LIGHTNINGTRAP = ENTITY_TYPES.register("lightningtrap",
+            () -> EntityType.Builder.<LightningTrapEntity>create(LightningTrapEntity::new, EntityClassification.MISC)
+                    .size(2.0F, 0.5F)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "lightningtrap").toString()));
 
 }

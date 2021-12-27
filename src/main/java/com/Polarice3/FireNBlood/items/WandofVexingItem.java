@@ -29,15 +29,15 @@ public class WandofVexingItem extends SoulUsingItem {
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
         super.onItemUseFinish(stack, worldIn, entityLiving);
         ServerWorld serverworld = (ServerWorld)entityLiving.world;
-            BlockPos blockpos = entityLiving.getPosition();
-            FriendlyVexEntity vexentity = ModEntityType.FRIENDLY_VEX.get().create(entityLiving.world);
-            assert vexentity != null;
-            vexentity.moveToBlockPosAndAngles(blockpos, 0.0F, 0.0F);
-            vexentity.onInitialSpawn(serverworld, entityLiving.world.getDifficultyForLocation(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
-            vexentity.setOwner((PlayerEntity) entityLiving);
-            vexentity.setBoundOrigin(blockpos);
-            vexentity.setLimitedLife(20 * (30 + entityLiving.world.rand.nextInt(90)));
-            serverworld.func_242417_l(vexentity);
+        BlockPos blockpos = entityLiving.getPosition();
+        FriendlyVexEntity vexentity = ModEntityType.FRIENDLY_VEX.get().create(entityLiving.world);
+        assert vexentity != null;
+        vexentity.moveToBlockPosAndAngles(blockpos, 0.0F, 0.0F);
+        vexentity.onInitialSpawn(serverworld, entityLiving.world.getDifficultyForLocation(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
+        vexentity.setOwner((PlayerEntity) entityLiving);
+        vexentity.setBoundOrigin(blockpos);
+        vexentity.setLimitedLife(20 * (30 + entityLiving.world.rand.nextInt(90)));
+        serverworld.func_242417_l(vexentity);
         worldIn.playSound((PlayerEntity) null, entityLiving.getPosX(), entityLiving.getPosY(), entityLiving.getPosZ(), SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
         for(int i = 0; i < entityLiving.world.rand.nextInt(35) + 10; ++i) {
             entityLiving.world.addParticle(ParticleTypes.POOF, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), 0.0F, 0.0F, 0.0F);

@@ -175,10 +175,6 @@ public class FireNBlood
             GlobalEntityTypeAttributes.put(ModEntityType.PENANCE.get(), PenanceEntity.setCustomAttributes().create());
         });
 
-        DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.FAKESEAT.get(), FakeSeatEntity.setCustomAttributes().create());
-        });
-
         event.enqueueWork(() -> {
             RegistryStructures.setupStructures();
             ConfiguredStructures.registerConfiguredStructures();

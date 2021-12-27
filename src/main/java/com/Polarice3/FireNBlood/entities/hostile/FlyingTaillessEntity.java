@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
-public class FlyingTaillessEntity extends ServantTaillessEntity {
+public class FlyingTaillessEntity extends AbstractTaillessEntity {
     protected FlyingTaillessEntity(EntityType<? extends FlyingTaillessEntity> type, World worldIn) {
         super(type, worldIn);
     }

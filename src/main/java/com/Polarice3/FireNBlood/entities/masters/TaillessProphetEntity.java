@@ -5,6 +5,7 @@ import com.Polarice3.FireNBlood.entities.hostile.RoyalBulletEntity;
 import com.Polarice3.FireNBlood.entities.hostile.ServantTaillessEntity;
 import com.Polarice3.FireNBlood.entities.hostile.SpellcastingTaillessEntity;
 import com.Polarice3.FireNBlood.entities.projectiles.SoulFireballEntity;
+import com.Polarice3.FireNBlood.entities.utilities.LightningTrapEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.BlockState;
@@ -12,7 +13,6 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.effect.LightningBoltEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.AbstractIllagerEntity;
 import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
@@ -31,8 +31,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
@@ -74,7 +73,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         this.goalSelector.addGoal(1, new TaillessProphetEntity.CastingSpellGoal());
         this.goalSelector.addGoal(2, new AvoidEntityGoal<>(this, PlayerEntity.class, 8.0F, 0.6D, 1.0D));
         this.goalSelector.addGoal(2, new AvoidEntityGoal<>(this, IronGolemEntity.class, 8.0F, 0.6D, 1.0D));
-        this.goalSelector.addGoal(4, new TaillessProphetEntity.JumpSpellGoal());
+        this.goalSelector.addGoal(4, new TaillessProphetEntity.LightningSpellGoal());
         this.goalSelector.addGoal(4, new TaillessProphetEntity.BarrageSpellGoal());
         this.goalSelector.addGoal(5, new TaillessProphetEntity.RegenSpellGoal());
         this.goalSelector.addGoal(6, new TaillessProphetEntity.SummonSpellGoal());
@@ -168,7 +167,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
     }
 
     public boolean attackEntityFrom(DamageSource source, float amount){
-        List<ServantTaillessEntity> list = TaillessProphetEntity.this.world.getTargettableEntitiesWithinAABB(ServantTaillessEntity.class, this.ally, TaillessProphetEntity.this, TaillessProphetEntity.this.getBoundingBox().grow(32.0D, 32.0D, 32.0D));
+        List<ServantTaillessEntity> list = TaillessProphetEntity.this.world.getTargettableEntitiesWithinAABB(ServantTaillessEntity.class, this.ally, TaillessProphetEntity.this, TaillessProphetEntity.this.getBoundingBox().grow(32.0D, 8.0D, 32.0D));
         if (list.isEmpty()) {
             boolean flag = super.attackEntityFrom(source, amount);
             if (TaillessProphetEntity.this.SecondPhase()) {
@@ -181,7 +180,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
     }
 
     public boolean isCharged(){
-        List<ServantTaillessEntity> list = TaillessProphetEntity.this.world.getTargettableEntitiesWithinAABB(ServantTaillessEntity.class, this.ally, TaillessProphetEntity.this, TaillessProphetEntity.this.getBoundingBox().grow(32.0D, 32.0D, 32.0D));
+        List<ServantTaillessEntity> list = TaillessProphetEntity.this.world.getTargettableEntitiesWithinAABB(ServantTaillessEntity.class, this.ally, TaillessProphetEntity.this, TaillessProphetEntity.this.getBoundingBox().grow(32.0D, 8.0D, 32.0D));
         if (list.isEmpty()) {
             return false;
         } else {
@@ -264,10 +263,22 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
                 }
             }
         }
+
         if (this.Launch >= 1){
             this.Launch = 0;
             this.setLaunching(false);
         }
+
+        for(Entity entity : this.world.getEntitiesWithinAABB(LivingEntity.class, this.getBoundingBox().grow(32.0D, 8.0D, 32.0D), field_213690_b)) {
+            if (entity instanceof ServantTaillessEntity) {
+                ((ServantTaillessEntity) entity).addPotionEffect(new EffectInstance(Effects.WEAKNESS, 60));
+                ((ServantTaillessEntity) entity).addPotionEffect(new EffectInstance(Effects.GLOWING, 60));
+                if (this.world.getDifficulty() == Difficulty.EASY){
+                    entity.attackEntityFrom(DamageSource.STARVE, 1.0F);
+                }
+            }
+        }
+
     }
 
     class CastingSpellGoal extends SpellcastingTaillessEntity.CastingASpellGoal{
@@ -349,25 +360,13 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
                 return false;
             }
         }
-        protected int getCastWarmupTime() {
-            if (TaillessProphetEntity.this.SecondPhase()){
-                return 60;
-            }
-             else {return 120;}
-        }
 
         protected int getCastingTime() {
-            if (TaillessProphetEntity.this.SecondPhase()){
-                return 60;
-            }
-            else {return 120;}
+            return 60;
         }
 
         protected int getCastingInterval() {
-            if (TaillessProphetEntity.this.SecondPhase()){
-                return 200;
-            }
-            else {return 400;}
+            return 200;
         }
 
         @Override
@@ -382,11 +381,19 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
 
         public void castSpell(){
             LivingEntity livingentity = TaillessProphetEntity.this.getAttackTarget();
-            LightningBoltEntity lightning = new LightningBoltEntity(EntityType.LIGHTNING_BOLT, world);
-            lightning.setPosition(livingentity.prevPosX,livingentity.prevPosY,livingentity.prevPosZ);
-            world.addEntity(lightning);
-            if (TaillessProphetEntity.this.SecondPhase()){
-                TaillessProphetEntity.this.teleportRandomly();
+            if (!TaillessProphetEntity.this.world.isRemote) {
+                assert livingentity != null;
+                LightningTrapEntity lightningrune = new LightningTrapEntity(TaillessProphetEntity.this.world, livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ());
+                lightningrune.setDuration(60);
+                AreaEffectCloudEntity areaeffectcloudentity = new AreaEffectCloudEntity(TaillessProphetEntity.this.world, livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ());
+                areaeffectcloudentity.setParticleData(ParticleTypes.CLOUD);
+                areaeffectcloudentity.setRadius(2.0F);
+                areaeffectcloudentity.setDuration(60);
+                TaillessProphetEntity.this.world.addEntity(areaeffectcloudentity);
+                TaillessProphetEntity.this.world.addEntity(lightningrune);
+                if (TaillessProphetEntity.this.SecondPhase()){
+                    TaillessProphetEntity.this.teleportRandomly();
+                }
             }
         }
     }
@@ -534,15 +541,6 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
             LivingEntity livingentity = TaillessProphetEntity.this.getAttackTarget();
             ServerWorld serverworld = (ServerWorld) TaillessProphetEntity.this.world;
             assert livingentity != null;
-/*            double d0 = TaillessProphetEntity.this.getDistanceSq(livingentity);
-            Vector3d vector3d = TaillessProphetEntity.this.getLook(1.0F);
-            float f = MathHelper.sqrt(MathHelper.sqrt(d0)) * 0.5F;
-            double d2 = livingentity.getPosX() - (TaillessProphetEntity.this.getPosX() + vector3d.x * 4.0D);
-            double d3 = livingentity.getPosYHeight(0.5D) - (0.5D + TaillessProphetEntity.this.getPosYHeight(0.5D));
-            double d4 = livingentity.getPosZ() - (TaillessProphetEntity.this.getPosZ() + vector3d.z * 4.0D);
-            SoulFireballEntity soulfireballEntity = new SoulFireballEntity(world, TaillessProphetEntity.this, d2 + TaillessProphetEntity.this.getRNG().nextGaussian() * (double) f, d3 + TaillessProphetEntity.this.getRNG().nextGaussian() * (double) f, d4 + TaillessProphetEntity.this.getRNG().nextGaussian() * (double) f);
-            soulfireballEntity.setPosition(TaillessProphetEntity.this.getPosX() + vector3d.x * 4.0D, TaillessProphetEntity.this.getPosYHeight(0.5D) + 0.5D, soulfireballEntity.getPosZ() + vector3d.z * 4.0D);
-            world.addEntity(soulfireballEntity);*/
             for(int i = 0; i < 3; ++i) {
                 SoulFireballEntity soulfireballEntity = new SoulFireballEntity(world, TaillessProphetEntity.this, 0, -900D, 0);
                 soulfireballEntity.setPosition(livingentity.getPosX() + TaillessProphetEntity.this.rand.nextInt(5), livingentity.getPosY() + 32.0D, livingentity.getPosZ() + TaillessProphetEntity.this.rand.nextInt(5));
