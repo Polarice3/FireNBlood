@@ -32,6 +32,7 @@ public class ClientEventBusSubscriber {
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.SOUL_FIREBALL.get(), SoulFireballRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.ETHEREAL_PUNCH.get(), EtherealPunchRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.WARPED_SPEAR.get(), WarpedSpearRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.WITCHBOMB.get(), WitchBombRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.SLOWBOMB.get(), SlowBombRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.REDEMPTOR.get(), RedemptorRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.PROTECTOR.get(), ProtectorRenderer::new);
@@ -41,6 +42,7 @@ public class ClientEventBusSubscriber {
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.QUELL.get(), QuellRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.SAVAGER.get(), SavagerRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.NEOPHYTE.get(), NeophyteRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.ACOLYTE.get(), AcolyteRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.FRIENDLY_VEX.get(), FriendlyVexRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.VIZIER.get(), VizierRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.IRK.get(), IrkRenderer::new);

@@ -9,6 +9,7 @@ import com.Polarice3.FireNBlood.entities.masters.MinotaurEntity;
 import com.Polarice3.FireNBlood.entities.masters.TaillessAnathemaEntity;
 import com.Polarice3.FireNBlood.entities.masters.TaillessProphetEntity;
 import com.Polarice3.FireNBlood.entities.neutral.*;
+import com.Polarice3.FireNBlood.entities.utilities.FakeSeatEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.init.ModItems;
 import com.Polarice3.FireNBlood.potions.ModPotions;
@@ -52,7 +53,7 @@ import java.util.Map;
 public class FireNBlood
 {
     // Directly reference a log4j logger.
-    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "firenblood";
 
     public FireNBlood() {
@@ -160,6 +161,10 @@ public class FireNBlood
         });
 
         DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.ACOLYTE.get(), AcolyteEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.FRIENDLY_VEX.get(), FriendlyVexEntity.setCustomAttributes().create());
         });
 
@@ -173,6 +178,10 @@ public class FireNBlood
 
         DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.PENANCE.get(), PenanceEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.FAKESEAT.get(), FakeSeatEntity.setCustomAttributes().create());
         });
 
         event.enqueueWork(() -> {
@@ -197,9 +206,7 @@ public class FireNBlood
         || event.getCategory() == Biome.Category.SAVANNA) {
             event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_TAVERN);
         }
-/*
         event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_PROFANEDTOWER);
-*/
     }
 
     private static Method GETCODEC_METHOD;
@@ -242,9 +249,7 @@ public class FireNBlood
              */
             Map<Structure<?>, StructureSeparationSettings> tempMap = new HashMap<>(serverWorld.getChunkProvider().generator.func_235957_b_().func_236195_a_());
             tempMap.putIfAbsent(RegistryStructures.TAVERN.get(), DimensionStructuresSettings.field_236191_b_.get(RegistryStructures.TAVERN.get()));
-/*
             tempMap.putIfAbsent(RegistryStructures.PROFANEDTOWER.get(), DimensionStructuresSettings.field_236191_b_.get(RegistryStructures.PROFANEDTOWER.get()));
-*/
             serverWorld.getChunkProvider().generator.func_235957_b_().field_236193_d_ = tempMap;
         }
     }

@@ -1,6 +1,6 @@
 package com.Polarice3.FireNBlood.client.model;
 
-import com.Polarice3.FireNBlood.entities.hostile.NeophyteEntity;
+import com.Polarice3.FireNBlood.entities.neutral.AcolyteEntity;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
 
-public class NeophyteModel extends SegmentedModel<NeophyteEntity> implements IHasArm, IHasHead {
+public class AcolyteModel extends SegmentedModel<AcolyteEntity> implements IHasArm, IHasHead {
     private final ModelRenderer body;
     private final ModelRenderer head;
     private final ModelRenderer hat;
@@ -24,7 +24,7 @@ public class NeophyteModel extends SegmentedModel<NeophyteEntity> implements IHa
     private final ModelRenderer leftArm;
     private boolean holdingItem;
 
-    public NeophyteModel() {
+    public AcolyteModel() {
         textureWidth = 64;
         textureHeight = 64;
 
@@ -81,7 +81,7 @@ public class NeophyteModel extends SegmentedModel<NeophyteEntity> implements IHa
     }
 
     @Override
-    public void setRotationAngles(NeophyteEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch){
+    public void setRotationAngles(AcolyteEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch){
         this.head.rotateAngleY = netHeadYaw * ((float)Math.PI / 180F);
         this.head.rotateAngleX = headPitch * ((float)Math.PI / 180F);
         this.arms.rotationPointY = 3.0F;

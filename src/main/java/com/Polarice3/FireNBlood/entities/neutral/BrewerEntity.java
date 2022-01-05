@@ -1,6 +1,7 @@
 package com.Polarice3.FireNBlood.entities.neutral;
 
 import com.Polarice3.FireNBlood.entities.hostile.AbstractTaillessEntity;
+import com.Polarice3.FireNBlood.entities.projectiles.WitchBombEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -14,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.entity.projectile.PotionEntity;
+import net.minecraft.entity.projectile.SnowballEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -64,13 +66,13 @@ public class BrewerEntity extends AbstractProtectorEntity implements IRangedAtta
         this.field_213694_A = new NearestAttackableTargetHealingGoal<>(this, PlayerEntity.class, true, (p_213693_1_) -> {
             if (this.isHired()){
                 LivingEntity employer = this.getOwner();
-                return p_213693_1_ != null && employer == p_213693_1_;
+                return p_213693_1_ != null && employer == p_213693_1_ && employer.getHealth() < employer.getMaxHealth();
             } else {
                 return false;
             }
         });
-        this.field_213694_B = new NearestAttackableTargetHealingGoal<>(this, AbstractProtectorEntity.class, true, (p_213693_1_) -> p_213693_1_ != null && p_213693_1_.getType() != ModEntityType.BREWER.get());
-        this.field_213694_C = new NearestAttackableTargetHealingGoal<>(this, AbstractVillagerEntity.class, true, Objects::nonNull);
+        this.field_213694_B = new NearestAttackableTargetHealingGoal<>(this, AbstractProtectorEntity.class, true, (p_213693_1_) -> p_213693_1_ != null && p_213693_1_.getType() != ModEntityType.BREWER.get() && p_213693_1_.getHealth() < p_213693_1_.getMaxHealth());
+        this.field_213694_C = new NearestAttackableTargetHealingGoal<>(this, AbstractVillagerEntity.class, true, (p_213693_1_) -> p_213693_1_ != null && p_213693_1_.getHealth() < p_213693_1_.getMaxHealth());
         this.field_213695_D0 = new ToggleableAttackableTargetGoal<>(this, AbstractTaillessEntity.class, 10, true, false, (Predicate<LivingEntity>)null);
         this.field_213695_D1 = new ToggleableAttackableTargetGoal<>(this, AbstractRaiderEntity.class, 10, true, false, (Predicate<LivingEntity>)null);
         this.field_213695_D2 = new ToggleableAttackableTargetGoal<>(this, MobEntity.class, 5, true, false, (p_234199_0_) -> p_234199_0_ instanceof IMob && !(p_234199_0_ instanceof CreeperEntity));
@@ -257,7 +259,7 @@ public class BrewerEntity extends AbstractProtectorEntity implements IRangedAtta
     }
 
     public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
-        if (!this.isDrinkingPotion() && !this.isDying()) {
+        if (!this.isDrinkingPotion() && !this.isDying() && !(target instanceof WitchEntity)) {
             Vector3d vector3d = target.getMotion();
             double d0 = target.getPosX() + vector3d.x - this.getPosX();
             double d1 = target.getPosYEye() - (double)1.1F - this.getPosY();
@@ -265,10 +267,10 @@ public class BrewerEntity extends AbstractProtectorEntity implements IRangedAtta
             float f = MathHelper.sqrt(d0 * d0 + d2 * d2);
             Potion potion = Potions.HARMING;
             if (target instanceof AbstractVillagerEntity || target instanceof AbstractProtectorEntity || target instanceof PlayerEntity) {
-                if (target.getHealth() < target.getMaxHealth()) {
-                    potion = Potions.HEALING;
-                } else if (target.isBurning()){
+                if (target.isBurning()){
                     potion = Potions.FIRE_RESISTANCE;
+                } else {
+                    potion = Potions.HEALING;
                 }
 
                 this.setAttackTarget((LivingEntity)null);
@@ -293,6 +295,17 @@ public class BrewerEntity extends AbstractProtectorEntity implements IRangedAtta
             }
 
             this.world.addEntity(potionentity);
+        }
+        if (!this.isDrinkingPotion() && !this.isDying() && target instanceof WitchEntity){
+            WitchBombEntity snowballentity = new WitchBombEntity(this.world, this);
+            Vector3d vector3d = target.getMotion();
+            double d0 = target.getPosX() + vector3d.x - this.getPosX();
+            double d1 = target.getPosYEye() - (double)1.1F - this.getPosY();
+            double d2 = target.getPosZ() + vector3d.z - this.getPosZ();
+            float f = MathHelper.sqrt(d0 * d0 + d2 * d2);
+            snowballentity.shoot(d0, d1 + (double)(f * 0.2F), d2, 0.75F, 2.0F);
+            this.playSound(SoundEvents.ENTITY_WITCH_THROW, 1.0F, 0.4F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+            this.world.addEntity(snowballentity);
         }
     }
 

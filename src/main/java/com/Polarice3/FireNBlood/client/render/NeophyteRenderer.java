@@ -3,7 +3,7 @@ package com.Polarice3.FireNBlood.client.render;
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.NeophyteModel;
 import com.Polarice3.FireNBlood.client.render.layers.NeophyteHeldItemLayer;
-import com.Polarice3.FireNBlood.entities.neutral.NeophyteEntity;
+import com.Polarice3.FireNBlood.entities.hostile.NeophyteEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;

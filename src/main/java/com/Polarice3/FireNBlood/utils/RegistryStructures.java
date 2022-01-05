@@ -1,6 +1,7 @@
 package com.Polarice3.FireNBlood.utils;
 
 import com.Polarice3.FireNBlood.FireNBlood;
+import com.Polarice3.FireNBlood.structures.ProfanedTowerStructure;
 import com.Polarice3.FireNBlood.structures.StructurePieces;
 import com.Polarice3.FireNBlood.structures.TavernStructure;
 import com.google.common.collect.ImmutableList;
@@ -21,9 +22,7 @@ import java.util.Map;
 public class RegistryStructures {
     public static final DeferredRegister<Structure<?>> STRUCTURES = DeferredRegister.create(ForgeRegistries.STRUCTURE_FEATURES, FireNBlood.MOD_ID);
     public static final RegistryObject<Structure<NoFeatureConfig>> TAVERN = STRUCTURES.register("tavern", () -> (new TavernStructure(NoFeatureConfig.field_236558_a_)));
-/*
     public static final RegistryObject<Structure<NoFeatureConfig>> PROFANEDTOWER = STRUCTURES.register("profanedtower", () -> (new ProfanedTowerStructure(NoFeatureConfig.field_236558_a_)));
-*/
 
     public static void init(){
         STRUCTURES.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -31,21 +30,21 @@ public class RegistryStructures {
 
     public static void setupStructures() {
         setupMapSpacingAndLand(
-                TAVERN.get(), /* The instance of the structure */
-                new StructureSeparationSettings(10 /* average distance apart in chunks between spawn attempts */,
-                        5 /* minimum distance apart in chunks between spawn attempts. MUST BE LESS THAN ABOVE VALUE*/,
-                        1234567890 /* this modifies the seed of the structure so no two structures always spawn over each-other. Make this large and unique. */),
+                TAVERN.get(),
+                new StructureSeparationSettings(60,
+                        20,
+                        1234567890),
                 true);
-/*        setupMapSpacingAndLand(
+        setupMapSpacingAndLand(
                 PROFANEDTOWER.get(),
-                new StructureSeparationSettings(20,
-                        5,
+                new StructureSeparationSettings(100,
+                        80,
                         1321321320),
-                false);*/
+                true);
         StructurePieces.registerStructurePieces();
 
-        // Add more structures here and so on
     }
+
     public static <F extends Structure<?>> void setupMapSpacingAndLand(
             F structure,
             StructureSeparationSettings structureSeparationSettings,

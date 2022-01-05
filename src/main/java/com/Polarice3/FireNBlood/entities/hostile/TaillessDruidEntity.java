@@ -1,6 +1,5 @@
 package com.Polarice3.FireNBlood.entities.hostile;
 
-import com.Polarice3.FireNBlood.entities.neutral.NeophyteEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.BlockState;
@@ -11,14 +10,12 @@ import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.monster.AbstractIllagerEntity;
-import net.minecraft.entity.monster.PillagerEntity;
 import net.minecraft.entity.monster.VexEntity;
 import net.minecraft.entity.monster.WitchEntity;
 import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -281,12 +278,14 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
             }
         }
 
-        for(Entity entity : this.world.getEntitiesWithinAABB(LivingEntity.class, this.getBoundingBox().grow(32.0D, 8.0D, 32.0D), field_213690_b)) {
-            if (entity instanceof ServantTaillessEntity) {
-                ((ServantTaillessEntity) entity).addPotionEffect(new EffectInstance(Effects.WEAKNESS, 60, 1));
-                ((ServantTaillessEntity) entity).addPotionEffect(new EffectInstance(Effects.GLOWING, 60));
-                if (this.world.getDifficulty() == Difficulty.EASY){
-                    entity.attackEntityFrom(DamageSource.STARVE, 1.0F);
+        if (this.getAttackTarget() != null) {
+            for (Entity entity : this.world.getEntitiesWithinAABB(LivingEntity.class, this.getBoundingBox().grow(32.0D, 8.0D, 32.0D), field_213690_b)) {
+                if (entity instanceof ServantTaillessEntity) {
+                    ((ServantTaillessEntity) entity).addPotionEffect(new EffectInstance(Effects.WEAKNESS, 60, 1));
+                    ((ServantTaillessEntity) entity).addPotionEffect(new EffectInstance(Effects.GLOWING, 60));
+                    if (this.world.getDifficulty() == Difficulty.EASY) {
+                        entity.attackEntityFrom(DamageSource.STARVE, 1.0F);
+                    }
                 }
             }
         }
