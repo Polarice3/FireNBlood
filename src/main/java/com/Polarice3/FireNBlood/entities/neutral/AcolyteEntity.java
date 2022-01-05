@@ -1,5 +1,7 @@
 package com.Polarice3.FireNBlood.entities.neutral;
 
+import com.Polarice3.FireNBlood.entities.hostile.AbstractTaillessEntity;
+import com.Polarice3.FireNBlood.entities.hostile.TaillessDruidEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.potions.ModPotions;
 import net.minecraft.entity.*;
@@ -7,11 +9,13 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.effect.LightningBoltEntity;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
-import net.minecraft.entity.monster.WitchEntity;
+import net.minecraft.entity.monster.AbstractRaiderEntity;
+import net.minecraft.entity.monster.CreeperEntity;
+import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -21,12 +25,10 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.GroundPathNavigator;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.potion.*;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.MathHelper;
@@ -36,39 +38,40 @@ import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
-import javax.annotation.Nullable;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
-public class NeophyteEntity extends CreatureEntity implements IRangedAttackMob {
+public class AcolyteEntity extends CreatureEntity implements IRangedAttackMob {
     private static final UUID MODIFIER_UUID = UUID.fromString("ed267621-aa4a-4b46-8dfe-6a10d164ab30");
     private static final AttributeModifier MODIFIER = new AttributeModifier(MODIFIER_UUID, "Drinking speed penalty", -0.25D, AttributeModifier.Operation.ADDITION);
-    private static final DataParameter<Boolean> IS_DRINKING = EntityDataManager.createKey(NeophyteEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> IS_DRINKING = EntityDataManager.createKey(AcolyteEntity.class, DataSerializers.BOOLEAN);
     private int potionUseTimer;
-    private VillagerEntity TemptTarget;
-    private LivingEntity WitchMaster;
-    private boolean witchloyal;
+    private int witchtime;
 
-    public NeophyteEntity(EntityType<? extends NeophyteEntity> type, World worldIn) {
+    public AcolyteEntity(EntityType<? extends AcolyteEntity> type, World worldIn) {
         super(type, worldIn);
         this.setPathPriority(PathNodeType.DANGER_FIRE, 16.0F);
         this.setPathPriority(PathNodeType.DAMAGE_FIRE, -1.0F);
         ((GroundPathNavigator)this.getNavigator()).setBreakDoors(true);
+        this.witchtime = 720000;
         this.getNavigator().setCanSwim(true);
     }
 
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(1, new SwimGoal(this));
+        this.goalSelector.addGoal(1, new FollowBrewerGoal(this, 1.0D));
         this.goalSelector.addGoal(2, new RangedAttackGoal(this, 1.0D, 60, 10.0F));
         this.goalSelector.addGoal(2, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
         this.goalSelector.addGoal(3, new LookAtGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.addGoal(3, new LookRandomlyGoal(this));
-        this.targetSelector.addGoal(1, new WitchHurtTargetGoal(this));
-        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, WitchEntity.class));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this, BrewerEntity.class));
-        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, NeophyteEntity.class));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this, AcolyteEntity.class));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, AbstractTaillessEntity.class, true));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, AbstractRaiderEntity.class, true));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, false, false, (p_234199_0_) -> {
+            return p_234199_0_ instanceof IMob && !(p_234199_0_ instanceof CreeperEntity);
+        }));
     }
 
     protected SoundEvent getAmbientSound() {
@@ -94,26 +97,6 @@ public class NeophyteEntity extends CreatureEntity implements IRangedAttackMob {
         this.getDataManager().register(IS_DRINKING, false);
     }
 
-    private final EntityPredicate villagers = (new EntityPredicate().setDistance(8.0D));
-
-    private void setWitchMaster(@Nullable LivingEntity TemptTargetIn) {
-        this.WitchMaster = TemptTargetIn;
-    }
-
-    @Nullable
-    private LivingEntity getWitchMaster() {
-        return this.WitchMaster;
-    }
-
-    private void setTemptTarget(@Nullable VillagerEntity TemptTargetIn) {
-        this.TemptTarget = TemptTargetIn;
-    }
-
-    @Nullable
-    private VillagerEntity getTemptTarget() {
-        return this.TemptTarget;
-    }
-
     public boolean canBeLeashedTo(PlayerEntity player) {
         return false;
     }
@@ -128,6 +111,20 @@ public class NeophyteEntity extends CreatureEntity implements IRangedAttackMob {
 
     public void livingTick() {
         if (!this.world.isRemote && this.isAlive()) {
+            if (this.witchtime > 0) {
+                --this.witchtime;
+            } else {
+                BrewerEntity witchentity = ModEntityType.BREWER.get().create(this.world);
+                witchentity.setLocationAndAngles(this.getPosX(), this.getPosY(), this.getPosZ(), this.rotationYaw, this.rotationPitch);
+                witchentity.onInitialSpawn((IServerWorld) this.world, this.world.getDifficultyForLocation(witchentity.getPosition()), SpawnReason.CONVERSION, (ILivingEntityData) null, (CompoundNBT) null);
+                witchentity.setNoAI(this.isAIDisabled());
+                if (this.hasCustomName()) {
+                    witchentity.setCustomName(this.getCustomName());
+                    witchentity.setCustomNameVisible(this.isCustomNameVisible());
+                }
+                witchentity.enablePersistence();
+                this.remove();
+            }
             if (this.isDrinkingPotion()) {
                 if (this.potionUseTimer-- <= 0) {
                     this.setDrinkingPotion(false);
@@ -155,65 +152,25 @@ public class NeophyteEntity extends CreatureEntity implements IRangedAttackMob {
                     this.potionUseTimer = this.getHeldItemMainhand().getUseDuration();
                     this.setDrinkingPotion(true);
                     if (!this.isSilent()) {
-                        this.world.playSound((PlayerEntity)null, this.getPosX(), this.getPosY(), this.getPosZ(), SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0F, 0.8F + this.rand.nextFloat() * 0.4F);
+                        this.world.playSound((PlayerEntity) null, this.getPosX(), this.getPosY(), this.getPosZ(), SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0F, 0.8F + this.rand.nextFloat() * 0.4F);
                     }
 
                     ModifiableAttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
                     modifiableattributeinstance.removeModifier(MODIFIER);
                     modifiableattributeinstance.applyNonPersistentModifier(MODIFIER);
                 }
-                List<VillagerEntity> mobs = this.world.getTargettableEntitiesWithinAABB(VillagerEntity.class, this.villagers, this, this.getBoundingBox().grow(8.0D, 8.0D, 8.0D));
-                List<NeophyteEntity> neophytes = this.world.getTargettableEntitiesWithinAABB(NeophyteEntity.class, this.villagers, this, this.getBoundingBox().grow(8.0D, 8.0D, 8.0D));
-                List<WitchEntity> witch = this.world.getTargettableEntitiesWithinAABB(WitchEntity.class, this.villagers, this, this.getBoundingBox().grow(8.0D, 8.0D, 8.0D));
-                List<BrewerEntity> brewer = this.world.getTargettableEntitiesWithinAABB(BrewerEntity.class, this.villagers, this, this.getBoundingBox().grow(8.0D, 8.0D, 8.0D));
-                if (this.getWitchMaster() == null){
-                    if (!witch.isEmpty()) {
-                        this.setWitchMaster(witch.get(this.rand.nextInt(witch.size())));
-                    } else if (!brewer.isEmpty()){
-                        this.setWitchMaster(brewer.get(this.rand.nextInt(brewer.size())));
-                    }
-                }
-                if (!mobs.isEmpty() && mobs.size() < neophytes.size()){
-                    this.setTemptTarget(mobs.get(this.rand.nextInt(mobs.size())));
-                    VillagerEntity villager = this.getTemptTarget();
-                    if (villager != null && villager.isAlive()){
-                        NeophyteEntity witchEntity = new NeophyteEntity(ModEntityType.NEOPHYTE.get(), world);
-                        witchEntity.setLocationAndAngles(villager.getPosX(), villager.getPosY(), villager.getPosZ(), villager.rotationYaw, villager.rotationPitch);
-                        witchEntity.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(witchEntity.getPosition()), SpawnReason.CONVERSION, null, null);
-                        witchEntity.setNoAI(villager.isAIDisabled());
-                        witchEntity.setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY);
-                        if (villager.hasCustomName()) {
-                            witchEntity.setCustomName(villager.getCustomName());
-                            witchEntity.setCustomNameVisible(villager.isCustomNameVisible());
-                        }
-                        witchEntity.enablePersistence();
-                        world.addEntity(witchEntity);
-                        for (int i = 0; i < 5; ++i) {
-                            double d0 = rand.nextGaussian() * 0.02D;
-                            double d1 = rand.nextGaussian() * 0.02D;
-                            double d2 = rand.nextGaussian() * 0.02D;
-                            world.addParticle(ParticleTypes.WITCH, witchEntity.getPosXRandom(1.0D), witchEntity.getPosYRandom() + 1.0D, witchEntity.getPosZRandom(1.0D), d0, d1, d2);
-                        }
-                        villager.resetMemoryPoint(MemoryModuleType.HOME);
-                        villager.resetMemoryPoint(MemoryModuleType.JOB_SITE);
-                        villager.resetMemoryPoint(MemoryModuleType.POTENTIAL_JOB_SITE);
-                        villager.resetMemoryPoint(MemoryModuleType.MEETING_POINT);
-                        villager.remove();
-                    }
-                }
             }
-
             if (this.rand.nextFloat() < 7.5E-4F) {
                 this.world.setEntityState(this, (byte)15);
             }
-        }
 
+        }
         super.livingTick();
     }
 
     public void func_241841_a(ServerWorld p_241841_1_, LightningBoltEntity p_241841_2_) {
         if (p_241841_1_.getDifficulty() != Difficulty.PEACEFUL) {
-            WitchEntity witchentity = EntityType.WITCH.create(p_241841_1_);
+            BrewerEntity witchentity = ModEntityType.BREWER.get().create(p_241841_1_);
             witchentity.setLocationAndAngles(this.getPosX(), this.getPosY(), this.getPosZ(), this.rotationYaw, this.rotationPitch);
             witchentity.onInitialSpawn(p_241841_1_, p_241841_1_.getDifficultyForLocation(witchentity.getPosition()), SpawnReason.CONVERSION, (ILivingEntityData)null, (CompoundNBT)null);
             witchentity.setNoAI(this.isAIDisabled());
@@ -221,7 +178,6 @@ public class NeophyteEntity extends CreatureEntity implements IRangedAttackMob {
                 witchentity.setCustomName(this.getCustomName());
                 witchentity.setCustomNameVisible(this.isCustomNameVisible());
             }
-
             witchentity.enablePersistence();
             p_241841_1_.func_242417_l(witchentity);
             this.remove();
@@ -255,45 +211,85 @@ public class NeophyteEntity extends CreatureEntity implements IRangedAttackMob {
         }
     }
 
-    public class WitchHurtTargetGoal extends TargetGoal {
-        private final NeophyteEntity neophyteEntity;
-        private LivingEntity attacker;
-        private int timestamp;
-
-        public WitchHurtTargetGoal(NeophyteEntity theEntityIn) {
-            super(theEntityIn, false);
-            this.neophyteEntity = theEntityIn;
-            this.setMutexFlags(EnumSet.of(Goal.Flag.TARGET));
-        }
-
-        public boolean shouldExecute() {
-            LivingEntity livingentity = this.neophyteEntity.getWitchMaster();
-            if (livingentity == null) {
-                return false;
-            } else {
-                this.attacker = livingentity.getLastAttackedEntity();
-                int i = livingentity.getLastAttackedEntityTime();
-                if (this.attacker != null) {
-                    return i != this.timestamp && !(this.attacker.getEntity() instanceof WitchEntity) && !(this.attacker.getEntity() instanceof BrewerEntity) && this.isSuitableTarget(this.attacker, EntityPredicate.DEFAULT);
-                } else {
-                    return false;
-                }
-            }
-        }
-
-        public void startExecuting() {
-            this.goalOwner.setAttackTarget(this.attacker);
-            LivingEntity livingentity = this.neophyteEntity.getWitchMaster();
-            if (livingentity != null) {
-                this.timestamp = livingentity.getLastAttackedEntityTime();
-            }
-
-            super.startExecuting();
-        }
-    }
-
     protected float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn) {
         return 1.62F;
     }
+
+    static class FollowBrewerGoal extends Goal {
+        private final AcolyteEntity acolyteEntity;
+        private BrewerEntity brewerEntity;
+        private final double moveSpeed;
+        private int delayCounter;
+        private final EntityPredicate brewer = (new EntityPredicate().setDistance(32.0D));
+
+        public FollowBrewerGoal(AcolyteEntity acolyte, double speed) {
+            this.acolyteEntity = acolyte;
+            this.moveSpeed = speed;
+        }
+
+        /**
+         * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
+         * method as well.
+         */
+        public boolean shouldExecute() {
+            List<BrewerEntity> list = this.acolyteEntity.world.getTargettableEntitiesWithinAABB(BrewerEntity.class, this.brewer, this.acolyteEntity, this.acolyteEntity.getBoundingBox().grow(32.0D, 4.0D, 32.0D));
+            BrewerEntity brewerEntity = null;
+            double d0 = Double.MAX_VALUE;
+
+            for(BrewerEntity brewerEntity1 : list) {
+                double d1 = this.acolyteEntity.getDistanceSq(brewerEntity1);
+                if (!(d1 > d0)) {
+                    d0 = d1;
+                    brewerEntity = brewerEntity1;
+                }
+            }
+
+            if (brewerEntity == null) {
+                return false;
+            } else if (d0 < 18.0D) {
+                return false;
+            } else {
+                this.brewerEntity = brewerEntity;
+                return true;
+            }
+        }
+
+        /**
+         * Returns whether an in-progress EntityAIBase should continue executing
+         */
+        public boolean shouldContinueExecuting() {
+            if (!this.brewerEntity.isAlive()) {
+                return false;
+            } else {
+                double d0 = this.acolyteEntity.getDistanceSq(this.brewerEntity);
+                return !(d0 < 18.0D) && !(d0 > 256.0D);
+            }
+        }
+
+        /**
+         * Execute a one shot task or start executing a continuous task
+         */
+        public void startExecuting() {
+            this.delayCounter = 0;
+        }
+
+        /**
+         * Reset the task's internal state. Called when this task is interrupted by another one
+         */
+        public void resetTask() {
+            this.brewerEntity = null;
+        }
+
+        /**
+         * Keep ticking a continuous task that has already been started
+         */
+        public void tick() {
+            if (--this.delayCounter <= 0) {
+                this.delayCounter = 10;
+                this.acolyteEntity.getNavigator().tryMoveToEntityLiving(this.brewerEntity, this.moveSpeed);
+            }
+        }
+    }
+
 
 }

@@ -1,7 +1,7 @@
 package com.Polarice3.FireNBlood.client.render.layers;
 
-import com.Polarice3.FireNBlood.client.model.NeophyteModel;
-import com.Polarice3.FireNBlood.entities.hostile.NeophyteEntity;
+import com.Polarice3.FireNBlood.client.model.AcolyteModel;
+import com.Polarice3.FireNBlood.entities.neutral.AcolyteEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.IEntityRenderer;
@@ -10,12 +10,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.vector.Vector3f;
 
-public class NeophyteHeldItemLayer extends CrossedArmsItemLayer<NeophyteEntity, NeophyteModel> {
-    public NeophyteHeldItemLayer(IEntityRenderer<NeophyteEntity, NeophyteModel> p_i50916_1_) {
+public class AcolyteHeldItemLayer extends CrossedArmsItemLayer<AcolyteEntity, AcolyteModel> {
+    public AcolyteHeldItemLayer(IEntityRenderer<AcolyteEntity, AcolyteModel> p_i50916_1_) {
         super(p_i50916_1_);
     }
 
-    public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, NeophyteEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, AcolyteEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         ItemStack itemstack = entitylivingbaseIn.getHeldItemMainhand();
         matrixStackIn.push();
         if (itemstack.getItem() == Items.POTION) {

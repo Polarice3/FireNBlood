@@ -15,6 +15,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.pathfinding.FlyingPathNavigator;
+import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
@@ -80,6 +82,14 @@ public class FriendlyVexEntity extends CreatureEntity {
         return MobEntity.func_233666_p_()
                 .createMutableAttribute(Attributes.MAX_HEALTH, 14.0D)
                 .createMutableAttribute(Attributes.ATTACK_DAMAGE, 4.0D);
+    }
+
+    protected PathNavigator createNavigation(World worldIn) {
+        FlyingPathNavigator flyingpathnavigator = new FlyingPathNavigator(this, worldIn);
+        flyingpathnavigator.setCanOpenDoors(false);
+        flyingpathnavigator.setCanSwim(true);
+        flyingpathnavigator.setCanEnterDoors(true);
+        return flyingpathnavigator;
     }
 
     protected void registerData() {

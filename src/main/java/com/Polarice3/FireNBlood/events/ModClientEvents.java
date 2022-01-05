@@ -12,10 +12,7 @@ import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
-import net.minecraft.entity.monster.EvokerEntity;
-import net.minecraft.entity.monster.IllusionerEntity;
-import net.minecraft.entity.monster.PillagerEntity;
-import net.minecraft.entity.monster.VindicatorEntity;
+import net.minecraft.entity.monster.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
@@ -44,7 +41,7 @@ import java.util.Map;
 @Mod.EventBusSubscriber(modid = FireNBlood.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ModClientEvents {
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
+/*    @SubscribeEvent(priority = EventPriority.HIGH)
     public static void spawnEntities(BiomeLoadingEvent event){
         if (event.getName() != null) {
             Biome biome = ForgeRegistries.BIOMES.getValue(event.getName());
@@ -60,7 +57,7 @@ public class ModClientEvents {
                 }
             }
         }
-    }
+    }*/
 
     private static final Map<ServerWorld, HexerSpawner> HEXER_SPAWNER_MAP = new HashMap<>();
 
@@ -140,6 +137,11 @@ public class ModClientEvents {
                 IllusionerEntity illager = (IllusionerEntity) entity;
                 illager.targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(illager, AbstractTaillessEntity.class, false));
                 illager.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(illager, AbstractProtectorEntity.class, false));
+        }
+        if (event.getEntity() instanceof WitchEntity) {
+            Entity entity = event.getEntity();
+            WitchEntity illager = (WitchEntity) entity;
+            illager.targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(illager, AbstractProtectorEntity.class, false));
         }
     }
 

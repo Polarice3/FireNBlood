@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.entities.neutral;
 
+import com.Polarice3.FireNBlood.entities.utilities.FakeSeatEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
@@ -477,7 +478,7 @@ public class AbstractProtectorEntity extends CreatureEntity {
          * Execute a one shot task or start executing a continuous task
          */
         public void startExecuting() {
-/*            if (this.hireable instanceof SavagerEntity) {
+            if (this.hireable instanceof SavagerEntity) {
                 this.hireable.getNavigator().clearPath();
                 this.hireable.setSleeping(true);
             } else {
@@ -485,7 +486,7 @@ public class AbstractProtectorEntity extends CreatureEntity {
                 fakeseat.setLocationAndAngles(this.hireable.getPosX(), this.hireable.getPosY(), this.hireable.getPosZ(), this.hireable.rotationYaw, this.hireable.rotationPitch);
                 world.addEntity(fakeseat);
                 this.hireable.startRiding(fakeseat);
-            }*/
+            }
             this.hireable.getNavigator().clearPath();
             this.hireable.setSleeping(true);
         }
@@ -494,11 +495,11 @@ public class AbstractProtectorEntity extends CreatureEntity {
          * Reset the task's internal state. Called when this task is interrupted by another one
          */
         public void resetTask() {
-/*            if (this.hireable instanceof SavagerEntity) {
+            if (this.hireable instanceof SavagerEntity) {
                 this.hireable.setSleeping(false);
             } else {
                 this.hireable.stopRiding();
-            }*/
+            }
             this.hireable.setSleeping(false);
         }
     }

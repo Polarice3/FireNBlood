@@ -13,6 +13,7 @@ import com.Polarice3.FireNBlood.entities.neutral.*;
 import com.Polarice3.FireNBlood.entities.projectiles.EtherealPunchEntity;
 import com.Polarice3.FireNBlood.entities.projectiles.SoulFireballEntity;
 import com.Polarice3.FireNBlood.entities.projectiles.WarpedSpearEntity;
+import com.Polarice3.FireNBlood.entities.projectiles.WitchBombEntity;
 import com.Polarice3.FireNBlood.entities.utilities.LightningTrapEntity;
 import com.Polarice3.FireNBlood.entities.utilities.FakeSeatEntity;
 import net.minecraft.entity.EntityClassification;
@@ -110,6 +111,12 @@ public class ModEntityType {
                     .func_233608_b_(20)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "warped_spear").toString()));
 
+    public static final RegistryObject<EntityType<WitchBombEntity>> WITCHBOMB = ENTITY_TYPES.register("witchbomb",
+            () -> EntityType.Builder.<WitchBombEntity>create(WitchBombEntity::new, EntityClassification.MISC)
+                    .size(0.25f,0.25f)
+                    .trackingRange(4)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "witchbomb").toString()));
+
     public static final RegistryObject<EntityType<SlowBombEntity>> SLOWBOMB = ENTITY_TYPES.register("slowbomb",
             () -> EntityType.Builder.<SlowBombEntity>create(SlowBombEntity::new, EntityClassification.MISC)
                     .immuneToFire()
@@ -165,6 +172,12 @@ public class ModEntityType {
                     .size(0.6F, 1.95F)
                     .trackingRange(8)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "neophyte").toString()));
+
+    public static final RegistryObject<EntityType<AcolyteEntity>> ACOLYTE = ENTITY_TYPES.register("acolyte",
+            () -> EntityType.Builder.create(AcolyteEntity::new, EntityClassification.MONSTER)
+                    .size(0.6F, 1.95F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "acolyte").toString()));
 
     public static final RegistryObject<EntityType<FriendlyVexEntity>> FRIENDLY_VEX = ENTITY_TYPES.register("friendly_vex",
             () -> EntityType.Builder.create(FriendlyVexEntity::new, EntityClassification.MONSTER)

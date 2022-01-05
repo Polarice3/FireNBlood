@@ -44,7 +44,7 @@ public class ModItems {
             () -> new ModSpawnEggItem(ModEntityType.PROTECTOR, 0xdcbf8b, 0x5f3621, new Item.Properties().group(FireNBlood.TAB)));
 
     public static final RegistryObject<ModSpawnEggItem> BREWER_SPAWN_EGG = ITEMS.register("brewer_spawn_egg",
-            () -> new ModSpawnEggItem(ModEntityType.BREWER, 0xe3e9ed, 0xa193ff, new Item.Properties().group(FireNBlood.TAB)));
+            () -> new ModSpawnEggItem(ModEntityType.BREWER, 0x111111, 0x132e01, new Item.Properties().group(FireNBlood.TAB)));
 
     public static final RegistryObject<ModSpawnEggItem> HEXER_SPAWN_EGG = ITEMS.register("hexer_spawn_egg",
             () -> new ModSpawnEggItem(ModEntityType.HEXER, 0x273a42, 0x223239, new Item.Properties().group(FireNBlood.TAB)));
@@ -54,6 +54,9 @@ public class ModItems {
 
     public static final RegistryObject<ModSpawnEggItem> NEOPHYTE_SPAWN_EGG = ITEMS.register("neophyte_spawn_egg",
             () -> new ModSpawnEggItem(ModEntityType.NEOPHYTE, 0xcccccc, 0x959595, new Item.Properties().group(FireNBlood.TAB)));
+
+    public static final RegistryObject<ModSpawnEggItem> ACOLYTE_SPAWN_EGG = ITEMS.register("acolyte_spawn_egg",
+            () -> new ModSpawnEggItem(ModEntityType.ACOLYTE, 0x4a4a4a, 0x292929, new Item.Properties().group(FireNBlood.TAB)));
 
     public static final RegistryObject<ModSpawnEggItem> VIZIER_SPAWN_EGG = ITEMS.register("vizier_spawn_egg",
             () -> new ModSpawnEggItem(ModEntityType.VIZIER, 0x1e1c1a, 0x440a67, new Item.Properties().group(FireNBlood.TAB)));
