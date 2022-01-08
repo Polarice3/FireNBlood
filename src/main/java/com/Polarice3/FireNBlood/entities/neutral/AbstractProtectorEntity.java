@@ -2,6 +2,7 @@ package com.Polarice3.FireNBlood.entities.neutral;
 
 import com.Polarice3.FireNBlood.entities.utilities.FakeSeatEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
+import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.*;
@@ -105,6 +106,10 @@ public class AbstractProtectorEntity extends CreatureEntity {
 
     public static Item Revive(){
         return Items.GOLDEN_APPLE;
+    }
+
+    public static Item Termination(){
+        return RegistryHandler.LEAVEFORM.get();
     }
 
     protected void registerData() {

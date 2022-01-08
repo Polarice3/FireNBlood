@@ -14,7 +14,7 @@
     },
     "b":
     {
-      "item": "minecraft:iron_sword"
+      "item": "minecraft:mutton"
     },
     "c":
     {
@@ -31,7 +31,7 @@
   },
   "result":
   {
-    "item": "firenblood:staffofvexations",
+    "item": "firenblood:staffofcrunches",
     "count": 1
   }
 }

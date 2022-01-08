@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.events;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.entities.neutral.HexerEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
@@ -47,7 +48,9 @@ public class HexerSpawner {
     }
 
     public int tick () {
-        if (--this.field_221248_c > 0) {
+        if (!FNBConfig.HexerSpawn) {
+            return 0;
+        } else if (--this.field_221248_c > 0) {
             return 0;
         } else {
             HexerWorldData worldinfo = HexerWorldData.get(world);

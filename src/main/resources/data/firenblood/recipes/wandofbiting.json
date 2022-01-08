@@ -2,36 +2,36 @@
   "type": "minecraft:crafting_shaped",
   "pattern":
   [
-    "waw",
-    "sbs",
+    "sas",
+    "gbg",
     " c "
   ],
   "key":
   {
     "a":
     {
-      "item": "firenblood:soulruby"
+      "item": "minecraft:emerald"
     },
     "b":
     {
-      "item": "minecraft:iron_sword"
+      "item": "minecraft:mutton"
     },
     "c":
     {
-      "item": "minecraft:log"
+      "item": "minecraft:stick"
     },
-    "w":
+    "s":
     {
       "item": "minecraft:nether_wart"
     },
-    "s":
+    "g":
     {
       "item": "minecraft:soul_sand"
     }
   },
   "result":
   {
-    "item": "firenblood:staffofvexations",
+    "item": "firenblood:wandofbiting",
     "count": 1
   }
 }

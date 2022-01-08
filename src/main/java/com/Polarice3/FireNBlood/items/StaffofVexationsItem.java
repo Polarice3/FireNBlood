@@ -23,11 +23,16 @@ import net.minecraft.world.server.ServerWorld;
 public class StaffofVexationsItem extends SoulUsingItem {
 
     public StaffofVexationsItem() {
-        super(new Item.Properties().group(FireNBlood.TAB).maxDamage(256));
+        super(new Item.Properties().group(FireNBlood.TAB));
     }
 
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        super.onItemUseFinish(stack, worldIn, entityLiving);
+    @Override
+    public int SoulCost() {
+        return 30;
+    }
+
+    @Override
+    public ItemStack MagicResults(ItemStack stack, World worldIn, LivingEntity entityLiving) {
         ServerWorld serverworld = (ServerWorld)entityLiving.world;
         for(int i1 = 0; i1 < 3; ++i1) {
             BlockPos blockpos = entityLiving.getPosition();
@@ -44,9 +49,6 @@ public class StaffofVexationsItem extends SoulUsingItem {
         for(int i = 0; i < entityLiving.world.rand.nextInt(35) + 10; ++i) {
             entityLiving.world.addParticle(ParticleTypes.POOF, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), 0.0F, 0.0F, 0.0F);
         }
-        stack.damageItem(1, entityLiving, (player) -> {
-            player.sendBreakAnimation(entityLiving.getActiveHand());
-        });
         return stack;
     }
 

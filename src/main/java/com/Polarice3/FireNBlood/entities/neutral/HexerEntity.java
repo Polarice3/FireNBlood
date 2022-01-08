@@ -18,6 +18,7 @@ import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.monster.RavagerEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.EvokerFangsEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
@@ -38,7 +39,9 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -634,6 +637,16 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
                         this.world.addParticle(ParticleTypes.HEART, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
                     }
                     return ActionResultType.SUCCESS;
+                }
+                if (item == Termination() && p_230254_1_ == this.getOwner()){
+                    this.remove();
+                    this.setHired(false);
+                    if (!p_230254_1_.abilities.isCreativeMode) {
+                        itemstack.shrink(1);
+                    }
+                    if (!this.world.isRemote && this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES) && this.getOwner() instanceof ServerPlayerEntity) {
+                        this.getOwner().sendMessage(new StringTextComponent(this.getDisplayName().getString() + " has been release from duty!"), Util.DUMMY_UUID);
+                    }
                 }
                 this.func_233687_w_(!this.isSitting());
                 this.isJumping = false;

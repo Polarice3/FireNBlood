@@ -1,0 +1,112 @@
+package com.Polarice3.FireNBlood.items;
+
+import com.Polarice3.FireNBlood.FireNBlood;
+import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
+import com.Polarice3.FireNBlood.entities.neutral.HexerEntity;
+import com.Polarice3.FireNBlood.init.ModEntityType;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.ILivingEntityData;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.EvokerFangsEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.UseAction;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
+
+public class StaffofCrunchesItem extends SoulUsingItem {
+
+    public StaffofCrunchesItem() {
+        super(new Properties().group(FireNBlood.TAB));
+    }
+
+    @Override
+    public int SoulCost() {
+        return 20;
+    }
+
+    @Override
+    public ItemStack MagicResults(ItemStack stack, World worldIn, LivingEntity entityLiving) {
+        PlayerEntity playerEntity = (PlayerEntity) entityLiving;
+        RayTraceResult rayTraceResult = rayTrace(worldIn, playerEntity, RayTraceContext.FluidMode.NONE);
+        Vector3d vector3d = rayTraceResult.getHitVec();
+        double d0 = Math.min(vector3d.y, entityLiving.getPosY());
+        double d1 = Math.max(vector3d.y, entityLiving.getPosY()) + 1.0D;
+        float f = (float) MathHelper.atan2(vector3d.z - entityLiving.getPosZ(), vector3d.x - entityLiving.getPosX());
+        for(int l = 0; l < 16; ++l) {
+            double d2 = 1.25D * (double)(l + 1);
+            int j = 1 * l;
+            this.spawnFangs(entityLiving,entityLiving.getPosX() + (double)MathHelper.cos(f) * d2, entityLiving.getPosZ() + (double)MathHelper.sin(f) * d2, d0, d1, f, j);
+        }
+        for(int i = 0; i < 5; ++i) {
+            float f1 = f + (float)i * (float)Math.PI * 0.4F;
+            this.spawnFangs(entityLiving,entityLiving.getPosX() + (double)MathHelper.cos(f1) * 1.5D, entityLiving.getPosZ() + (double)MathHelper.sin(f1) * 1.5D, d0, d1, f1, 0);
+        }
+
+        for(int k = 0; k < 8; ++k) {
+            float f2 = f + (float)k * (float)Math.PI * 2.0F / 8.0F + 1.2566371F;
+            this.spawnFangs(entityLiving,entityLiving.getPosX() + (double)MathHelper.cos(f2) * 2.5D, entityLiving.getPosZ() + (double)MathHelper.sin(f2) * 2.5D, d0, d1, f2, 3);
+        }
+        worldIn.playSound((PlayerEntity) null, entityLiving.getPosX(), entityLiving.getPosY(), entityLiving.getPosZ(), SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+        for(int i = 0; i < entityLiving.world.rand.nextInt(35) + 10; ++i) {
+            entityLiving.world.addParticle(ParticleTypes.POOF, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), 0.0F, 0.0F, 0.0F);
+        }
+        return stack;
+    }
+
+    private void spawnFangs(LivingEntity livingEntity, double p_190876_1_, double p_190876_3_, double p_190876_5_, double p_190876_7_, float p_190876_9_, int p_190876_10_) {
+        BlockPos blockpos = new BlockPos(p_190876_1_, p_190876_7_, p_190876_3_);
+        boolean flag = false;
+        double d0 = 0.0D;
+
+        do {
+            BlockPos blockpos1 = blockpos.down();
+            BlockState blockstate = livingEntity.world.getBlockState(blockpos1);
+            if (blockstate.isSolidSide(livingEntity.world, blockpos1, Direction.UP)) {
+                if (!livingEntity.world.isAirBlock(blockpos)) {
+                    BlockState blockstate1 = livingEntity.world.getBlockState(blockpos);
+                    VoxelShape voxelshape = blockstate1.getCollisionShape(livingEntity.world, blockpos);
+                    if (!voxelshape.isEmpty()) {
+                        d0 = voxelshape.getEnd(Direction.Axis.Y);
+                    }
+                }
+
+                flag = true;
+                break;
+            }
+
+            blockpos = blockpos.down();
+        } while(blockpos.getY() >= MathHelper.floor(p_190876_5_) - 1);
+
+        if (flag) {
+            livingEntity.world.addEntity(new EvokerFangsEntity(livingEntity.world, p_190876_1_, (double)blockpos.getY() + d0, p_190876_3_, p_190876_9_, p_190876_10_, livingEntity));
+        }
+
+    }
+
+    public int getUseDuration(ItemStack stack) {
+        return 25;
+    }
+
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.BOW;
+    }
+
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getHeldItem(handIn);
+        playerIn.setActiveHand(handIn);
+        playerIn.world.addParticle(ParticleTypes.PORTAL, playerIn.getPosX(), playerIn.getPosY(), playerIn.getPosZ(), 0.0F, 0.0F, 0.0F);
+        return ActionResult.resultConsume(itemstack);
+    }
+
+}

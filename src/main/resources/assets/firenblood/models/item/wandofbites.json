@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "firenblood:items/wand",
-		"1": "item/iron_sword"
+		"1": "item/emerald"
 	},
 	"elements": [
 		{

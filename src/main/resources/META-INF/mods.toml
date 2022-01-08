@@ -4,13 +4,13 @@ loaderVersion="[35,)" #mandatory This is typically bumped every Minecraft versio
 
 license="All rights reserved"
 
-issueTrackerURL="http://my.issue.tracker/" #optional
+issueTrackerURL="https://github.com/Polarice3/FireNBlood/issues" #optional
 
 [[mods]] #mandatory
 
 modId="firenblood" #mandatory
 
-version="1.16.4 - 1.1.0" #mandatory
+version="1.16.4 - 1.2.0" #mandatory
 
 displayName="Fire N' Blood" #mandatory
 
@@ -22,12 +22,12 @@ logoFile="Logo.png" #optional
 
 credits="Special thanks to Technovision and TelepathicGrunt for their tutorials and diesieben07 for helping me with a problem!
 
-Credit to Alex666 for event codes, and Ipsis for certain codes!" #optional
+Credit to Alex666 for event, spawner and config codes, and Ipsis for certain codes!" #optional
 
 authors="anogon" #optional
 
 description='''
-My first Mod
+Fire N' Blood adds a bunch of new Mobs that can help or hinder players and a magic system that can provides a player a different way of combat!
 '''
 
 [[dependencies.firenblood]] #optional

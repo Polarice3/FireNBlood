@@ -307,17 +307,10 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
             super(creature, false);
         }
 
-        /**
-         * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
-         * method as well.
-         */
         public boolean shouldExecute() {
             return IrkEntity.this.owner != null && IrkEntity.this.owner.getAttackTarget() != null && this.isSuitableTarget(IrkEntity.this.owner.getAttackTarget(), this.field_220803_b);
         }
 
-        /**
-         * Execute a one shot task or start executing a continuous task
-         */
         public void startExecuting() {
             IrkEntity.this.setAttackTarget(IrkEntity.this.owner.getAttackTarget());
             super.startExecuting();
@@ -340,12 +333,12 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
                     IrkEntity.this.setMotion(IrkEntity.this.getMotion().add(vector3d.scale(this.speed * 0.05D / d0)));
                     if (IrkEntity.this.getAttackTarget() == null) {
                         Vector3d vector3d1 = IrkEntity.this.getMotion();
-                        IrkEntity.this.rotationYaw = (float)MathHelper.atan2(vector3d1.z, vector3d1.x) * (180F / (float)Math.PI) - 90.0F;
+                        IrkEntity.this.rotationYaw = -((float) MathHelper.atan2(vector3d1.x, vector3d1.z)) * (180F / (float)Math.PI);
                         IrkEntity.this.renderYawOffset = IrkEntity.this.rotationYaw;
                     } else {
                         double d2 = IrkEntity.this.getAttackTarget().getPosX() - IrkEntity.this.getPosX();
                         double d1 = IrkEntity.this.getAttackTarget().getPosZ() - IrkEntity.this.getPosZ();
-                        IrkEntity.this.rotationYaw = (float)MathHelper.atan2(d1, d2) * (180F / (float)Math.PI) - 90.0F;
+                        IrkEntity.this.rotationYaw = -((float)MathHelper.atan2(d2, d1)) * (180F / (float)Math.PI);
                         IrkEntity.this.renderYawOffset = IrkEntity.this.rotationYaw;
                     }
                 }
@@ -359,24 +352,14 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
             this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE));
         }
 
-        /**
-         * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
-         * method as well.
-         */
         public boolean shouldExecute() {
             return !IrkEntity.this.getMoveHelper().isUpdating() && IrkEntity.this.rand.nextInt(7) == 0;
         }
 
-        /**
-         * Returns whether an in-progress EntityAIBase should continue executing
-         */
         public boolean shouldContinueExecuting() {
             return false;
         }
 
-        /**
-         * Keep ticking a continuous task that has already been started
-         */
         public void tick() {
             BlockPos blockpos = IrkEntity.this.getBoundOrigin();
             if (blockpos == null) {

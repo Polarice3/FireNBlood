@@ -6,9 +6,7 @@ import com.Polarice3.FireNBlood.blocks.BlockItemBase;
 import com.Polarice3.FireNBlood.blocks.PorcusShrineBlock;
 import com.Polarice3.FireNBlood.blocks.TankCoreBlock;
 import com.Polarice3.FireNBlood.items.*;
-import com.Polarice3.FireNBlood.potions.CursedEffect;
-import com.Polarice3.FireNBlood.potions.EvilEyeEffect;
-import com.Polarice3.FireNBlood.potions.MinorHarmEffect;
+import com.Polarice3.FireNBlood.potions.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -49,6 +47,7 @@ public class RegistryHandler {
     public static final RegistryObject<DarkSteak> DARKSTEAK = ITEMS.register("darksteak", DarkSteak::new);
     public static final RegistryObject<FlameGunItem> FLAMEGUN = ITEMS.register("flamegun", FlameGunItem::new);
     public static final RegistryObject<Item> PADRE_EFFIGY = ITEMS.register("padre_effigy", ItemBase::new);
+    public static final RegistryObject<Item> LEAVEFORM = ITEMS.register("leaveform", ItemBase::new);
     public static final RegistryObject<Item> MOCKING_EFFIGY = ITEMS.register("mocking_effigy", MockingEffigyItem::new);
     public static final RegistryObject<SacredFishItem> SACRED_FISH = ITEMS.register("sacred_fish", SacredFishItem::new);
     public static final RegistryObject<Item> RALLYING_HORN = ITEMS.register("rallying_horn", RallyingHornItem::new);
@@ -63,6 +62,9 @@ public class RegistryHandler {
     public static final RegistryObject<Item> WARPED_SPEAR = ITEMS.register("warped_spear", WarpedSpearItem::new);
     public static final RegistryObject<Item> STAFFOFVEXATIONS = ITEMS.register("staffofvexations", StaffofVexationsItem::new);
     public static final RegistryObject<Item> WANDOFVEXING = ITEMS.register("wandofvexing", WandofVexingItem::new);
+    public static final RegistryObject<Item> STAFFOFCRUNCHES = ITEMS.register("staffofcrunches", StaffofCrunchesItem::new);
+    public static final RegistryObject<Item> WANDOFBITES = ITEMS.register("wandofbites", WandofBitesItem::new);
+
     //Armors
     public static final RegistryObject<Item> FURRED_HELMET = ITEMS.register("furred_helmet", () ->
             new ArmorItem(ModArmorMaterial.FURRED, EquipmentSlotType.HEAD, new Item.Properties().group(FireNBlood.TAB)));
@@ -87,4 +89,8 @@ public class RegistryHandler {
             CursedEffect::new);
     public static final RegistryObject<Effect> MINOR_HARM = EFFECTS.register("minorharm",
             MinorHarmEffect::new);
+    public static final RegistryObject<Effect> DEATHPROTECT = EFFECTS.register("deathprotect",
+            DeathProtectEffect::new);
+    public static final RegistryObject<Effect> SOULDRAIN = EFFECTS.register("souldrain",
+            SoulDrainEffect::new);
 }

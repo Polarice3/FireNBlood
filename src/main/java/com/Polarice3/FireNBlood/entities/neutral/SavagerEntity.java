@@ -343,6 +343,16 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
                     }
                     return ActionResultType.SUCCESS;
                 }
+                if (item == Termination() && p_230254_1_ == this.getOwner()){
+                    this.remove();
+                    this.setHired(false);
+                    if (!p_230254_1_.abilities.isCreativeMode) {
+                        itemstack.shrink(1);
+                    }
+                    if (!this.world.isRemote && this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES) && this.getOwner() instanceof ServerPlayerEntity) {
+                        this.getOwner().sendMessage(new StringTextComponent(this.getDisplayName().getString() + " has been release from duty!"), Util.DUMMY_UUID);
+                    }
+                }
                 if (!p_230254_1_.isCrouching() && p_230254_1_.getHeldItemMainhand().getItem() == Items.AIR){
                     this.mountTo(p_230254_1_);
                     this.func_233687_w_(false);

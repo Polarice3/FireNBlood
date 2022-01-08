@@ -1,13 +1,26 @@
 package com.Polarice3.FireNBlood.items;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.FireNBlood;
+import com.Polarice3.FireNBlood.entities.hostile.AbstractTaillessEntity;
+import com.Polarice3.FireNBlood.entities.hostile.NeophyteEntity;
+import com.Polarice3.FireNBlood.entities.neutral.AbstractProtectorEntity;
+import com.Polarice3.FireNBlood.entities.neutral.AcolyteEntity;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.merchant.villager.VillagerEntity;
+import net.minecraft.entity.monster.AbstractRaiderEntity;
+import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -17,10 +30,14 @@ import java.util.List;
 
 public class GoldTotemItem extends Item {
     private static final String SOULSAMOUNT = "Souls";
-    public static final int MAXSOULS = 10000;
+    public static final int MAXSOULS = FNBConfig.MaxSouls;
 
     public GoldTotemItem() {
         super(new Item.Properties().group(FireNBlood.TAB).maxStackSize(1));
+        ItemModelsProperties.registerProperty(this, new ResourceLocation("souls"), (stack, world, living) -> ((float) currentSouls(stack)) / MAXSOULS);
+        ItemModelsProperties.registerProperty(this, new ResourceLocation("activated"), (stack, world, living) -> {
+            return isActivated(stack) ? 1.0F : 0.0F;
+        });
     }
 
     @Override
@@ -29,7 +46,25 @@ public class GoldTotemItem extends Item {
             CompoundNBT compound = stack.getOrCreateTag();
             compound.putInt(SOULSAMOUNT, 0);
         }
+        if (stack.getTag().getInt(SOULSAMOUNT) > MAXSOULS){
+            stack.getTag().putInt(SOULSAMOUNT, MAXSOULS);
+        }
+        if (stack.getTag().getInt(SOULSAMOUNT) < 0){
+            stack.getTag().putInt(SOULSAMOUNT, 0);
+        }
+        if (entityIn instanceof LivingEntity){
+            if (stack.getTag().getInt(SOULSAMOUNT) == MAXSOULS){
+                ((LivingEntity) entityIn).addPotionEffect(new EffectInstance(RegistryHandler.DEATHPROTECT.get(), 100));
+            }
+            if (((LivingEntity) entityIn).isPotionActive(RegistryHandler.SOULDRAIN.get())){
+                stack.getTag().putInt(SOULSAMOUNT, 0);
+            }
+        }
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
+    }
+
+    public static boolean isActivated(ItemStack itemStack){
+        return itemStack.getTag() != null;
     }
 
     private static boolean isFull(ItemStack itemStack) {
@@ -38,19 +73,50 @@ public class GoldTotemItem extends Item {
         return Soulcount == MAXSOULS;
     }
 
-    public static void handleKill(PlayerEntity playerEntity) {
+    private static boolean isEmpty(ItemStack itemStack) {
+        assert itemStack.getTag() != null;
+        int Soulcount = itemStack.getTag().getInt(SOULSAMOUNT);
+        return Soulcount == 0;
+    }
+
+    private static boolean isMatchingItem(ItemStack itemStack) {
+        return itemStack.getItem() == RegistryHandler.GOLDTOTEM.get();
+    }
+
+    public static int currentSouls(ItemStack itemStack){
+        assert itemStack.getTag() != null;
+        return itemStack.getTag().getInt(SOULSAMOUNT);
+    }
+
+    public static void handleKill(PlayerEntity playerEntity, LivingEntity victim) {
         ItemStack foundStack = ItemStack.EMPTY;
 
         for (int i = 0; i <= 9; i++) {
             ItemStack itemStack = playerEntity.inventory.getStackInSlot(i);
-            if (!itemStack.isEmpty()) {
+            if (!itemStack.isEmpty() && isMatchingItem(itemStack)) {
                 foundStack = itemStack;
                 break;
             }
         }
 
-        if (!foundStack.isEmpty()) {
-            increaseSouls(foundStack, 1);
+        if (!foundStack.isEmpty() && !(victim instanceof PlayerEntity)) {
+            if (victim instanceof AbstractRaiderEntity || victim instanceof AbstractProtectorEntity){
+                increaseSouls(foundStack, 5);
+            } else
+            if (victim instanceof VillagerEntity){
+                increaseSouls(foundStack, 10);
+            } else
+            if (victim instanceof NeophyteEntity || victim instanceof AcolyteEntity){
+                increaseSouls(foundStack, 8);
+            } else
+            if (victim instanceof AbstractPiglinEntity || victim instanceof TameableEntity){
+                increaseSouls(foundStack, 2);
+            } else
+            if (victim instanceof AbstractTaillessEntity){
+                increaseSouls(foundStack, 6);
+            } else {
+                increaseSouls(foundStack, 1);
+            }
         }
     }
 
@@ -66,7 +132,19 @@ public class GoldTotemItem extends Item {
         }
     }
 
-   @Override
+    public static void decreaseSouls(ItemStack itemStack, int souls) {
+        if (itemStack.getItem() != RegistryHandler.GOLDTOTEM.get()) {
+            return;
+        }
+        assert itemStack.getTag() != null;
+        int Soulcount = itemStack.getTag().getInt(SOULSAMOUNT);
+        if (!isEmpty(itemStack)) {
+            Soulcount -= souls;
+            itemStack.getTag().putInt(SOULSAMOUNT, Soulcount);
+        }
+    }
+
+    @Override
     public boolean showDurabilityBar(ItemStack stack) {
         return stack.getTag() != null;
     }

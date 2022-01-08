@@ -23,11 +23,16 @@ import net.minecraft.world.server.ServerWorld;
 public class WandofVexingItem extends SoulUsingItem {
 
     public WandofVexingItem() {
-        super(new Properties().group(FireNBlood.TAB).maxDamage(64));
+        super(new Properties().group(FireNBlood.TAB));
     }
 
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        super.onItemUseFinish(stack, worldIn, entityLiving);
+    @Override
+    public int SoulCost() {
+        return 15;
+    }
+
+    @Override
+    public ItemStack MagicResults(ItemStack stack, World worldIn, LivingEntity entityLiving) {
         ServerWorld serverworld = (ServerWorld)entityLiving.world;
         BlockPos blockpos = entityLiving.getPosition();
         FriendlyVexEntity vexentity = ModEntityType.FRIENDLY_VEX.get().create(entityLiving.world);
@@ -42,9 +47,6 @@ public class WandofVexingItem extends SoulUsingItem {
         for(int i = 0; i < entityLiving.world.rand.nextInt(35) + 10; ++i) {
             entityLiving.world.addParticle(ParticleTypes.POOF, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), 0.0F, 0.0F, 0.0F);
         }
-        stack.damageItem(1, entityLiving, (player) -> {
-            player.sendBreakAnimation(entityLiving.getActiveHand());
-        });
         return stack;
     }
 

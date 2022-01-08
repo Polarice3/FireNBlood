@@ -1,45 +1,41 @@
 package com.Polarice3.FireNBlood.events;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.entities.hostile.AbstractTaillessEntity;
 import com.Polarice3.FireNBlood.entities.neutral.AbstractProtectorEntity;
-import com.Polarice3.FireNBlood.init.ModEntityType;
-import com.Polarice3.FireNBlood.items.GoldTotemItem;
-import com.Polarice3.FireNBlood.items.SoulUsingItem;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
-import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.fml.config.ModConfig;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = FireNBlood.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ModClientEvents {
+
+    @SubscribeEvent
+    public static void onConfigEvent(final ModConfig.ModConfigEvent event) {
+        final ModConfig config = event.getConfig();
+        if (config.getSpec() == FNBConfig.CLIENT_SPEC) {
+            FNBConfig.bakeClient(config);
+        }
+    }
 
 /*    @SubscribeEvent(priority = EventPriority.HIGH)
     public static void spawnEntities(BiomeLoadingEvent event){
@@ -84,31 +80,6 @@ public class ModClientEvents {
                 spawner.tick();
             }
         }
-
-    }
-
-    @SubscribeEvent(priority = EventPriority.NORMAL)
-    public void onLivingDeathEvent(LivingDeathEvent event) {
-        if (!(event.getSource().getTrueSource() instanceof PlayerEntity)){
-            return;
-        }
-
-        if (event.getEntity() == null){
-            return;
-        }
-
-        PlayerEntity slayer = (PlayerEntity) event.getSource().getTrueSource();
-        LivingEntity victim = event.getEntityLiving();
-
-        if (slayer instanceof FakePlayer){
-            return;
-        }
-
-        if (!(victim instanceof MobEntity)){
-            return;
-        }
-
-        GoldTotemItem.handleKill(slayer);
 
     }
 
