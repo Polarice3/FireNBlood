@@ -2,7 +2,7 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "firenblood:items/wand",
-		"1": "item/emerald"
+		"1": "firenblood:spellicons/fang_spell"
 	},
 	"elements": [
 		{

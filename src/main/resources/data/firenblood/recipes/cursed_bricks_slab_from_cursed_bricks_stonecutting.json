@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "firenblood:cursed_bricks"
+  },
+  "result": "firenblood:cursed_bricks_slab",
+  "count": 2
+}

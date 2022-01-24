@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "firenblood:mutatedporkchop_uncooked"
+  },
+  "result": "firenblood:mutatedporkchop",
+  "experience": 0.35,
+  "cookingtime": 200
+}

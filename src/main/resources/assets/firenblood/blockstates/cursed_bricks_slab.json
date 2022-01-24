@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "firenblood:block/cursed_bricks_slab"
+    },
+    "type=double": {
+      "model": "firenblood:block/cursed_bricks"
+    },
+    "type=top": {
+      "model": "firenblood:block/cursed_bricks_slab_top"
+    }
+  }
+}

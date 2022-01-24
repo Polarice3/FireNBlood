@@ -150,6 +150,11 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
         this.dataManager.set(DATA_CHARGING_STATE, isCharging);
     }
 
+    @Override
+    public void fireProjectile(LivingEntity p_230284_1_, ItemStack p_230284_2_, ProjectileEntity p_230284_3_, float p_230284_4_) {
+        this.func_234279_a_(this, p_230284_1_, p_230284_3_, p_230284_4_, 1.6F);
+    }
+
     @OnlyIn(Dist.CLIENT)
     public AbstractIllagerEntity.ArmPose getArmPose() {
         if (this.isCharging()) {
@@ -259,10 +264,6 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
         this.func_234281_b_(this, 1.6F);
     }
 
-    public void func_230284_a_(LivingEntity p_230284_1_, ItemStack p_230284_2_, ProjectileEntity p_230284_3_, float p_230284_4_) {
-        this.func_234279_a_(this, p_230284_1_, p_230284_3_, p_230284_4_, 1.6F);
-    }
-
     public boolean replaceItemInInventory(int inventorySlot, ItemStack itemStackIn) {
         if (super.replaceItemInInventory(inventorySlot, itemStackIn)) {
             return true;
@@ -301,7 +302,7 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
     }
 
     class CopyOwnerTargetGoal extends TargetGoal {
-        private final EntityPredicate field_220803_b = (new EntityPredicate()).setLineOfSiteRequired().setUseInvisibilityCheck();
+        private final EntityPredicate field_220803_b = (new EntityPredicate()).setIgnoresLineOfSight().setUseInvisibilityCheck();
 
         public CopyOwnerTargetGoal(CreatureEntity creature) {
             super(creature, false);

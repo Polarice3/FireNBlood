@@ -1,8 +1,7 @@
 package com.Polarice3.FireNBlood.init;
 
 import com.Polarice3.FireNBlood.FireNBlood;
-import com.Polarice3.FireNBlood.entities.ally.FriendlyTankEntity;
-import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
+import com.Polarice3.FireNBlood.entities.ally.*;
 import com.Polarice3.FireNBlood.entities.bosses.PenanceEntity;
 import com.Polarice3.FireNBlood.entities.bosses.VizierEntity;
 import com.Polarice3.FireNBlood.entities.hostile.*;
@@ -10,10 +9,7 @@ import com.Polarice3.FireNBlood.entities.masters.MinotaurEntity;
 import com.Polarice3.FireNBlood.entities.masters.TaillessAnathemaEntity;
 import com.Polarice3.FireNBlood.entities.masters.TaillessProphetEntity;
 import com.Polarice3.FireNBlood.entities.neutral.*;
-import com.Polarice3.FireNBlood.entities.projectiles.EtherealPunchEntity;
-import com.Polarice3.FireNBlood.entities.projectiles.SoulFireballEntity;
-import com.Polarice3.FireNBlood.entities.projectiles.WarpedSpearEntity;
-import com.Polarice3.FireNBlood.entities.projectiles.WitchBombEntity;
+import com.Polarice3.FireNBlood.entities.projectiles.*;
 import com.Polarice3.FireNBlood.entities.utilities.LightningTrapEntity;
 import com.Polarice3.FireNBlood.entities.utilities.FakeSeatEntity;
 import net.minecraft.entity.EntityClassification;
@@ -108,7 +104,7 @@ public class ModEntityType {
             () -> EntityType.Builder.<WarpedSpearEntity>create(WarpedSpearEntity::new, EntityClassification.MISC)
                     .size(0.5F, 0.5F)
                     .trackingRange(4)
-                    .func_233608_b_(20)
+                    .updateInterval(20)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "warped_spear").toString()));
 
     public static final RegistryObject<EntityType<WitchBombEntity>> WITCHBOMB = ENTITY_TYPES.register("witchbomb",
@@ -123,6 +119,12 @@ public class ModEntityType {
                     .size(0.98F, 0.98F)
                     .trackingRange(10)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "slowbomb").toString()));
+
+    public static final RegistryObject<EntityType<ScorchBallEntity>> SCORCHBALL = ENTITY_TYPES.register("scorchball",
+            () -> EntityType.Builder.<ScorchBallEntity>create(ScorchBallEntity::new, EntityClassification.MISC)
+                    .size(1.0f,1.0f)
+                    .trackingRange(4)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "scorchball").toString()));
 
     public static final RegistryObject<EntityType<RedemptorEntity>> REDEMPTOR = ENTITY_TYPES.register("redemptor",
             () -> EntityType.Builder.create(RedemptorEntity::new, EntityClassification.MONSTER)
@@ -179,12 +181,63 @@ public class ModEntityType {
                     .trackingRange(8)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "acolyte").toString()));
 
+    public static final RegistryObject<EntityType<ChannellerEntity>> CHANNELLER = ENTITY_TYPES.register("channeller",
+            () -> EntityType.Builder.create(ChannellerEntity::new, EntityClassification.MONSTER)
+                    .size(0.6F, 1.95F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "channeller").toString()));
+
+    public static final RegistryObject<EntityType<MutatedCowEntity>> MUTATED_COW = ENTITY_TYPES.register("mutatedcow",
+            () -> EntityType.Builder.create(MutatedCowEntity::new, EntityClassification.MONSTER)
+                    .size(0.9F, 1.95F)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "mutatedcow").toString()));
+
+    public static final RegistryObject<EntityType<MutatedChickenEntity>> MUTATED_CHICKEN = ENTITY_TYPES.register("mutatedchicken",
+            () -> EntityType.Builder.create(MutatedChickenEntity::new, EntityClassification.MONSTER)
+                    .size(0.5F, 1.0F)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "mutatedchicken").toString()));
+
+    public static final RegistryObject<EntityType<MutatedSheepEntity>> MUTATED_SHEEP = ENTITY_TYPES.register("mutatedsheep",
+            () -> EntityType.Builder.create(MutatedSheepEntity::new, EntityClassification.MONSTER)
+                    .size(0.9F, 1.95F)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "mutatedsheep").toString()));
+
+    public static final RegistryObject<EntityType<MutatedPigEntity>> MUTATED_PIG = ENTITY_TYPES.register("mutatedpig",
+            () -> EntityType.Builder.create(MutatedPigEntity::new, EntityClassification.MONSTER)
+                    .size(0.9F, 1.55F)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "mutatedpig").toString()));
+
+    public static final RegistryObject<EntityType<ParasiteEntity>> PARASITE = ENTITY_TYPES.register("parasite",
+            () -> EntityType.Builder.create(ParasiteEntity::new, EntityClassification.MONSTER)
+                    .size(0.4F, 0.3F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "parasite").toString()));
+
     public static final RegistryObject<EntityType<FriendlyVexEntity>> FRIENDLY_VEX = ENTITY_TYPES.register("friendly_vex",
             () -> EntityType.Builder.create(FriendlyVexEntity::new, EntityClassification.MONSTER)
                     .immuneToFire()
                     .size(0.4F, 0.8F)
                     .trackingRange(8)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "friendly_vex").toString()));
+
+    public static final RegistryObject<EntityType<FriendlyScorchEntity>> FRIENDLY_SCORCH = ENTITY_TYPES.register("friendly_scorch",
+            () -> EntityType.Builder.create(FriendlyScorchEntity::new, EntityClassification.MONSTER)
+                    .immuneToFire()
+                    .size(0.4F, 0.8F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "friendly_scorch").toString()));
+
+    public static final RegistryObject<EntityType<ZombieMinionEntity>> ZOMBIE_MINION = ENTITY_TYPES.register("zombie_minion",
+            () -> EntityType.Builder.create(ZombieMinionEntity::new, EntityClassification.MONSTER)
+                    .size(0.6F, 1.95F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "zombie_minion").toString()));
+
+    public static final RegistryObject<EntityType<SkeletonMinionEntity>> SKELETON_MINION = ENTITY_TYPES.register("skeleton_minion",
+            () -> EntityType.Builder.create(SkeletonMinionEntity::new, EntityClassification.MONSTER)
+                    .size(0.6F, 1.99F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "skeleton_minion").toString()));
 
     public static final RegistryObject<EntityType<VizierEntity>> VIZIER = ENTITY_TYPES.register("vizier",
             () -> EntityType.Builder.create(VizierEntity::new, EntityClassification.MONSTER)
@@ -198,6 +251,13 @@ public class ModEntityType {
                     .size(0.4F, 0.8F)
                     .trackingRange(8)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "irk").toString()));
+
+    public static final RegistryObject<EntityType<ScorchEntity>> SCORCH = ENTITY_TYPES.register("scorch",
+            () -> EntityType.Builder.create(ScorchEntity::new, EntityClassification.MONSTER)
+                    .immuneToFire()
+                    .size(0.4F, 0.8F)
+                    .trackingRange(8)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "scorch").toString()));
 
     public static final RegistryObject<EntityType<PenanceEntity>> PENANCE = ENTITY_TYPES.register("penance",
             () -> EntityType.Builder.create(PenanceEntity::new, EntityClassification.MONSTER)

@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "powered=false": { "model": "firenblood:block/fang_totem" },
+    "powered=true": {"model": "firenblood:block/fang_totem_activated"}
+  }
+}

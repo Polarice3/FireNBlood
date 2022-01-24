@@ -1,9 +1,10 @@
 package com.Polarice3.FireNBlood.utils;
 
 import com.Polarice3.FireNBlood.FireNBlood;
-import com.Polarice3.FireNBlood.structures.ProfanedTowerStructure;
-import com.Polarice3.FireNBlood.structures.StructurePieces;
-import com.Polarice3.FireNBlood.structures.TavernStructure;
+import com.Polarice3.FireNBlood.world.structures.ProfanedShrineStructure;
+import com.Polarice3.FireNBlood.world.structures.ProfanedTowerStructure;
+import com.Polarice3.FireNBlood.world.structures.StructurePieces;
+import com.Polarice3.FireNBlood.world.structures.TavernStructure;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.registry.WorldGenRegistries;
@@ -21,8 +22,10 @@ import java.util.Map;
 
 public class RegistryStructures {
     public static final DeferredRegister<Structure<?>> STRUCTURES = DeferredRegister.create(ForgeRegistries.STRUCTURE_FEATURES, FireNBlood.MOD_ID);
-    public static final RegistryObject<Structure<NoFeatureConfig>> TAVERN = STRUCTURES.register("tavern", () -> (new TavernStructure(NoFeatureConfig.field_236558_a_)));
-    public static final RegistryObject<Structure<NoFeatureConfig>> PROFANEDTOWER = STRUCTURES.register("profanedtower", () -> (new ProfanedTowerStructure(NoFeatureConfig.field_236558_a_)));
+    public static final RegistryObject<Structure<NoFeatureConfig>> TAVERN = STRUCTURES.register("tavern", () -> (new TavernStructure(NoFeatureConfig.CODEC)));
+    public static final RegistryObject<Structure<NoFeatureConfig>> PROFANEDTOWER = STRUCTURES.register("profanedtower", () -> (new ProfanedTowerStructure(NoFeatureConfig.CODEC)));
+    public static final RegistryObject<Structure<NoFeatureConfig>> PROFANEDSHRINE = STRUCTURES.register("profanedshrine", () -> (new ProfanedShrineStructure(NoFeatureConfig.CODEC)));
+
 
     public static void init(){
         STRUCTURES.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -40,6 +43,12 @@ public class RegistryStructures {
                 new StructureSeparationSettings(100,
                         80,
                         1321321320),
+                true);
+        setupMapSpacingAndLand(
+                PROFANEDSHRINE.get(),
+                new StructureSeparationSettings(60,
+                        40,
+                        1432143214),
                 true);
         StructurePieces.registerStructurePieces();
 

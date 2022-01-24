@@ -1,5 +1,8 @@
 package com.Polarice3.FireNBlood.entities.neutral;
 
+import com.Polarice3.FireNBlood.entities.ally.FriendlyTankEntity;
+import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
+import com.Polarice3.FireNBlood.entities.ally.SummonedEntity;
 import com.Polarice3.FireNBlood.entities.utilities.FakeSeatEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
@@ -311,6 +314,15 @@ public class AbstractProtectorEntity extends CreatureEntity {
         }
         if (this.isDying()){
             return entityIn.getTeam() == this.getTeam() && this.getTeam() == entityIn.getTeam();
+        }
+        if (entityIn instanceof FriendlyVexEntity && ((FriendlyVexEntity) entityIn).getTrueOwner() == this.getOwner()){
+            return true;
+        }
+        if (entityIn instanceof SummonedEntity && ((SummonedEntity) entityIn).getTrueOwner() == this.getOwner()){
+            return true;
+        }
+        if (entityIn instanceof FriendlyTankEntity && ((FriendlyTankEntity) entityIn).getOwner() == this.getOwner()){
+            return true;
         }
         return super.isOnSameTeam(entityIn);
     }
@@ -632,7 +644,7 @@ public class AbstractProtectorEntity extends CreatureEntity {
         }
 
         private boolean isTeleportFriendlyBlock(BlockPos pos) {
-            PathNodeType pathnodetype = WalkNodeProcessor.func_237231_a_(this.world, pos.toMutable());
+            PathNodeType pathnodetype = WalkNodeProcessor.getFloorNodeType(this.world, pos.toMutable());
             if (pathnodetype != PathNodeType.WALKABLE) {
                 return false;
             } else {

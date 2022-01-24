@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#",
+    "#"
+  ],
+  "key": {
+    "#": {
+      "item": "firenblood:cursed_stone_slab"
+    }
+  },
+  "result": {
+    "item": "firenblood:cursed_stone_chiseled"
+  }
+}

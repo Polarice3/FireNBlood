@@ -30,7 +30,7 @@ public class BlackBullEntity extends ServantTaillessEntity {
         return MobEntity.func_233666_p_()
                 .createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D)
                 .createMutableAttribute(Attributes.MAX_HEALTH, 30.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.35D)
+                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.45D)
                 .createMutableAttribute(Attributes.ATTACK_DAMAGE, 4.0D)
                 .createMutableAttribute(Attributes.ATTACK_SPEED, 8.0D)
                 .createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 0.6D)

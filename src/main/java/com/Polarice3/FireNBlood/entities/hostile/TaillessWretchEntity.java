@@ -43,7 +43,6 @@ public class TaillessWretchEntity extends ServantTaillessEntity {
         this.stepHeight = 1.0F;
     }
 
-    //func_233666_p_ -> registerAttributes()
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
         return MobEntity.func_233666_p_()
                 .createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D)
@@ -166,6 +165,7 @@ public class TaillessWretchEntity extends ServantTaillessEntity {
                 }
             }
         }
+        super.onDeath(cause);
     }
 
     static class PotionGoal extends Goal{

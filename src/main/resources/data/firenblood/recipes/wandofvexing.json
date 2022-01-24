@@ -3,18 +3,18 @@
   "pattern":
   [
     "sas",
-    "gbg",
+    "cbc",
     " c "
   ],
   "key":
   {
     "a":
     {
-      "item": "minecraft:emerald"
+      "item": "minecraft:iron_sword"
     },
     "b":
     {
-      "item": "minecraft:iron_sword"
+      "item": "minecraft:soul_sand"
     },
     "c":
     {
@@ -22,11 +22,7 @@
     },
     "s":
     {
-      "item": "minecraft:nether_wart"
-    },
-    "g":
-    {
-      "item": "minecraft:soul_sand"
+      "item": "minecraft:emerald"
     }
   },
   "result":

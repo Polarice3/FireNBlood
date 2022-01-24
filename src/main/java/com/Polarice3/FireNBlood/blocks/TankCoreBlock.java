@@ -67,7 +67,7 @@ public class TankCoreBlock extends Block {
 
             for(int l = 0; l < this.getTankpattern().getThumbLength(); ++l) {
                 CachedBlockInfo cachedblockinfo3 = blockpattern$patternhelper.translateOffset(0, l, 0);
-                world.func_230547_a_(cachedblockinfo3.getPos(), Blocks.AIR);
+                world.updateBlock(cachedblockinfo3.getPos(), Blocks.AIR);
             }
         }
     }

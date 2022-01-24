@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "bbb",
+    "bbb"
+  ],
+  "key":
+  {
+    "b":
+    {
+      "item": "firenblood:cursed_ingot"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:cursed_bars",
+    "count": 16
+  }
+}

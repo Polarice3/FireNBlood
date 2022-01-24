@@ -28,7 +28,7 @@ public class CallerModel<T extends CallerEntity> extends EntityModel<T> {
     private final ModelRenderer cube_r7;
     private final ModelRenderer Base;
 
-    public CallerModel() {
+    public CallerModel(float layer) {
         textureWidth = 64;
         textureHeight = 64;
 

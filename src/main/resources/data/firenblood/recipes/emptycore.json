@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    " b ",
+    "bgb",
+    " b "
+  ],
+  "key":
+  {
+    "b":
+    {
+      "item": "firenblood:cursed_ingot"
+    },
+    "g":
+    {
+      "item": "minecraft:glass"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:emptycore",
+    "count": 1
+  }
+}

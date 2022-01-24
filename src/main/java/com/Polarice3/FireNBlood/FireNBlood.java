@@ -1,7 +1,6 @@
 package com.Polarice3.FireNBlood;
 
-import com.Polarice3.FireNBlood.entities.ally.FriendlyTankEntity;
-import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
+import com.Polarice3.FireNBlood.entities.ally.*;
 import com.Polarice3.FireNBlood.entities.bosses.PenanceEntity;
 import com.Polarice3.FireNBlood.entities.bosses.VizierEntity;
 import com.Polarice3.FireNBlood.entities.hostile.*;
@@ -13,7 +12,10 @@ import com.Polarice3.FireNBlood.entities.utilities.FakeSeatEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.init.ModItems;
 import com.Polarice3.FireNBlood.potions.ModPotions;
-import com.Polarice3.FireNBlood.structures.ConfiguredStructures;
+import com.Polarice3.FireNBlood.utils.RegistryFeatures;
+import com.Polarice3.FireNBlood.world.features.ConfiguredFeatures;
+import com.Polarice3.FireNBlood.world.structures.ConfiguredStructures;
+import com.Polarice3.FireNBlood.tileentities.ModTileEntityType;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import com.Polarice3.FireNBlood.utils.RegistryStructures;
 import com.mojang.serialization.Codec;
@@ -27,6 +29,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.FlatChunkGenerator;
+import net.minecraft.world.gen.GenerationStage;
 import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.settings.DimensionStructuresSettings;
 import net.minecraft.world.gen.settings.StructureSeparationSettings;
@@ -43,6 +46,7 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -61,15 +65,17 @@ public class FireNBlood
 
         ModEntityType.ENTITY_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
 
+        ModTileEntityType.TILEENTITY_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
+
         ModItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
 
         ModPotions.POTIONS.register(FMLJavaModLoadingContext.get().getModEventBus());
 
         MinecraftForge.EVENT_BUS.register(this);
 
-/*        final ModLoadingContext modLoadingContext = ModLoadingContext.get();
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, FNBConfig.SPEC, "firenblood.toml");
 
-        modLoadingContext.registerConfig(ModConfig.Type.CLIENT, FNBConfig.CLIENT_SPEC);*/
+        FNBConfig.loadConfig(FNBConfig.SPEC, FMLPaths.CONFIGDIR.get().resolve("firenblood.toml").toString());
 
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
         forgeBus.addListener(EventPriority.NORMAL, this::addDimensionalSpacing);
@@ -78,6 +84,7 @@ public class FireNBlood
 
         RegistryHandler.init();
         RegistryStructures.init();
+        RegistryFeatures.init();
     }
 
     private void setup(final FMLCommonSetupEvent event)
@@ -167,7 +174,43 @@ public class FireNBlood
         });
 
         DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.CHANNELLER.get(), ChannellerEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_COW.get(), MutatedCowEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_CHICKEN.get(), MutatedChickenEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_SHEEP.get(), MutatedSheepEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_PIG.get(), MutatedPigEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.PARASITE.get(), ParasiteEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.FRIENDLY_VEX.get(), FriendlyVexEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.FRIENDLY_SCORCH.get(), FriendlyScorchEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.ZOMBIE_MINION.get(), ZombieMinionEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.SKELETON_MINION.get(), SkeletonMinionEntity.setCustomAttributes().create());
         });
 
         DeferredWorkQueue.runLater(() -> {
@@ -176,6 +219,10 @@ public class FireNBlood
 
         DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.IRK.get(), IrkEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.SCORCH.get(), ScorchEntity.setCustomAttributes().create());
         });
 
         DeferredWorkQueue.runLater(() -> {
@@ -199,6 +246,20 @@ public class FireNBlood
         || event.getCategory() == Biome.Category.PLAINS
         || event.getCategory() == Biome.Category.SAVANNA) {
             event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_TAVERN);
+        }
+        if (event.getCategory() == Biome.Category.PLAINS
+        || event.getCategory() == Biome.Category.FOREST
+        || event.getCategory() == Biome.Category.SAVANNA
+        || event.getCategory() == Biome.Category.TAIGA
+        || event.getCategory() == Biome.Category.DESERT) {
+            event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_PROFANEDSHRINE);
+        }
+        if (event.getCategory() != Biome.Category.THEEND
+                && event.getCategory() != Biome.Category.MUSHROOM
+                && event.getCategory() != Biome.Category.NETHER
+                && event.getCategory() != Biome.Category.OCEAN
+                && event.getCategory() != Biome.Category.RIVER){
+            event.getGeneration().getFeatures(GenerationStage.Decoration.SURFACE_STRUCTURES).add(() -> ConfiguredFeatures.CONFIGURED_CURSEDTOTEM);
         }
         event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_PROFANEDTOWER);
     }
@@ -225,6 +286,7 @@ public class FireNBlood
             Map<Structure<?>, StructureSeparationSettings> tempMap = new HashMap<>(serverWorld.getChunkProvider().generator.func_235957_b_().func_236195_a_());
             tempMap.putIfAbsent(RegistryStructures.TAVERN.get(), DimensionStructuresSettings.field_236191_b_.get(RegistryStructures.TAVERN.get()));
             tempMap.putIfAbsent(RegistryStructures.PROFANEDTOWER.get(), DimensionStructuresSettings.field_236191_b_.get(RegistryStructures.PROFANEDTOWER.get()));
+            tempMap.putIfAbsent(RegistryStructures.PROFANEDSHRINE.get(), DimensionStructuresSettings.field_236191_b_.get(RegistryStructures.PROFANEDSHRINE.get()));
             serverWorld.getChunkProvider().generator.func_235957_b_().field_236193_d_ = tempMap;
         }
     }

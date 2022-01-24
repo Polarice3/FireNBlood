@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "fgf",
+    "flf"
+  ],
+  "key":
+  {
+    "f":
+    {
+      "item": "minecraft:black_wool"
+    },
+    "g":
+    {
+      "item": "minecraft:yellow_wool"
+    },
+    "l":
+    {
+      "item": "minecraft:lapis_lazuli"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:darkhelm",
+    "count": 1
+  }
+}

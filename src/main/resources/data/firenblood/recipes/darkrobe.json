@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "f f",
+    "yly",
+    "fff"
+  ],
+  "key":
+  {
+    "f":
+    {
+      "item": "minecraft:black_wool"
+    },
+    "y":
+    {
+      "item": "minecraft:yellow_wool"
+    },
+    "l":
+    {
+      "item": "minecraft:lapis_lazuli"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:darkrobe",
+    "count": 1
+  }
+}

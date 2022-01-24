@@ -8,15 +8,17 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.Hand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-@Mod.EventBusSubscriber(modid = FireNBlood.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = FireNBlood.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class GoldTotemEvent {
 
     @SubscribeEvent
@@ -45,6 +47,17 @@ public class GoldTotemEvent {
             }
         }
 
+    }
+
+    private static ItemStack getTotemItem(PlayerEntity player) {
+        for(Hand hand : Hand.values()) {
+            ItemStack itemstack = player.getHeldItem(hand);
+            if (itemstack.getItem() == RegistryHandler.GOLDTOTEM.get()) {
+                return itemstack;
+            }
+        }
+
+        return new ItemStack(RegistryHandler.GOLDTOTEM.get());
     }
 
 }

@@ -2,14 +2,17 @@ package com.Polarice3.FireNBlood.items;
 
 import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.FireNBlood;
+import com.Polarice3.FireNBlood.entities.bosses.VizierEntity;
 import com.Polarice3.FireNBlood.entities.hostile.AbstractTaillessEntity;
 import com.Polarice3.FireNBlood.entities.hostile.NeophyteEntity;
 import com.Polarice3.FireNBlood.entities.neutral.AbstractProtectorEntity;
 import com.Polarice3.FireNBlood.entities.neutral.AcolyteEntity;
+import com.Polarice3.FireNBlood.entities.neutral.MutatedEntity;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.monster.AbstractRaiderEntity;
 import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
@@ -25,19 +28,31 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class GoldTotemItem extends Item {
-    private static final String SOULSAMOUNT = "Souls";
-    public static final int MAXSOULS = FNBConfig.MaxSouls;
+    public static final String SOULSAMOUNT = "Souls";
+    public static final int MAXSOULS = FNBConfig.MaxSouls.get();
 
     public GoldTotemItem() {
         super(new Item.Properties().group(FireNBlood.TAB).maxStackSize(1));
-        ItemModelsProperties.registerProperty(this, new ResourceLocation("souls"), (stack, world, living) -> ((float) currentSouls(stack)) / MAXSOULS);
-        ItemModelsProperties.registerProperty(this, new ResourceLocation("activated"), (stack, world, living) -> {
-            return isActivated(stack) ? 1.0F : 0.0F;
-        });
+        ItemModelsProperties.registerProperty(this, new ResourceLocation("souls"),
+                (stack, world, living) -> ((float) currentSouls(stack)) / MAXSOULS);
+        ItemModelsProperties.registerProperty(this, new ResourceLocation("activated"),
+                (stack, world, living) -> isActivated(stack) ? 1.0F : 0.0F);
+    }
+
+    @Override
+    public boolean hasContainerItem(ItemStack stack) {
+        return true;
+    }
+
+    @Nonnull
+    @Override
+    public ItemStack getContainerItem(ItemStack itemStack) {
+        return itemStack.copy();
     }
 
     @Override
@@ -103,17 +118,17 @@ public class GoldTotemItem extends Item {
             if (victim instanceof AbstractRaiderEntity || victim instanceof AbstractProtectorEntity){
                 increaseSouls(foundStack, 5);
             } else
-            if (victim instanceof VillagerEntity){
+            if (victim instanceof VillagerEntity && !victim.isChild()){
                 increaseSouls(foundStack, 10);
             } else
-            if (victim instanceof NeophyteEntity || victim instanceof AcolyteEntity){
+            if (victim instanceof NeophyteEntity || victim instanceof AcolyteEntity || victim instanceof AbstractTaillessEntity){
                 increaseSouls(foundStack, 8);
             } else
-            if (victim instanceof AbstractPiglinEntity || victim instanceof TameableEntity){
+            if (victim instanceof AbstractPiglinEntity || victim instanceof TameableEntity || victim instanceof MutatedEntity){
                 increaseSouls(foundStack, 2);
             } else
-            if (victim instanceof AbstractTaillessEntity){
-                increaseSouls(foundStack, 6);
+            if (victim instanceof EnderDragonEntity){
+                increaseSouls(foundStack, 200);
             } else {
                 increaseSouls(foundStack, 1);
             }

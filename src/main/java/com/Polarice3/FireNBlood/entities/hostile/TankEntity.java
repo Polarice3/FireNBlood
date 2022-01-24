@@ -1,6 +1,5 @@
 package com.Polarice3.FireNBlood.entities.hostile;
 
-import com.google.common.collect.ImmutableList;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -8,7 +7,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.HurtByTargetGoal;
+import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
+import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
 import net.minecraft.entity.monster.AbstractIllagerEntity;
 import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
@@ -25,17 +27,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
-import java.util.Comparator;
-import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
-public class TankEntity extends ServantTaillessEntity{
+public class TankEntity extends AbstractTaillessEntity{
     private static final Predicate<Entity> field_213690_b = (p_213685_0_) -> {
         return p_213685_0_.isAlive() && !(p_213685_0_ instanceof TankEntity);
     };
 
-    public TankEntity(EntityType<? extends ServantTaillessEntity> type, World worldIn) {
+    public TankEntity(EntityType<? extends AbstractTaillessEntity> type, World worldIn) {
         super(type, worldIn);
         this.setPathPriority(PathNodeType.WATER, -1.0F);
         this.setPathPriority(PathNodeType.DANGER_FIRE, 0.0F);

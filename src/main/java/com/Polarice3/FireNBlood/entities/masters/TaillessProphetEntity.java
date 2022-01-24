@@ -445,7 +445,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
     }
 
     class SummonSpellGoal extends SpellcastingTaillessEntity.UseSpellGoal {
-        private final EntityPredicate field_220843_e = (new EntityPredicate()).setDistance(32.0D).setLineOfSiteRequired().setUseInvisibilityCheck().allowInvulnerable().allowFriendlyFire();
+        private final EntityPredicate field_220843_e = (new EntityPredicate()).setDistance(32.0D).setIgnoresLineOfSight().setUseInvisibilityCheck().allowInvulnerable().allowFriendlyFire();
 
         private SummonSpellGoal() {
         }
@@ -506,7 +506,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         private int attackTime;
         private int firedRecentlyTimer;
 
-        private final EntityPredicate field_220843_e = (new EntityPredicate()).setDistance(32.0D).setLineOfSiteRequired().setUseInvisibilityCheck().allowInvulnerable().allowFriendlyFire();
+        private final EntityPredicate field_220843_e = (new EntityPredicate()).setDistance(32.0D).setIgnoresLineOfSight().setUseInvisibilityCheck().allowInvulnerable().allowFriendlyFire();
 
         private BarrageSpellGoal() {
         }

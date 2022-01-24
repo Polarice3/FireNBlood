@@ -2,9 +2,9 @@ package com.Polarice3.FireNBlood.armors;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
-import com.sun.org.apache.xalan.internal.xsltc.util.IntegerArray;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.IArmorMaterial;
+import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
@@ -16,7 +16,11 @@ import java.util.function.Supplier;
 public enum ModArmorMaterial implements IArmorMaterial {
 
     FURRED(FireNBlood.MOD_ID + ":furred", 5, new int[] {1, 2, 3, 1}, 15,
-            SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0.0F, 0.0F, () -> { return Ingredient.fromItems(RegistryHandler.FURLEATHER.get());});
+            SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0.0F, 0.0F, () -> { return Ingredient.fromItems(RegistryHandler.FURLEATHER.get());}),
+    DARKMAGE(FireNBlood.MOD_ID + ":darkmage", 5, new int[] {1, 2, 2, 1}, 25,
+            SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0.0F, 0.0F, () -> { return Ingredient.fromItems(Items.BLACK_WOOL);}),
+    NECROTURGE(FireNBlood.MOD_ID + ":necroturge", 5, new int[] {1, 2, 2, 1}, 25,
+            SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0.0F, 0.0F, () -> { return Ingredient.fromItems(Items.BONE);});;
 
     private static final int[] MAX_DAMAGE_ARRAY = new int[] {13, 15, 16, 11};
     private final String name;

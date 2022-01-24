@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "firenblood:cursed_stone"
+    }
+  },
+  "result": {
+    "item": "firenblood:cursed_stone_stairs",
+    "count": 4
+  }
+}

@@ -20,6 +20,7 @@ import java.util.EnumSet;
     public abstract class SpellcastingTaillessEntity extends AbstractTaillessEntity {
         private static final DataParameter<Byte> SPELL = EntityDataManager.createKey(SpellcastingTaillessEntity.class, DataSerializers.BYTE);
         protected int spellTicks;
+        protected int prayingTicks;
         private SpellcastingTaillessEntity.SpellType activeSpell = SpellcastingTaillessEntity.SpellType.NONE;
 
         protected SpellcastingTaillessEntity(EntityType<? extends SpellcastingTaillessEntity> type, World p_i48551_2_) {
@@ -37,20 +38,26 @@ import java.util.EnumSet;
         public void readAdditional(CompoundNBT compound) {
             super.readAdditional(compound);
             this.spellTicks = compound.getInt("SpellTicks");
+            this.prayingTicks = compound.getInt("PrayingTicks");
         }
 
         public void writeAdditional(CompoundNBT compound) {
             super.writeAdditional(compound);
             compound.putInt("SpellTicks", this.spellTicks);
+            compound.putInt("PrayingTicks", this.prayingTicks);
         }
 
         @OnlyIn(Dist.CLIENT)
         public AbstractTaillessEntity.ArmPose getArmPose() {
-            if (this.isSpellcasting()) {
+            if (this.isSpellcasting() || this.isPraying()) {
                 return AbstractTaillessEntity.ArmPose.SPELLCASTING;
             } else {
                 return AbstractTaillessEntity.ArmPose.NEUTRAL;
             }
+        }
+
+        public boolean isPraying(){
+            return this.prayingTicks > 0;
         }
 
         public boolean isSpellcasting() {

@@ -55,7 +55,7 @@ public class WarpedSpearItem extends Item implements IVanishable {
                     player.sendBreakAnimation(entityLiving.getActiveHand());
                 });
                 WarpedSpearEntity warpedSpearEntity = new WarpedSpearEntity(worldIn, playerentity, stack);
-                warpedSpearEntity.func_234612_a_(playerentity, playerentity.rotationPitch, playerentity.rotationYaw, 0.0F, 2.5F + (float)3 * 0.5F, 1.0F);
+                warpedSpearEntity.setDirectionAndMovement(playerentity, playerentity.rotationPitch, playerentity.rotationYaw, 0.0F, 2.5F + (float)3 * 0.5F, 1.0F);
                 if (playerentity.abilities.isCreativeMode) {
                     warpedSpearEntity.pickupStatus = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
                 }

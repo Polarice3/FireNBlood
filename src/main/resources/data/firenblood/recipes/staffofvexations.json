@@ -10,15 +10,15 @@
   {
     "a":
     {
-      "item": "firenblood:soulruby"
+      "item": "minecraft:iron_sword"
     },
     "b":
     {
-      "item": "minecraft:iron_sword"
+      "item": "firenblood:soulruby"
     },
     "c":
     {
-      "item": "minecraft:log"
+      "tag": "minecraft:logs"
     },
     "w":
     {

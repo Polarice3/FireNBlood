@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "sas",
+    "cbc",
+    " c "
+  ],
+  "key":
+  {
+    "a":
+    {
+      "item": "minecraft:bone"
+    },
+    "b":
+    {
+      "item": "minecraft:soul_sand"
+    },
+    "c":
+    {
+      "item": "minecraft:stick"
+    },
+    "s":
+    {
+      "item": "minecraft:emerald"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:wandofosseous",
+    "count": 1
+  }
+}

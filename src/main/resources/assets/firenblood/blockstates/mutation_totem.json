@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "powered=false": { "model": "firenblood:block/mutation_totem" },
+    "powered=true": {"model": "firenblood:block/mutation_totem_activated"}
+  }
+}

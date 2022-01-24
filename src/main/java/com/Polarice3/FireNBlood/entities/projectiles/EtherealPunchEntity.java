@@ -31,7 +31,7 @@ public class EtherealPunchEntity extends DamagingProjectileEntity {
     protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
         super.onEntityHit(p_213868_1_);
         Entity entity = p_213868_1_.getEntity();
-        Entity entity1 = this.func_234616_v_();
+        Entity entity1 = this.getShooter();
         LivingEntity livingentity = entity1 instanceof LivingEntity ? (LivingEntity)entity1 : null;
         assert livingentity != null;
         boolean flag = entity.attackEntityFrom(DamageSource.causeIndirectDamage(this, livingentity).setProjectile(), 4.0F);

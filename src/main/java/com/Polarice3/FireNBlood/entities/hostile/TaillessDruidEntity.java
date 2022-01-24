@@ -1,11 +1,15 @@
 package com.Polarice3.FireNBlood.entities.hostile;
 
+import com.Polarice3.FireNBlood.entities.masters.MinotaurEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
+import jdk.nashorn.internal.codegen.CompilerConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.brain.memory.MemoryModuleType;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
@@ -36,8 +40,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
+
+import static com.Polarice3.FireNBlood.entities.neutral.AbstractProtectorEntity.MODIFIER_UUID;
 
 @OnlyIn(
         value = Dist.CLIENT,
@@ -51,13 +58,13 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
     protected static final DataParameter<Byte> DRUID_FLAGS = EntityDataManager.createKey(TaillessDruidEntity.class, DataSerializers.BYTE);
     private AbstractTaillessEntity AllyTarget;
     private VillagerEntity TemptTarget;
+    private CallerEntity CallerTarget;
     public int Fire;
 
     public TaillessDruidEntity(EntityType<? extends SpellcastingTaillessEntity> type, World worldIn) {
         super(type, worldIn);
     }
 
-    //func_233666_p_ -> registerAttributes()
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
         return MobEntity.func_233666_p_()
                 .createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D)
@@ -159,6 +166,10 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         this.TemptTarget = TemptTargetIn;
     }
 
+    private void setCallerTarget(@Nullable CallerEntity CallerTarget) {
+        this.CallerTarget = CallerTarget;
+    }
+
     @Nullable
     private AbstractTaillessEntity getAllyTarget() {
         return this.AllyTarget;
@@ -169,7 +180,12 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         return this.TemptTarget;
     }
 
-    private final EntityPredicate ally = (new EntityPredicate().setDistance(32.0D));
+    @Nullable
+    private CallerEntity getCallerTarget() {
+        return this.CallerTarget;
+    }
+
+    private final EntityPredicate ally = (new EntityPredicate().setDistance(64.0D));
 
     public boolean isOnSameTeam(Entity entityIn) {
         if (super.isOnSameTeam(entityIn)) {
@@ -192,11 +208,7 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
 
     public boolean isCharged(){
         List<ServantTaillessEntity> list = TaillessDruidEntity.this.world.getTargettableEntitiesWithinAABB(ServantTaillessEntity.class, this.ally, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().grow(32.0D, 8.0D, 32.0D));
-        if (list.isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
+        return !list.isEmpty();
     }
 
     public void onDeath(DamageSource cause) {
@@ -241,6 +253,7 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
                 }
             }
         }
+        super.onDeath(cause);
     }
     public void livingTick() {
         if (this.isFiring()) {
@@ -289,6 +302,28 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
                 }
             }
         }
+        List<CallerEntity> list = this.world.getTargettableEntitiesWithinAABB(CallerEntity.class, this.ally, this, this.getBoundingBox().grow(64.0D, 8.0D, 64.0D));
+        if (!list.isEmpty()){
+            this.setCallerTarget(list.get(this.rand.nextInt(list.size())));
+            if (this.getHealth() == this.getMaxHealth()) {
+                if (this.getDistance(this.getCallerTarget()) <= 8.0D) {
+                    this.setAttackTarget(null);
+                    this.getLookController().setLookPositionWithEntity(this.getCallerTarget(), (float) this.getHorizontalFaceSpeed(), (float) this.getVerticalFaceSpeed());
+                    this.navigator.clearPath();
+                    this.prayingTicks = 60;
+                    this.spellTicks = 60;
+                    this.idleTime = 0;
+                    for (int i = 0; i < 2; ++i) {
+                        this.world.addParticle(ParticleTypes.ENCHANT, this.getPosXRandom(0.5D), this.getPosYRandom() - 0.25D, this.getPosZRandom(0.5D), (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D);
+                    }
+                } else {
+                    Vector3d vector3d = getCallerTarget().getPositionVec();
+                    this.getNavigator().tryMoveToXYZ(vector3d.x, vector3d.y, vector3d.z, 1.0D);
+                }
+            }
+        } else {
+            this.prayingTicks = 0;
+        }
 
         super.livingTick();
     }
@@ -303,6 +338,8 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
             }
             else if (TaillessDruidEntity.this.getAllyTarget() != null) {
                 TaillessDruidEntity.this.getLookController().setLookPositionWithEntity(TaillessDruidEntity.this.getAllyTarget(), (float)TaillessDruidEntity.this.getHorizontalFaceSpeed(), (float)TaillessDruidEntity.this.getVerticalFaceSpeed());
+            } else if (TaillessDruidEntity.this.getCallerTarget() != null){
+                TaillessDruidEntity.this.getLookController().setLookPositionWithEntity(TaillessDruidEntity.this.getCallerTarget(), (float)TaillessDruidEntity.this.getHorizontalFaceSpeed(), (float)TaillessDruidEntity.this.getVerticalFaceSpeed());
             }
         }
     }
@@ -609,7 +646,7 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
     }
 
     class SummonSpellGoal extends SpellcastingTaillessEntity.UseSpellGoal {
-        private final EntityPredicate field_220843_e = (new EntityPredicate()).setDistance(32.0D).setLineOfSiteRequired().setUseInvisibilityCheck().allowInvulnerable().allowFriendlyFire();
+        private final EntityPredicate field_220843_e = (new EntityPredicate()).setDistance(32.0D).setIgnoresLineOfSight().setUseInvisibilityCheck().allowInvulnerable().allowFriendlyFire();
 
         private SummonSpellGoal() {
         }

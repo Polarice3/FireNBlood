@@ -48,9 +48,9 @@ public class HexerSpawner {
     }
 
     public int tick () {
-        if (!FNBConfig.HexerSpawn) {
+        /*if (!FNBConfig.INIT.HexerSpawn.get()) {
             return 0;
-        } else if (--this.field_221248_c > 0) {
+        } else */if (--this.field_221248_c > 0) {
             return 0;
         } else {
             HexerWorldData worldinfo = HexerWorldData.get(world);

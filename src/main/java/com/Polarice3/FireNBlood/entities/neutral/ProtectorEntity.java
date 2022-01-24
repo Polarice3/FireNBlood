@@ -245,7 +245,7 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
 
     public float getBlockPathWeight(BlockPos pos, IWorldReader worldIn) {
         BlockState blockstate = worldIn.getBlockState(pos.down());
-        return !blockstate.isIn(Blocks.GRASS_BLOCK) && !blockstate.isIn(Blocks.SAND) ? 0.5F - worldIn.getBrightness(pos) : 10.0F;
+        return !blockstate.matchesBlock(Blocks.GRASS_BLOCK) && !blockstate.matchesBlock(Blocks.SAND) ? 0.5F - worldIn.getBrightness(pos) : 10.0F;
     }
 
     public int getMaxSpawnedInChunk() {
@@ -292,7 +292,7 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
         this.func_234281_b_(this, 1.6F);
     }
 
-    public void func_230284_a_(LivingEntity p_230284_1_, ItemStack p_230284_2_, ProjectileEntity p_230284_3_, float p_230284_4_) {
+    public void fireProjectile(LivingEntity p_230284_1_, ItemStack p_230284_2_, ProjectileEntity p_230284_3_, float p_230284_4_) {
         this.func_234279_a_(this, p_230284_1_, p_230284_3_, p_230284_4_, 1.6F);
     }
 
@@ -326,7 +326,7 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
         }
     }
 
-    public ActionResultType func_230254_b_(PlayerEntity p_230254_1_, Hand p_230254_2_) {
+    public ActionResultType getEntityInteractionResult(PlayerEntity p_230254_1_, Hand p_230254_2_) {
         ItemStack itemstack = p_230254_1_.getHeldItem(p_230254_2_);
         Item item = itemstack.getItem();
         if (this.isDying()){

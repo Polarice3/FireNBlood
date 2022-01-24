@@ -222,7 +222,7 @@ public class NeophyteEntity extends CreatureEntity implements IRangedAttackMob {
         super.livingTick();
     }
 
-    public void func_241841_a(ServerWorld p_241841_1_, LightningBoltEntity p_241841_2_) {
+    public void causeLightningStrike(ServerWorld p_241841_1_, LightningBoltEntity p_241841_2_) {
         if (p_241841_1_.getDifficulty() != Difficulty.PEACEFUL) {
             WitchEntity witchentity = EntityType.WITCH.create(p_241841_1_);
             witchentity.setLocationAndAngles(this.getPosX(), this.getPosY(), this.getPosZ(), this.rotationYaw, this.rotationPitch);
@@ -237,7 +237,7 @@ public class NeophyteEntity extends CreatureEntity implements IRangedAttackMob {
             p_241841_1_.func_242417_l(witchentity);
             this.remove();
         } else {
-            super.func_241841_a(p_241841_1_, p_241841_2_);
+            super.causeLightningStrike(p_241841_1_, p_241841_2_);
         }
 
     }

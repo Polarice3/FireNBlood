@@ -1,20 +1,16 @@
 package com.Polarice3.FireNBlood.items;
 
 import com.Polarice3.FireNBlood.FireNBlood;
-import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
-import com.Polarice3.FireNBlood.entities.neutral.HexerEntity;
-import com.Polarice3.FireNBlood.init.ModEntityType;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.EvokerFangsEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.UseAction;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.*;
+import net.minecraft.util.Direction;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceContext;
@@ -22,7 +18,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 
 public class WandofBitesItem extends SoulUsingItem {
 
@@ -32,7 +27,17 @@ public class WandofBitesItem extends SoulUsingItem {
 
     @Override
     public int SoulCost() {
-        return 10;
+        return 12;
+    }
+
+    @Override
+    public int CastDuration() {
+        return 40;
+    }
+
+    @Override
+    public SoundEvent CastingSound() {
+        return SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK;
     }
 
     @Override
@@ -83,21 +88,6 @@ public class WandofBitesItem extends SoulUsingItem {
             livingEntity.world.addEntity(new EvokerFangsEntity(livingEntity.world, p_190876_1_, (double)blockpos.getY() + d0, p_190876_3_, p_190876_9_, p_190876_10_, livingEntity));
         }
 
-    }
-
-    public int getUseDuration(ItemStack stack) {
-        return 25;
-    }
-
-    public UseAction getUseAction(ItemStack stack) {
-        return UseAction.BOW;
-    }
-
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
-        playerIn.setActiveHand(handIn);
-        playerIn.world.addParticle(ParticleTypes.PORTAL, playerIn.getPosX(), playerIn.getPosY(), playerIn.getPosZ(), 0.0F, 0.0F, 0.0F);
-        return ActionResult.resultConsume(itemstack);
     }
 
 }

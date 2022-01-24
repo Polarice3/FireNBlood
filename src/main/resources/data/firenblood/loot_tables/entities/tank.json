@@ -5,7 +5,7 @@
       "rolls": 1,
       "entries": [
         {
-          "type": "item",
+          "type": "minecraft:item",
           "name": "minecraft:iron_ingot",
           "weight": 1,
           "functions": [
@@ -32,7 +32,7 @@
       "rolls": 1,
       "entries": [
         {
-          "type": "item",
+          "type": "minecraft:item",
           "name": "minecraft:redstone",
           "weight": 1,
           "functions": [
@@ -69,7 +69,7 @@
       "rolls": 1,
       "entries": [
         {
-          "type": "item",
+          "type": "minecraft:item",
           "name": "firenblood:brokenblazecore",
           "weight": 1
         }

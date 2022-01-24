@@ -508,10 +508,11 @@ public class TaillessAnathemaEntity extends ServantTaillessEntity {
                 if (multi < 3) {
                     BlockPos blockPos = this.anathema.getPosition();
                     Random random = this.anathema.world.rand;
-                    float f = random.nextFloat() * ((float)Math.PI * 2F);
-                    double d2 = blockPos.getX() - random.nextInt(900);
+                    double d = (this.anathema.world.rand.nextBoolean() ? 1: -1);
+                    double e = (this.anathema.world.rand.nextBoolean() ? 1: -1);
+                    double d2 = (random.nextInt(900) * d);
                     double d3 = -900.0D;
-                    double d4 = blockPos.getZ() - random.nextInt(900);
+                    double d4 = (random.nextInt(900) * e);
                     SoulFireballEntity fireball = new SoulFireballEntity(this.anathema.world, this.anathema, d2, d3, d4);
                     fireball.setPosition(this.anathema.getPosXRandom(0.2), this.anathema.getPosY() + 64.0D, this.anathema.getPosZRandom(0.2));
                     this.anathema.world.addEntity(fireball);
@@ -524,10 +525,11 @@ public class TaillessAnathemaEntity extends ServantTaillessEntity {
                     for (int i = 0; i < 3; ++i) {
                         BlockPos blockPos = this.anathema.getPosition();
                         Random random = this.anathema.world.rand;
-                        float f = random.nextFloat() * ((float)Math.PI * 2F);
-                        double d2 = blockPos.getX() - random.nextInt(900);
+                        double d = (this.anathema.world.rand.nextBoolean() ? 1: -1);
+                        double e = (this.anathema.world.rand.nextBoolean() ? 1: -1);
+                        double d2 = (random.nextInt(900) * d);
                         double d3 = -900.0D;
-                        double d4 = blockPos.getX() - random.nextInt(900);
+                        double d4 = (random.nextInt(900) * e);
                         SoulFireballEntity fireball = new SoulFireballEntity(this.anathema.world, this.anathema, d2, d3, d4);
                         fireball.setPosition(this.anathema.getPosXRandom(0.2), this.anathema.getPosY() + 64.0D, this.anathema.getPosZRandom(0.2));
                         this.anathema.world.addEntity(fireball);

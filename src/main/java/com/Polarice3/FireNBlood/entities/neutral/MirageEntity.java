@@ -244,7 +244,7 @@ public class MirageEntity extends AbstractProtectorEntity {
         }
 
         private boolean isTeleportFriendlyBlock(BlockPos pos) {
-            PathNodeType pathnodetype = WalkNodeProcessor.func_237231_a_(this.world, pos.toMutable());
+            PathNodeType pathnodetype = WalkNodeProcessor.getFloorNodeType(this.world, pos.toMutable());
             if (pathnodetype != PathNodeType.WALKABLE) {
                 return false;
             } else {
@@ -264,7 +264,7 @@ public class MirageEntity extends AbstractProtectorEntity {
     }
 
     class CopyOwnerTargetGoal extends TargetGoal {
-        private final EntityPredicate field_220803_b = (new EntityPredicate()).setLineOfSiteRequired().setUseInvisibilityCheck();
+        private final EntityPredicate field_220803_b = (new EntityPredicate()).setIgnoresLineOfSight().setUseInvisibilityCheck();
 
         public CopyOwnerTargetGoal(CreatureEntity creature) {
             super(creature, false);

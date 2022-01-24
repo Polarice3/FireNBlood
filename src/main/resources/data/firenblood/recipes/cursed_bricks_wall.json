@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###",
+    "###"
+  ],
+  "key": {
+    "#": {
+      "item": "firenblood:cursed_bricks"
+    }
+  },
+  "result": {
+    "item": "firenblood:cursed_bricks_wall",
+    "count": 6
+  }
+}

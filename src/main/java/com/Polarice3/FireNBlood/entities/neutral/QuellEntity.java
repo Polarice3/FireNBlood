@@ -241,7 +241,7 @@ public class QuellEntity extends AbstractProtectorEntity {
     }
 
     class CopyOwnerTargetGoal extends TargetGoal {
-        private final EntityPredicate field_220803_b = (new EntityPredicate()).setLineOfSiteRequired().setUseInvisibilityCheck();
+        private final EntityPredicate field_220803_b = (new EntityPredicate()).setIgnoresLineOfSight().setUseInvisibilityCheck();
 
         public CopyOwnerTargetGoal(CreatureEntity creature) {
             super(creature, false);

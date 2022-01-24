@@ -10,15 +10,15 @@
   {
     "a":
     {
-      "item": "firenblood:soulruby"
+      "item": "firenblood:savagetooth"
     },
     "b":
     {
-      "item": "minecraft:mutton"
+      "item": "firenblood:soulruby"
     },
     "c":
     {
-      "item": "minecraft:log"
+      "tag": "minecraft:logs"
     },
     "w":
     {

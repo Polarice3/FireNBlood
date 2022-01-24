@@ -1,33 +1,31 @@
 package com.Polarice3.FireNBlood;
 
-import com.Polarice3.FireNBlood.client.ClientConfig;
+import com.electronwill.nightconfig.core.file.CommentedFileConfig;
+import com.electronwill.nightconfig.core.io.WritingMode;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.config.ModConfig;
-import org.apache.commons.lang3.tuple.Pair;
+
+import java.io.File;
 
 public class FNBConfig {
 
-    public static int MaxSouls = 10000;
-    public static boolean HexerSpawn = true;
-    public static final ForgeConfigSpec CLIENT_SPEC;
-    static final ClientConfig CLIENT;
+    public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    public static final ForgeConfigSpec SPEC;
 
-    public static void bakeClient(final ModConfig config) {
-        try {
-            MaxSouls = CLIENT.MaxSouls.get();
-            HexerSpawn = CLIENT.HexerSpawn.get();
-        }catch (Exception e){
-            FireNBlood.LOGGER.warn("An exception was caused trying to load the config for Fire N Blood.");
-            e.printStackTrace();
-        }
-    }
+    public static final ForgeConfigSpec.ConfigValue<Integer> MaxSouls;
 
     static {
-        {
-            final Pair<ClientConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
-            CLIENT = specPair.getLeft();
-            CLIENT_SPEC = specPair.getRight();
-        }
+        BUILDER.push("General");
+        MaxSouls = BUILDER.comment("Totem Maximum Soul Count")
+                .defineInRange("maxSouls", 10000, 100, 999999);
 
+        BUILDER.pop();
+        SPEC = BUILDER.build();
     }
+
+    public static void loadConfig(ForgeConfigSpec config, String path) {
+        final CommentedFileConfig file = CommentedFileConfig.builder(new File(path)).preserveInsertionOrder().sync().autosave().writingMode(WritingMode.REPLACE).build();
+        file.load();
+        config.setConfig(file);
+    }
+
 }

@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "waw",
+    "sbs",
+    " c "
+  ],
+  "key":
+  {
+    "a":
+    {
+      "item": "minecraft:bone"
+    },
+    "b":
+    {
+      "item": "firenblood:soulruby"
+    },
+    "c":
+    {
+      "tag": "minecraft:logs"
+    },
+    "w":
+    {
+      "item": "minecraft:nether_wart"
+    },
+    "s":
+    {
+      "item": "minecraft:soul_sand"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:staffofwalkingbones",
+    "count": 1
+  }
+}

@@ -112,7 +112,6 @@ public class AbstractProtectorModel<T extends AbstractProtectorEntity> extends B
             this.bipedLeftLeg.rotateAngleX = -1.4137167F;
             this.bipedLeftLeg.rotateAngleY = (-(float)Math.PI / 10F);
             this.bipedLeftLeg.rotateAngleZ = -0.07853982F;
-//            this.all.rotationPointY = 10.0F;
         } else {
             this.arms.rotationPointY = 3.0F;
             this.bipedRightArm.rotationPointY = 2.0F;
@@ -129,7 +128,6 @@ public class AbstractProtectorModel<T extends AbstractProtectorEntity> extends B
             this.bipedLeftLeg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount * 0.5F;
             this.bipedLeftLeg.rotateAngleY = 0.0F;
             this.bipedLeftLeg.rotateAngleZ = 0.0F;
-//            this.all.rotationPointY = 0.0F;
         }
 
         AbstractProtectorEntity.ArmPose abstractprotectorentity$armpose = entityIn.getArmPose();

@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=false": { "model": "firenblood:block/soulforge" },
+    "lit=true": {"model": "firenblood:block/soulforge_working"}
+  }
+}

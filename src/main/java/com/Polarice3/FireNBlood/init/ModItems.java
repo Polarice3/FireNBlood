@@ -58,11 +58,26 @@ public class ModItems {
     public static final RegistryObject<ModSpawnEggItem> ACOLYTE_SPAWN_EGG = ITEMS.register("acolyte_spawn_egg",
             () -> new ModSpawnEggItem(ModEntityType.ACOLYTE, 0x4a4a4a, 0x292929, new Item.Properties().group(FireNBlood.TAB)));
 
+    public static final RegistryObject<ModSpawnEggItem> CHANNELLER_SPAWN_EGG = ITEMS.register("channeller_spawn_egg",
+            () -> new ModSpawnEggItem(ModEntityType.CHANNELLER, 0x120e0e, 0x5a0b0b, new Item.Properties().group(FireNBlood.TAB)));
+
     public static final RegistryObject<ModSpawnEggItem> VIZIER_SPAWN_EGG = ITEMS.register("vizier_spawn_egg",
             () -> new ModSpawnEggItem(ModEntityType.VIZIER, 0x1e1c1a, 0x440a67, new Item.Properties().group(FireNBlood.TAB)));
 
+    public static final RegistryObject<ModSpawnEggItem> PARASITE_SPAWN_EGG = ITEMS.register("parasite_spawn_egg",
+            () -> new ModSpawnEggItem(ModEntityType.PARASITE, 0xffc975, 0xffb541, new Item.Properties().group(FireNBlood.TAB)));
+
     public static final RegistryObject<ModSpawnEggItem> IRK_SPAWN_EGG = ITEMS.register("irk_spawn_egg",
             () -> new ModSpawnEggItem(ModEntityType.IRK, 8032420, 8032420, new Item.Properties().group(FireNBlood.TAB)));
+
+    public static final RegistryObject<ModSpawnEggItem> SCORCH_SPAWN_EGG = ITEMS.register("scorch_spawn_egg",
+            () -> new ModSpawnEggItem(ModEntityType.SCORCH, 0x3b1414, 0xf48522, new Item.Properties().group(FireNBlood.TAB)));
+
+    public static final RegistryObject<ModSpawnEggItem> ZOMBIE_MINION_SPAWN_EGG = ITEMS.register("zombie_minion_spawn_egg",
+            () -> new ModSpawnEggItem(ModEntityType.ZOMBIE_MINION, 0x192927, 0x737885, new Item.Properties().group(FireNBlood.TAB)));
+
+    public static final RegistryObject<ModSpawnEggItem> SKELETON_MINION_SPAWN_EGG = ITEMS.register("skeleton_minion_spawn_egg",
+            () -> new ModSpawnEggItem(ModEntityType.ZOMBIE_MINION, 0x1f1f1f, 0x6e6473, new Item.Properties().group(FireNBlood.TAB)));
 
     public static final RegistryObject<ModSpawnEggItem> PENANCE_SPAWN_EGG = ITEMS.register("penance_spawn_egg",
             () -> new ModSpawnEggItem(ModEntityType.PENANCE, 0x2c2c2c, 8032420, new Item.Properties().group(FireNBlood.TAB)));

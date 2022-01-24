@@ -3,7 +3,7 @@
 	"ambientocclusion": false,
 	"texture_size": [32, 32],
 	"textures": {
-		"1": "item/emerald",
+		"1": "firenblood:spellicons/fang_spell",
 		"2": "firenblood:items/staff"
 	},
 	"elements": [

@@ -323,7 +323,7 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
         this.func_234281_b_(this, 1.6F);
     }
 
-    public void func_230284_a_(LivingEntity p_230284_1_, ItemStack p_230284_2_, ProjectileEntity p_230284_3_, float p_230284_4_) {
+    public void fireProjectile(LivingEntity p_230284_1_, ItemStack p_230284_2_, ProjectileEntity p_230284_3_, float p_230284_4_) {
         this.func_234279_a_(this, p_230284_1_, p_230284_3_, p_230284_4_, 1.6F);
     }
 
@@ -413,7 +413,7 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
         }
     }
 
-    public ActionResultType func_230254_b_(PlayerEntity p_230254_1_, Hand p_230254_2_) {
+    public ActionResultType getEntityInteractionResult(PlayerEntity p_230254_1_, Hand p_230254_2_) {
         ItemStack itemstack = p_230254_1_.getHeldItem(p_230254_2_);
         Item item = itemstack.getItem();
         ItemStack itemstack2 = this.getHeldItemMainhand();
@@ -660,7 +660,7 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
     }
 
     class SummonSpellGoal extends SpellcastingProtectorEntity.UseSpellGoal {
-        private final EntityPredicate field_220843_e = (new EntityPredicate()).setDistance(16.0D).setLineOfSiteRequired().setUseInvisibilityCheck().allowInvulnerable().allowFriendlyFire();
+        private final EntityPredicate field_220843_e = (new EntityPredicate()).setDistance(16.0D).setIgnoresLineOfSight().setUseInvisibilityCheck().allowInvulnerable().allowFriendlyFire();
 
         private SummonSpellGoal() {
         }

@@ -35,7 +35,7 @@ public class SoulFireballEntity extends DamagingProjectileEntity {
         if (!this.world.isRemote) {
             Entity entity = p_213868_1_.getEntity();
             if (!entity.isImmuneToFire()) {
-                Entity entity1 = this.func_234616_v_();
+                Entity entity1 = this.getShooter();
                 int i = entity.getFireTimer();
                 entity.setFire(15);
                 boolean flag = entity.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, entity1), 6.0F);

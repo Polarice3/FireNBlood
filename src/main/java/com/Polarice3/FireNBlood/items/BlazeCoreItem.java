@@ -35,7 +35,7 @@ public class BlazeCoreItem extends Item {
         BlockPos blockpos = context.getPos();
         Direction direction = context.getFace();
         BlockState blockstate = world.getBlockState(blockpos);
-        if (blockstate.isIn(Blocks.SPAWNER)) {
+        if (blockstate.matchesBlock(Blocks.SPAWNER)) {
             TileEntity tileentity = world.getTileEntity(blockpos);
             if (tileentity instanceof MobSpawnerTileEntity) {
                 AbstractSpawner abstractspawner = ((MobSpawnerTileEntity)tileentity).getSpawnerBaseLogic();

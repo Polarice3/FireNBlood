@@ -235,6 +235,7 @@ public class TaillessHorrorEntity extends FlyingTaillessEntity {
                 }
             }
         }
+        super.onDeath(cause);
     }
 
     class AttackPlayerGoal extends Goal {
