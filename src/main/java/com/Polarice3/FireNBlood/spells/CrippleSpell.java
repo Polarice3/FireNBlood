@@ -4,7 +4,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.DamageSource;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
@@ -13,15 +14,15 @@ import net.minecraft.world.World;
 
 import java.util.function.Predicate;
 
-public class RoarSpell extends Spells {
+public class CrippleSpell extends Spells{
     private static final Predicate<Entity> field_213690_b = Entity::isAlive;
 
     public int SoulCost() {
-        return 10;
+        return 15;
     }
 
     public int CastDuration() {
-        return 100;
+        return 60;
     }
 
     public SoundEvent CastingSound() {
@@ -29,10 +30,10 @@ public class RoarSpell extends Spells {
     }
 
     public void WandResult(World worldIn, LivingEntity entityLiving) {
-        for(Entity entity : worldIn.getEntitiesWithinAABB(LivingEntity.class, entityLiving.getBoundingBox().grow(8.0D), field_213690_b)) {
+        for(LivingEntity entity : worldIn.getEntitiesWithinAABB(LivingEntity.class, entityLiving.getBoundingBox().grow(4.0D), field_213690_b)) {
             if (!(entity == entityLiving)) {
-                entity.attackEntityFrom(DamageSource.causeMobDamage(entityLiving), 8.0F);
-                this.launch(entity, entityLiving);
+                entity.addPotionEffect(new EffectInstance(Effects.SLOWNESS, 1800));
+                entity.addPotionEffect(new EffectInstance(Effects.WEAKNESS, 1800));
             }
 
         }
@@ -43,7 +44,7 @@ public class RoarSpell extends Spells {
             double d0 = worldIn.rand.nextGaussian() * 0.2D;
             double d1 = worldIn.rand.nextGaussian() * 0.2D;
             double d2 = worldIn.rand.nextGaussian() * 0.2D;
-            entityLiving.world.addParticle(ParticleTypes.POOF, vector3d.x, vector3d.y, vector3d.z, d0, d1, d2);
+            entityLiving.world.addParticle(ParticleTypes.WITCH, vector3d.x, vector3d.y, vector3d.z, d0, d1, d2);
         }
         worldIn.playSound((PlayerEntity) null, entityLiving.getPosX(), entityLiving.getPosY(), entityLiving.getPosZ(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.NEUTRAL, 1.0F, 1.0F);
         for(int i = 0; i < entityLiving.world.rand.nextInt(35) + 10; ++i) {
@@ -52,10 +53,10 @@ public class RoarSpell extends Spells {
     }
 
     public void StaffResult(World worldIn, LivingEntity entityLiving) {
-        for(Entity entity : worldIn.getEntitiesWithinAABB(LivingEntity.class, entityLiving.getBoundingBox().grow(4.0D), field_213690_b)) {
+        for(LivingEntity entity : worldIn.getEntitiesWithinAABB(LivingEntity.class, entityLiving.getBoundingBox().grow(8.0D), field_213690_b)) {
             if (!(entity == entityLiving)) {
-                entity.attackEntityFrom(DamageSource.causeMobDamage(entityLiving), 4.0F);
-                this.superlaunch(entity, entityLiving);
+                entity.addPotionEffect(new EffectInstance(Effects.SLOWNESS, 1800, 1));
+                entity.addPotionEffect(new EffectInstance(Effects.WEAKNESS, 1800, 1));
             }
 
         }
@@ -66,26 +67,12 @@ public class RoarSpell extends Spells {
             double d0 = worldIn.rand.nextGaussian() * 0.2D;
             double d1 = worldIn.rand.nextGaussian() * 0.2D;
             double d2 = worldIn.rand.nextGaussian() * 0.2D;
-            entityLiving.world.addParticle(ParticleTypes.POOF, vector3d.x, vector3d.y, vector3d.z, d0, d1, d2);
+            entityLiving.world.addParticle(ParticleTypes.WITCH, vector3d.x, vector3d.y, vector3d.z, d0, d1, d2);
         }
         worldIn.playSound((PlayerEntity) null, entityLiving.getPosX(), entityLiving.getPosY(), entityLiving.getPosZ(), SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.NEUTRAL, 1.0F, 1.0F);
         for(int i = 0; i < entityLiving.world.rand.nextInt(35) + 10; ++i) {
-            double d = worldIn.rand.nextGaussian() * 0.2D;
-            entityLiving.world.addParticle(ParticleTypes.POOF, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), d, d, d);
+            entityLiving.world.addParticle(ParticleTypes.POOF, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), 0.0F, 0.0F, 0.0F);
         }
     }
 
-    private void superlaunch(Entity p_213688_1_, LivingEntity livingEntity) {
-        double d0 = p_213688_1_.getPosX() - livingEntity.getPosX();
-        double d1 = p_213688_1_.getPosZ() - livingEntity.getPosZ();
-        double d2 = Math.max(d0 * d0 + d1 * d1, 0.001D);
-        p_213688_1_.addVelocity(d0 / d2 * 8.0D, 0.2D, d1 / d2 * 8.0D);
-    }
-
-    private void launch(Entity p_213688_1_, LivingEntity livingEntity) {
-        double d0 = p_213688_1_.getPosX() - livingEntity.getPosX();
-        double d1 = p_213688_1_.getPosZ() - livingEntity.getPosZ();
-        double d2 = Math.max(d0 * d0 + d1 * d1, 0.001D);
-        p_213688_1_.addVelocity(d0 / d2 * 4.0D, 0.2D, d1 / d2 * 4.0D);
-    }
 }

@@ -1,7 +1,9 @@
 package com.Polarice3.FireNBlood.utils;
 
 import com.Polarice3.FireNBlood.FireNBlood;
+import com.Polarice3.FireNBlood.armors.DarkRobeArmor;
 import com.Polarice3.FireNBlood.armors.ModArmorMaterial;
+import com.Polarice3.FireNBlood.armors.NecroRobeArmor;
 import com.Polarice3.FireNBlood.blocks.*;
 import com.Polarice3.FireNBlood.items.*;
 import com.Polarice3.FireNBlood.potions.*;
@@ -98,13 +100,13 @@ public class RegistryHandler {
     public static final RegistryObject<Item> FURRED_BOOTS = ITEMS.register("furred_boots", () ->
             new ArmorItem(ModArmorMaterial.FURRED, EquipmentSlotType.FEET, new Item.Properties().group(FireNBlood.TAB)));
     public static final RegistryObject<Item> DARKHELM = ITEMS.register("darkhelm", () ->
-            new ArmorItem(ModArmorMaterial.DARKMAGE, EquipmentSlotType.HEAD, new Item.Properties().group(FireNBlood.TAB)));
+            new DarkRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.HEAD, new Item.Properties().group(FireNBlood.TAB)));
     public static final RegistryObject<Item> DARKROBE = ITEMS.register("darkrobe", () ->
-            new ArmorItem(ModArmorMaterial.DARKMAGE, EquipmentSlotType.CHEST, new Item.Properties().group(FireNBlood.TAB)));
+            new DarkRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.CHEST, new Item.Properties().group(FireNBlood.TAB)));
     public static final RegistryObject<Item> NECROHELM = ITEMS.register("necrohelm", () ->
-            new ArmorItem(ModArmorMaterial.NECROTURGE, EquipmentSlotType.HEAD, new Item.Properties().group(FireNBlood.TAB)));
+            new NecroRobeArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.HEAD, new Item.Properties().group(FireNBlood.TAB)));
     public static final RegistryObject<Item> NECROROBE = ITEMS.register("necrorobe", () ->
-            new ArmorItem(ModArmorMaterial.NECROTURGE, EquipmentSlotType.CHEST, new Item.Properties().group(FireNBlood.TAB)));
+            new NecroRobeArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.CHEST, new Item.Properties().group(FireNBlood.TAB)));
     //Blocks
     public static final RegistryObject<Block> BLAZE_CORE_BLOCK = BLOCKS.register("blazecoreblock", TankCoreBlock::new);
     public static final RegistryObject<Block> PORCUS_SHRINE = BLOCKS.register("porcusshrine", PorcusShrineBlock::new);

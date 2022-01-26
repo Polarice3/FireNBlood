@@ -7,15 +7,46 @@ import net.minecraft.entity.projectile.EvokerFangsEntity;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
-public class FangSpell {
+public class FangSpell extends Spells{
 
-    public FangSpell(World worldIn, LivingEntity entityLiving){
+    public int SoulCost() {
+        return 12;
+    }
+
+    public int CastDuration() {
+        return 40;
+    }
+
+    public SoundEvent CastingSound() {
+        return SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK;
+    }
+
+    public void WandResult(World worldIn, LivingEntity entityLiving){
+        PlayerEntity playerEntity = (PlayerEntity) entityLiving;
+        RayTraceResult rayTraceResult = rayTrace(worldIn, playerEntity, RayTraceContext.FluidMode.NONE);
+        Vector3d vector3d = rayTraceResult.getHitVec();
+        double d0 = Math.min(vector3d.y, entityLiving.getPosY());
+        double d1 = Math.max(vector3d.y, entityLiving.getPosY()) + 1.0D;
+        float f = (float) MathHelper.atan2(vector3d.z - entityLiving.getPosZ(), vector3d.x - entityLiving.getPosX());
+        for(int l = 0; l < 8; ++l) {
+            double d2 = 1.25D * (double)(l + 1);
+            int j = 1 * l;
+            this.spawnFangs(entityLiving,entityLiving.getPosX() + (double)MathHelper.cos(f) * d2, entityLiving.getPosZ() + (double)MathHelper.sin(f) * d2, d0, d1, f, j);
+        }
+        worldIn.playSound((PlayerEntity) null, entityLiving.getPosX(), entityLiving.getPosY(), entityLiving.getPosZ(), SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+        for(int i = 0; i < entityLiving.world.rand.nextInt(35) + 10; ++i) {
+            entityLiving.world.addParticle(ParticleTypes.POOF, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), 0.0F, 0.0F, 0.0F);
+        }
+    }
+
+    public void StaffResult(World worldIn, LivingEntity entityLiving){
         PlayerEntity playerEntity = (PlayerEntity) entityLiving;
         RayTraceResult rayTraceResult = rayTrace(worldIn, playerEntity, RayTraceContext.FluidMode.NONE);
         Vector3d vector3d = rayTraceResult.getHitVec();

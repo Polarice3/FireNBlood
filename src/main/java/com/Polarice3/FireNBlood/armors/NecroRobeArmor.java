@@ -11,9 +11,9 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
 
-public class DarkRobeArmor extends ArmorItem {
+public class NecroRobeArmor extends ArmorItem {
 
-    public DarkRobeArmor(IArmorMaterial materialIn, EquipmentSlotType slot, Properties builderIn) {
+    public NecroRobeArmor(IArmorMaterial materialIn, EquipmentSlotType slot, Properties builderIn) {
         super(materialIn, slot, builderIn);
     }
 
@@ -38,6 +38,6 @@ public class DarkRobeArmor extends ArmorItem {
     @Nullable
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlotType slot, String type) {
-        return "firenblood:textures/models/armor/darkrobearmor.png";
+        return "firenblood:textures/models/armor/necrorobearmor.png";
     }
 }
