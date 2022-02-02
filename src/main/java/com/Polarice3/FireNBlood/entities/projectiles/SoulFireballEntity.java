@@ -1,12 +1,11 @@
 package com.Polarice3.FireNBlood.entities.projectiles;
 
-import com.Polarice3.FireNBlood.entities.masters.TaillessAnathemaEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.masters.TaillessAnathemaEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.DamagingProjectileEntity;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;

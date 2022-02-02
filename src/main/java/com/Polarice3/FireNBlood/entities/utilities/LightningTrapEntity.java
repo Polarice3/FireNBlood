@@ -64,7 +64,6 @@ public class LightningTrapEntity extends Entity {
     public void tick() {
         super.tick();
         if (this.world.isRemote){
-            IParticleData iparticledata = this.getParticle();
             float f = 3.0F;
             float f5 = (float)Math.PI * f * f;
             for(int k1 = 0; (float)k1 < f5; ++k1) {
@@ -72,7 +71,7 @@ public class LightningTrapEntity extends Entity {
                 float f7 = MathHelper.sqrt(this.rand.nextFloat()) * f;
                 float f8 = MathHelper.cos(f6) * f7;
                 float f9 = MathHelper.sin(f6) * f7;
-                this.world.addParticle(iparticledata, this.getPosX() + (double)f8, this.getPosY(), this.getPosZ() + (double)f9, (0.5D - this.rand.nextDouble()) * 0.15D, (double)0.01F, (0.5D - this.rand.nextDouble()) * 0.15D);
+                this.world.addOptionalParticle(ParticleTypes.CLOUD, this.getPosX() + (double)f8, this.getPosY(), this.getPosZ() + (double)f9, (0.5D - this.rand.nextDouble()) * 0.15D, (double)0.01F, (0.5D - this.rand.nextDouble()) * 0.15D);
             }
         }
         if (this.ticksExisted >= this.duration) {
@@ -98,10 +97,6 @@ public class LightningTrapEntity extends Entity {
         }
 
         return this.owner;
-    }
-
-    protected IParticleData getParticle() {
-        return ParticleTypes.CLOUD;
     }
 
     public PushReaction getPushReaction() {

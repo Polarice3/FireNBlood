@@ -8,8 +8,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
+@OnlyIn(Dist.CLIENT)
 public class SoulForgeScreen extends ContainerScreen<SoulForgeContainer> {
     private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(FireNBlood.MOD_ID, "textures/gui/soulforge.png");
 
@@ -35,13 +39,14 @@ public class SoulForgeScreen extends ContainerScreen<SoulForgeContainer> {
         int i = this.guiLeft;
         int j = this.guiTop;
         this.blit(matrixStack, i, j, 0, 0, this.xSize, this.ySize);
-        if (this.container.isBurning()) {
-            int k = this.container.getBurnLeftScaled();
-            this.blit(matrixStack, i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
+        int k = this.container.getFuelTotal();
+        int f = MathHelper.clamp((18 * k + 20 - 1) / 20, 0, 18);
+        if (f > 0) {
+            this.blit(matrixStack, i + 144, j + 75, 200, 0, 4, f);
         }
 
         int l = this.container.getCookProgressionScaled();
-        this.blit(matrixStack, i + 79, j + 34, 176, 14, l + 1, 16);
+        this.blit(matrixStack, i + 77, j + 19, 176, 14, l + 1, 16);
     }
 }
 */

@@ -1,10 +1,7 @@
 package com.Polarice3.FireNBlood.client.render;
 
 import com.Polarice3.FireNBlood.FireNBlood;
-import com.Polarice3.FireNBlood.client.model.MinotaurModel;
 import com.Polarice3.FireNBlood.client.model.MutatedCowModel;
-import com.Polarice3.FireNBlood.entities.masters.MinotaurEntity;
-import com.Polarice3.FireNBlood.entities.neutral.MutatedChickenEntity;
 import com.Polarice3.FireNBlood.entities.neutral.MutatedCowEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.entity.EntityRendererManager;

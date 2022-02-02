@@ -2,7 +2,7 @@ package com.Polarice3.FireNBlood.client.render;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.ChannellerModel;
-import com.Polarice3.FireNBlood.entities.hostile.ChannellerEntity;
+import com.Polarice3.FireNBlood.entities.hostile.cultists.ChannellerEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;

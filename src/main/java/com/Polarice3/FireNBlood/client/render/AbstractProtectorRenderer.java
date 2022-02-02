@@ -1,7 +1,7 @@
 package com.Polarice3.FireNBlood.client.render;
 
 import com.Polarice3.FireNBlood.client.model.AbstractProtectorModel;
-import com.Polarice3.FireNBlood.entities.neutral.AbstractProtectorEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;

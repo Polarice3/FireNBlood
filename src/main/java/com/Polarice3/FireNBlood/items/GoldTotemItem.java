@@ -2,14 +2,17 @@ package com.Polarice3.FireNBlood.items;
 
 import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.FireNBlood;
-import com.Polarice3.FireNBlood.entities.bosses.VizierEntity;
-import com.Polarice3.FireNBlood.entities.hostile.AbstractTaillessEntity;
+import com.Polarice3.FireNBlood.enchantments.ModEnchantmentsType;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
 import com.Polarice3.FireNBlood.entities.hostile.NeophyteEntity;
-import com.Polarice3.FireNBlood.entities.neutral.AbstractProtectorEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEntity;
 import com.Polarice3.FireNBlood.entities.neutral.AcolyteEntity;
 import com.Polarice3.FireNBlood.entities.neutral.MutatedEntity;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
@@ -21,8 +24,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Rarity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -37,7 +43,7 @@ public class GoldTotemItem extends Item {
     public static final int MAXSOULS = FNBConfig.MaxSouls.get();
 
     public GoldTotemItem() {
-        super(new Item.Properties().group(FireNBlood.TAB).maxStackSize(1));
+        super(new Item.Properties().group(FireNBlood.TAB).maxStackSize(1).rarity(Rarity.RARE));
         ItemModelsProperties.registerProperty(this, new ResourceLocation("souls"),
                 (stack, world, living) -> ((float) currentSouls(stack)) / MAXSOULS);
         ItemModelsProperties.registerProperty(this, new ResourceLocation("activated"),
@@ -52,7 +58,14 @@ public class GoldTotemItem extends Item {
     @Nonnull
     @Override
     public ItemStack getContainerItem(ItemStack itemStack) {
-        return itemStack.copy();
+        ItemStack container = itemStack.copy();
+        assert container.getTag() != null;
+        if (container.getTag().getInt(SOULSAMOUNT) > 0) {
+            GoldTotemItem.decreaseSouls(container, FNBConfig.CraftingSouls.get());
+            return container;
+        } else {
+            return new ItemStack(RegistryHandler.SPENTTOTEM.get());
+        }
     }
 
     @Override
@@ -114,24 +127,43 @@ public class GoldTotemItem extends Item {
             }
         }
 
-        if (!foundStack.isEmpty() && !(victim instanceof PlayerEntity)) {
+        if (!foundStack.isEmpty()) {
+            if (victim.getCreatureAttribute() == CreatureAttribute.UNDEAD){
+                increaseSouls(foundStack, FNBConfig.UndeadSouls.get() * SoulMultiply(playerEntity));
+            } else
+            if (victim.getCreatureAttribute() == CreatureAttribute.ARTHROPOD){
+                increaseSouls(foundStack, FNBConfig.AnthropodSouls.get() * SoulMultiply(playerEntity));
+            } else
             if (victim instanceof AbstractRaiderEntity || victim instanceof AbstractProtectorEntity){
-                increaseSouls(foundStack, 5);
+                increaseSouls(foundStack, FNBConfig.IllagerSouls.get() * SoulMultiply(playerEntity));
             } else
             if (victim instanceof VillagerEntity && !victim.isChild()){
-                increaseSouls(foundStack, 10);
+                increaseSouls(foundStack, FNBConfig.VillagerSouls.get() * SoulMultiply(playerEntity));
             } else
             if (victim instanceof NeophyteEntity || victim instanceof AcolyteEntity || victim instanceof AbstractTaillessEntity){
-                increaseSouls(foundStack, 8);
+                increaseSouls(foundStack, FNBConfig.TaillessSouls.get() * SoulMultiply(playerEntity));
             } else
             if (victim instanceof AbstractPiglinEntity || victim instanceof TameableEntity || victim instanceof MutatedEntity){
-                increaseSouls(foundStack, 2);
+                increaseSouls(foundStack, FNBConfig.PiglinSouls.get() * SoulMultiply(playerEntity));
             } else
             if (victim instanceof EnderDragonEntity){
-                increaseSouls(foundStack, 200);
+                increaseSouls(foundStack, FNBConfig.EnderDragonSouls.get() * SoulMultiply(playerEntity));
+            } else
+            if (victim instanceof PlayerEntity){
+                increaseSouls(foundStack, FNBConfig.PlayerSouls.get() * SoulMultiply(playerEntity));
             } else {
-                increaseSouls(foundStack, 1);
+                increaseSouls(foundStack, FNBConfig.DefaultSouls.get() * SoulMultiply(playerEntity));
             }
+        }
+    }
+
+    public static int SoulMultiply(PlayerEntity playerEntity){
+        ItemStack weapon= playerEntity.getHeldItemMainhand();
+        int i = EnchantmentHelper.getEnchantmentLevel(ModEnchantmentsType.SOULEATER.get(), weapon);
+        if (i > 0){
+            return i + 1;
+        } else {
+            return 1;
         }
     }
 
@@ -171,6 +203,17 @@ public class GoldTotemItem extends Item {
             return 1.0D - (Soulcount / (double) MAXSOULS);
         } else {
             return 1.0D;
+        }
+    }
+
+    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getHeldItem(handIn);
+        if (playerIn.isCreative()){
+            assert itemstack.getTag() != null;
+            itemstack.getTag().putInt(SOULSAMOUNT, MAXSOULS);
+            return ActionResult.resultConsume(itemstack);
+        } else {
+            return ActionResult.resultFail(itemstack);
         }
     }
 

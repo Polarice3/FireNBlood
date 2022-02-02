@@ -1,13 +1,11 @@
 package com.Polarice3.FireNBlood.client.render.layers;
 
 import com.Polarice3.FireNBlood.client.model.BrewerModel;
-import com.Polarice3.FireNBlood.entities.neutral.BrewerEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.BrewerEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.IEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.CrossedArmsItemLayer;
-import net.minecraft.client.renderer.entity.model.WitchModel;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.vector.Vector3f;

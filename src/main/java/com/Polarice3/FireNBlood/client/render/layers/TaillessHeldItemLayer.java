@@ -1,7 +1,5 @@
 package com.Polarice3.FireNBlood.client.render.layers;
 
-import com.Polarice3.FireNBlood.entities.hostile.AbstractTaillessEntity;
-import com.Polarice3.FireNBlood.entities.hostile.TaillessWretchEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -10,7 +8,6 @@ import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.entity.model.IHasArm;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.HandSide;

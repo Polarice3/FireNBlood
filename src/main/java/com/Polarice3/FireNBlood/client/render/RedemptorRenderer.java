@@ -4,7 +4,7 @@ import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.APArmorModel;
 import com.Polarice3.FireNBlood.client.model.AbstractProtectorModel;
 import com.Polarice3.FireNBlood.client.render.layers.ProtectorLoyalLayer;
-import com.Polarice3.FireNBlood.entities.neutral.RedemptorEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.RedemptorEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;

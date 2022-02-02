@@ -1,7 +1,7 @@
 package com.Polarice3.FireNBlood.client.model;
 
-import com.Polarice3.FireNBlood.entities.hostile.AbstractTaillessEntity;
-import com.Polarice3.FireNBlood.entities.masters.TaillessProphetEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.masters.TaillessProphetEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.entity.model.EntityModel;

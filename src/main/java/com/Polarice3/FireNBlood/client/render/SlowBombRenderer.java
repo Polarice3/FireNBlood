@@ -2,7 +2,7 @@ package com.Polarice3.FireNBlood.client.render;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.SlowBombModel;
-import com.Polarice3.FireNBlood.entities.hostile.SlowBombEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.SlowBombEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3f;
 
 public class SlowBombRenderer extends EntityRenderer<SlowBombEntity> {
     protected static final ResourceLocation TEXTURE = new ResourceLocation(FireNBlood.MOD_ID, "textures/entity/slowbomb.png");

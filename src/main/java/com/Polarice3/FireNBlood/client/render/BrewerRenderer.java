@@ -3,14 +3,11 @@ package com.Polarice3.FireNBlood.client.render;
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.BrewerModel;
 import com.Polarice3.FireNBlood.client.render.layers.BrewerHeldItemLayer;
-import com.Polarice3.FireNBlood.entities.neutral.BrewerEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.BrewerEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.client.renderer.entity.layers.WitchHeldItemLayer;
-import net.minecraft.client.renderer.entity.model.WitchModel;
-import net.minecraft.entity.monster.WitchEntity;
 import net.minecraft.util.ResourceLocation;
 
 public class BrewerRenderer extends MobRenderer<BrewerEntity, BrewerModel<BrewerEntity>> {

@@ -2,7 +2,7 @@ package com.Polarice3.FireNBlood.client.render.layers;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.BullmanProphetModel;
-import com.Polarice3.FireNBlood.entities.masters.TaillessProphetEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.masters.TaillessProphetEntity;
 import net.minecraft.client.renderer.entity.IEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.EnergyLayer;
 import net.minecraft.client.renderer.entity.model.EntityModel;

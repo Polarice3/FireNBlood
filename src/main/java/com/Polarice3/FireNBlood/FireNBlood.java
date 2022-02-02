@@ -1,23 +1,28 @@
 package com.Polarice3.FireNBlood;
 
+import com.Polarice3.FireNBlood.enchantments.ModEnchantmentsType;
 import com.Polarice3.FireNBlood.entities.ally.*;
 import com.Polarice3.FireNBlood.entities.bosses.PenanceEntity;
 import com.Polarice3.FireNBlood.entities.bosses.VizierEntity;
 import com.Polarice3.FireNBlood.entities.hostile.*;
-import com.Polarice3.FireNBlood.entities.masters.MinotaurEntity;
-import com.Polarice3.FireNBlood.entities.masters.TaillessAnathemaEntity;
-import com.Polarice3.FireNBlood.entities.masters.TaillessProphetEntity;
+import com.Polarice3.FireNBlood.entities.hostile.cultists.*;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.*;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.masters.MinotaurEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.masters.TaillessAnathemaEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.masters.TaillessProphetEntity;
 import com.Polarice3.FireNBlood.entities.neutral.*;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.*;
 import com.Polarice3.FireNBlood.entities.utilities.FakeSeatEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.init.ModItems;
+import com.Polarice3.FireNBlood.inventory.container.ModContainerType;
 import com.Polarice3.FireNBlood.potions.ModPotions;
-import com.Polarice3.FireNBlood.utils.RegistryFeatures;
-import com.Polarice3.FireNBlood.world.features.ConfiguredFeatures;
-import com.Polarice3.FireNBlood.world.structures.ConfiguredStructures;
 import com.Polarice3.FireNBlood.tileentities.ModTileEntityType;
+import com.Polarice3.FireNBlood.utils.RegistryFeatures;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import com.Polarice3.FireNBlood.utils.RegistryStructures;
+import com.Polarice3.FireNBlood.world.features.ConfiguredFeatures;
+import com.Polarice3.FireNBlood.world.structures.ConfiguredStructures;
 import com.mojang.serialization.Codec;
 import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
 import net.minecraft.item.ItemGroup;
@@ -47,6 +52,8 @@ import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -54,11 +61,25 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.http.params.CoreProtocolPNames.PROTOCOL_VERSION;
+
 @Mod("firenblood")
 public class FireNBlood
 {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "firenblood";
+
+    public static SimpleChannel channel = NetworkRegistry.ChannelBuilder
+            .named(location("general"))
+            .clientAcceptedVersions(PROTOCOL_VERSION::equals)
+            .serverAcceptedVersions(PROTOCOL_VERSION::equals)
+            .networkProtocolVersion(() -> PROTOCOL_VERSION)
+            .simpleChannel();
+
+    public static ResourceLocation location(String path)
+    {
+        return new ResourceLocation(MOD_ID, path);
+    }
 
     public FireNBlood() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
@@ -70,6 +91,10 @@ public class FireNBlood
         ModItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
 
         ModPotions.POTIONS.register(FMLJavaModLoadingContext.get().getModEventBus());
+
+        ModContainerType.CONTAINER_TYPE.register(FMLJavaModLoadingContext.get().getModEventBus());
+
+        ModEnchantmentsType.ENCHANTMENT_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
 
         MinecraftForge.EVENT_BUS.register(this);
 
@@ -154,10 +179,6 @@ public class FireNBlood
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.QUELL.get(), QuellEntity.setCustomAttributes().create());
-        });
-
-        DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.MIRAGE.get(), MirageEntity.setCustomAttributes().create());
         });
 
@@ -175,6 +196,22 @@ public class FireNBlood
 
         DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.CHANNELLER.get(), ChannellerEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.FANATIC.get(), FanaticEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.ZEALOT.get(), ZealotEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.APOSTLE.get(), ApostleEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.ZOMBIE_VILLAGER_MINION.get(), ZombieVillagerMinionEntity.setCustomAttributes().create());
         });
 
         DeferredWorkQueue.runLater(() -> {
@@ -214,6 +251,10 @@ public class FireNBlood
         });
 
         DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.SPIDERLING_MINION.get(), SpiderlingMinionEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.VIZIER.get(), VizierEntity.setCustomAttributes().create());
         });
 
@@ -223,6 +264,10 @@ public class FireNBlood
 
         DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.SCORCH.get(), ScorchEntity.setCustomAttributes().create());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.NETHERNAL.get(), NethernalEntity.setCustomAttributes().create());
         });
 
         DeferredWorkQueue.runLater(() -> {
@@ -294,10 +339,8 @@ public class FireNBlood
     public static final ItemGroup TAB = new ItemGroup("firenbloodTab") {
         @Override
         public ItemStack createIcon(){
-            return new ItemStack(Items.GOLD_INGOT);
+            return new ItemStack(RegistryHandler.GOLDTOTEM.get());
         }
 
     };
-
-
 }

@@ -1,8 +1,10 @@
 package com.Polarice3.FireNBlood.spells;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
@@ -17,18 +19,18 @@ public class RoarSpell extends Spells {
     private static final Predicate<Entity> field_213690_b = Entity::isAlive;
 
     public int SoulCost() {
-        return 10;
+        return FNBConfig.RoarCost.get();
     }
 
     public int CastDuration() {
-        return 100;
+        return FNBConfig.RoarDuration.get();
     }
 
     public SoundEvent CastingSound() {
         return SoundEvents.ENTITY_ILLUSIONER_PREPARE_BLINDNESS;
     }
 
-    public void WandResult(World worldIn, LivingEntity entityLiving) {
+    public ItemStack WandResult(World worldIn, LivingEntity entityLiving) {
         for(Entity entity : worldIn.getEntitiesWithinAABB(LivingEntity.class, entityLiving.getBoundingBox().grow(8.0D), field_213690_b)) {
             if (!(entity == entityLiving)) {
                 entity.attackEntityFrom(DamageSource.causeMobDamage(entityLiving), 8.0F);
@@ -49,12 +51,13 @@ public class RoarSpell extends Spells {
         for(int i = 0; i < entityLiving.world.rand.nextInt(35) + 10; ++i) {
             entityLiving.world.addParticle(ParticleTypes.POOF, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), 0.0F, 0.0F, 0.0F);
         }
+        return null;
     }
 
     public void StaffResult(World worldIn, LivingEntity entityLiving) {
-        for(Entity entity : worldIn.getEntitiesWithinAABB(LivingEntity.class, entityLiving.getBoundingBox().grow(4.0D), field_213690_b)) {
+        for(Entity entity : worldIn.getEntitiesWithinAABB(LivingEntity.class, entityLiving.getBoundingBox().grow(16.0D), field_213690_b)) {
             if (!(entity == entityLiving)) {
-                entity.attackEntityFrom(DamageSource.causeMobDamage(entityLiving), 4.0F);
+                entity.attackEntityFrom(DamageSource.causeMobDamage(entityLiving), 16.0F);
                 this.superlaunch(entity, entityLiving);
             }
 

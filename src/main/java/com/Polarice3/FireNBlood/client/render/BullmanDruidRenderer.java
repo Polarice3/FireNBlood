@@ -3,7 +3,7 @@ package com.Polarice3.FireNBlood.client.render;
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.BullmanDruidModel;
 import com.Polarice3.FireNBlood.client.render.layers.BullmanDruidAuraLayer;
-import com.Polarice3.FireNBlood.entities.hostile.TaillessDruidEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.TaillessDruidEntity;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;

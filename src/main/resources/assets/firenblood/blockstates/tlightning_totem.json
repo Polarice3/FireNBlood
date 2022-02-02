@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "powered=false": { "model": "firenblood:block/tlightning_totem" },
+    "powered=true": {"model": "firenblood:block/tlightning_totem_activated"}
+  }
+}

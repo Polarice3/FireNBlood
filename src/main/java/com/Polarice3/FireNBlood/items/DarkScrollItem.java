@@ -2,21 +2,17 @@ package com.Polarice3.FireNBlood.items;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.entities.bosses.VizierEntity;
-import com.Polarice3.FireNBlood.entities.hostile.BlackBullEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
-import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.UseAction;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 
 public class DarkScrollItem extends Item {

@@ -3,33 +3,24 @@ package com.Polarice3.FireNBlood.events;
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.entities.ai.MoveTowardsTargetGoal;
 import com.Polarice3.FireNBlood.entities.hostile.*;
-import com.Polarice3.FireNBlood.entities.masters.MinotaurEntity;
-import com.Polarice3.FireNBlood.entities.masters.TaillessAnathemaEntity;
-import com.Polarice3.FireNBlood.entities.masters.TaillessProphetEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.BlackBullEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.TaillessDruidEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.TaillessHorrorEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.TaillessWretchEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.masters.MinotaurEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.masters.TaillessAnathemaEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.masters.TaillessProphetEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
-import com.Polarice3.FireNBlood.init.ModItems;
-import com.Polarice3.FireNBlood.items.DiamondMaceItem;
-import com.Polarice3.FireNBlood.items.GoldenMaceItem;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.DimensionType;
-import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.spawner.WorldEntitySpawner;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import javax.annotation.Nullable;
-import java.util.Random;
 
 
 @Mod.EventBusSubscriber(modid = FireNBlood.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)

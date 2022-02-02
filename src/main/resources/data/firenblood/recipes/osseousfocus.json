@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "sfs",
+    "aea",
+    "sas"
+  ],
+  "key":
+  {
+    "e":
+    {
+      "item": "firenblood:emptycore"
+    },
+    "f":
+    {
+      "item": "minecraft:bow"
+    },
+    "a":
+    {
+      "item": "minecraft:arrow"
+    },
+    "s":
+    {
+      "item": "minecraft:bone"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:osseousfocus",
+    "count": 1
+  }
+}

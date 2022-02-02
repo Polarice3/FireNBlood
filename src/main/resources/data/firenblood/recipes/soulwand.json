@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "ete",
+    " c ",
+    "scs"
+  ],
+  "key":
+  {
+    "t":
+    {
+      "item": "firenblood:cursed_stone"
+    },
+    "e":
+    {
+      "item": "minecraft:emerald"
+    },
+    "c":
+    {
+      "item": "firenblood:cursed_ingot"
+    },
+    "s":
+    {
+      "item": "minecraft:soul_sand"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:soulwand",
+    "count": 1
+  }
+}

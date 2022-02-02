@@ -2,7 +2,7 @@ package com.Polarice3.FireNBlood.client.render;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.RoyalBulletModel;
-import com.Polarice3.FireNBlood.entities.hostile.RoyalBulletEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.RoyalBulletEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;

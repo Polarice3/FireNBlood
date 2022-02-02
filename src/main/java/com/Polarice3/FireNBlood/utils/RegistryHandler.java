@@ -1,18 +1,19 @@
 package com.Polarice3.FireNBlood.utils;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.FireNBlood;
-import com.Polarice3.FireNBlood.armors.DarkRobeArmor;
-import com.Polarice3.FireNBlood.armors.ModArmorMaterial;
-import com.Polarice3.FireNBlood.armors.NecroRobeArmor;
+import com.Polarice3.FireNBlood.armors.*;
 import com.Polarice3.FireNBlood.blocks.*;
 import com.Polarice3.FireNBlood.items.*;
 import com.Polarice3.FireNBlood.potions.*;
+import com.Polarice3.FireNBlood.spells.VexSpell;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Effect;
 import net.minecraftforge.common.ToolType;
@@ -60,10 +61,10 @@ public class RegistryHandler {
     public static final RegistryObject<PhilosophersStoneItem> PHILOSOPHERSSTONE = ITEMS.register("philosophersstone", PhilosophersStoneItem::new);
     public static final RegistryObject<WitchBombItem> WITCHBOMB = ITEMS.register("witchbomb", WitchBombItem::new);
     public static final RegistryObject<GoldTotemItem> GOLDTOTEM = ITEMS.register("goldtotem", GoldTotemItem::new);
+    public static final RegistryObject<Item> SPENTTOTEM = ITEMS.register("spenttotem", ItemBase::new);
     public static final RegistryObject<Item> CURSED_INGOT = ITEMS.register("cursed_ingot", ItemBase::new);
     public static final RegistryObject<Item> SAVAGETOOTH = ITEMS.register("savagetooth", ItemBase::new);
     public static final RegistryObject<Item> EMPTYCORE = ITEMS.register("emptycore", ItemBase::new);
-    public static final RegistryObject<Item> CRIPPLINGCORE = ITEMS.register("cripplingcore", ItemBase::new);
     public static final RegistryObject<UncookedMutatedItem> MUTATED_STEAK_UNCOOKED = ITEMS.register("mutatedsteak_uncooked", UncookedMutatedItem::new);
     public static final RegistryObject<MutatedSteakItem> MUTATED_STEAK = ITEMS.register("mutatedsteak", MutatedSteakItem::new);
     public static final RegistryObject<UncookedMutatedItem> MUTATED_CHICKEN_UNCOOKED = ITEMS.register("mutatedchicken_uncooked", UncookedMutatedItem::new);
@@ -72,24 +73,22 @@ public class RegistryHandler {
     public static final RegistryObject<MutatedMuttonItem> MUTATED_MUTTON = ITEMS.register("mutatedmutton", MutatedMuttonItem::new);
     public static final RegistryObject<UncookedMutatedItem> MUTATED_PORKCHOP_UNCOOKED = ITEMS.register("mutatedporkchop_uncooked", UncookedMutatedItem::new);
     public static final RegistryObject<MutatedPorkchopItem> MUTATED_PORKCHOP = ITEMS.register("mutatedporkchop", MutatedPorkchopItem::new);
-
+    //Focuses
+    public static final RegistryObject<Item> FOCUSBAG = ITEMS.register("focusbag", FocusBagItem::new);
+    public static final RegistryObject<Item> VEXINGFOCUS = ITEMS.register("vexingfocus", () -> new MagicFocusItem(FNBConfig.VexCost.get()));
+    public static final RegistryObject<Item> BITINGFOCUS = ITEMS.register("bitingfocus", () -> new MagicFocusItem(FNBConfig.FangCost.get()));
+    public static final RegistryObject<Item> ROARINGFOCUS = ITEMS.register("roaringfocus", () -> new MagicFocusItem(FNBConfig.RoarCost.get()));
+    public static final RegistryObject<Item> NECROTURGYFOCUS = ITEMS.register("necroturgyfocus", () -> new MagicFocusItem(FNBConfig.ZombieCost.get()));
+    public static final RegistryObject<Item> OSSEOUSFOCUS = ITEMS.register("osseousfocus", () -> new MagicFocusItem(FNBConfig.SkeletonCost.get()));
+    public static final RegistryObject<Item> CRIPPLINGFOCUS = ITEMS.register("cripplingfocus", () -> new MagicFocusItem(FNBConfig.CrippleCost.get()));
+    public static final RegistryObject<Item> SPIDERLINGFOCUS = ITEMS.register("spiderlingfocus", () -> new MagicFocusItem(FNBConfig.SpiderlingCost.get()));
+    public static final RegistryObject<Item> BRAINEATERFOCUS = ITEMS.register("braineaterfocus", () -> new MagicFocusItem(FNBConfig.BrainEaterCost.get()));
     //Tools
     public static final RegistryObject<Item> GOLDEN_MACE = ITEMS.register("golden_mace", GoldenMaceItem::new);
     public static final RegistryObject<Item> DIAMOND_MACE = ITEMS.register("diamond_mace", DiamondMaceItem::new);
     public static final RegistryObject<Item> WARPED_SPEAR = ITEMS.register("warped_spear", WarpedSpearItem::new);
-    public static final RegistryObject<Item> WANDOFVEXING = ITEMS.register("wandofvexing", WandofVexingItem::new);
-    public static final RegistryObject<Item> STAFFOFVEXATIONS = ITEMS.register("staffofvexations", StaffofVexationsItem::new);
-    public static final RegistryObject<Item> WANDOFBITES = ITEMS.register("wandofbites", WandofBitesItem::new);
-    public static final RegistryObject<Item> STAFFOFCRUNCHES = ITEMS.register("staffofcrunches", StaffofCrunchesItem::new);
-    public static final RegistryObject<Item> WANDOFROARING = ITEMS.register("wandofroaring", WandofRoaringItem::new);
-    public static final RegistryObject<Item> STAFFOFROARS = ITEMS.register("staffofroars", StaffofRoarsItem::new);
-    public static final RegistryObject<Item> WANDOFDEAD = ITEMS.register("wandofdead", WandofDeadItem::new);
-    public static final RegistryObject<Item> STAFFOFNECROTURGY = ITEMS.register("staffofnecroturgy", StaffofNecroturgyItem::new);
-    public static final RegistryObject<Item> WANDOFOSSEOUS = ITEMS.register("wandofosseous", WandofOsseousItem::new);
-    public static final RegistryObject<Item> STAFFOFWALKINGBONES = ITEMS.register("staffofwalkingbones", StaffofWalkingBonesItem::new);
-    public static final RegistryObject<Item> WANDOFCRIPPLE = ITEMS.register("wandofcripple", WandofCrippleItem::new);
-    public static final RegistryObject<Item> STAFFOFCRIPPLING = ITEMS.register("staffofcrippling", StaffofCripplingItem::new);
-
+    public static final RegistryObject<Item> SOULWAND = ITEMS.register("soulwand", SoulWand::new);
+    public static final RegistryObject<Item> SOULSTAFF = ITEMS.register("soulstaff", SoulStaff::new);
     //Armors
     public static final RegistryObject<Item> FURRED_HELMET = ITEMS.register("furred_helmet", () ->
             new ArmorItem(ModArmorMaterial.FURRED, EquipmentSlotType.HEAD, new Item.Properties().group(FireNBlood.TAB)));
@@ -107,6 +106,10 @@ public class RegistryHandler {
             new NecroRobeArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.HEAD, new Item.Properties().group(FireNBlood.TAB)));
     public static final RegistryObject<Item> NECROROBE = ITEMS.register("necrorobe", () ->
             new NecroRobeArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.CHEST, new Item.Properties().group(FireNBlood.TAB)));
+    public static final RegistryObject<Item> APOSTLEHELM = ITEMS.register("apostlehelm", () ->
+            new ApostleRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.HEAD, new Item.Properties()));
+    public static final RegistryObject<Item> APOSTLEROBE = ITEMS.register("apostlerobe", () ->
+            new ApostleRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.CHEST, new Item.Properties()));
     //Blocks
     public static final RegistryObject<Block> BLAZE_CORE_BLOCK = BLOCKS.register("blazecoreblock", TankCoreBlock::new);
     public static final RegistryObject<Block> PORCUS_SHRINE = BLOCKS.register("porcusshrine", PorcusShrineBlock::new);
@@ -118,6 +121,8 @@ public class RegistryHandler {
     public static final RegistryObject<Block> CURSED_TOTEM_BLOCK = BLOCKS.register("cursed_totem", CursedStoneBlock::new);
     public static final RegistryObject<Block> FANG_TOTEM = BLOCKS.register("fang_totem", FangTotemBlock::new);
     public static final RegistryObject<Block> MUTATE_TOTEM = BLOCKS.register("mutation_totem", MutateTotemBlock::new);
+    public static final RegistryObject<Block> TLIGHTNING_TOTEM = BLOCKS.register("tlightning_totem", TLightningTotemBlock::new);
+//    public static final RegistryObject<Block> SOULFORGE = BLOCKS.register("soulforge", SoulForgeBlock::new);
 
     //Slabs
     public static final RegistryObject<Block> CURSED_STONE_SLAB_BLOCK = BLOCKS.register("cursed_stone_slab",
@@ -192,6 +197,8 @@ public class RegistryHandler {
             () -> new BlockItemBase(FANG_TOTEM.get()));
     public static final RegistryObject<Item> MUTATE_TOTEM_ITEM = ITEMS.register("mutation_totem",
             () -> new BlockItemBase(MUTATE_TOTEM.get()));
+    public static final RegistryObject<Item> TLIGHTNING_TOTEM_ITEM = ITEMS.register("tlightning_totem",
+            () -> new BlockItemBase(TLIGHTNING_TOTEM.get()));
     //Effects
     public static final RegistryObject<Effect> EVIL_EYE = EFFECTS.register("evileye",
             EvilEyeEffect::new);

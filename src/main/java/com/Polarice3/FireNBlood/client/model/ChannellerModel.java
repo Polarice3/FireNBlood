@@ -1,6 +1,6 @@
 package com.Polarice3.FireNBlood.client.model;
 
-import com.Polarice3.FireNBlood.entities.hostile.ChannellerEntity;
+import com.Polarice3.FireNBlood.entities.hostile.cultists.ChannellerEntity;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;

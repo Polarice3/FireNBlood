@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.spells;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.entities.ally.ZombieMinionEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import net.minecraft.entity.ILivingEntityData;
@@ -19,28 +20,28 @@ import net.minecraft.world.World;
 public class ZombieSpell extends SummonSpells{
 
     public int SoulCost() {
-        return 5;
+        return FNBConfig.ZombieCost.get();
     }
 
     public int CastDuration() {
-        return 60;
+        return FNBConfig.ZombieDuration.get();
     }
 
     public int SummonDownDuration() {
-        return 250;
+        return FNBConfig.ZombieCooldown.get();
     }
 
     public SoundEvent CastingSound() {
         return SoundEvents.ENTITY_EVOKER_PREPARE_SUMMON;
     }
 
-    public void WandResult(World worldIn, LivingEntity entityLiving) {
+    public ItemStack WandResult(World worldIn, LivingEntity entityLiving) {
         BlockPos blockpos = entityLiving.getPosition();
         ZombieMinionEntity summonedentity = new ZombieMinionEntity(ModEntityType.ZOMBIE_MINION.get(), worldIn);
         summonedentity.setOwnerId(entityLiving.getUniqueID());
         summonedentity.moveToBlockPosAndAngles(blockpos, 0.0F, 0.0F);
         summonedentity.onInitialSpawn((IServerWorld) worldIn, entityLiving.world.getDifficultyForLocation(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
-        summonedentity.setLimitedLife(20 * (30 + entityLiving.world.rand.nextInt(90)));
+        summonedentity.setLimitedLife(60 * (90 + entityLiving.world.rand.nextInt(180)));
         summonedentity.setUpgraded(this.NecroPower(entityLiving));
         worldIn.addEntity(summonedentity);
         worldIn.playSound((PlayerEntity) null, entityLiving.getPosX(), entityLiving.getPosY(), entityLiving.getPosZ(), SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
@@ -48,6 +49,7 @@ public class ZombieSpell extends SummonSpells{
             entityLiving.world.addParticle(ParticleTypes.POOF, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), 0.0F, 0.0F, 0.0F);
         }
         this.SummonDown(entityLiving);
+        return null;
     }
 
     public void StaffResult(World worldIn, LivingEntity entityLiving) {
@@ -57,7 +59,7 @@ public class ZombieSpell extends SummonSpells{
             summonedentity.setOwnerId(entityLiving.getUniqueID());
             summonedentity.moveToBlockPosAndAngles(blockpos, 0.0F, 0.0F);
             summonedentity.onInitialSpawn((IServerWorld) worldIn, entityLiving.world.getDifficultyForLocation(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
-            summonedentity.setLimitedLife(40 * (60 + entityLiving.world.rand.nextInt(180)));
+            summonedentity.setLimitedLife(120 * (180 + entityLiving.world.rand.nextInt(360)));
             summonedentity.setUpgraded(this.NecroPower(entityLiving));
             worldIn.addEntity(summonedentity);
         }

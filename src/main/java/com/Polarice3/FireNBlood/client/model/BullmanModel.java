@@ -1,11 +1,10 @@
 package com.Polarice3.FireNBlood.client.model;
 
-import com.Polarice3.FireNBlood.entities.hostile.AbstractTaillessEntity;
-import com.Polarice3.FireNBlood.entities.hostile.TaillessWretchEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.TaillessWretchEntity;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.entity.model.IHasArm;
 import net.minecraft.client.renderer.entity.model.SegmentedModel;
 import net.minecraft.client.renderer.model.ModelRenderer;

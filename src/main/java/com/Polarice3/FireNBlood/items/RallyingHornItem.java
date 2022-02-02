@@ -1,7 +1,7 @@
 package com.Polarice3.FireNBlood.items;
 
 import com.Polarice3.FireNBlood.FireNBlood;
-import com.Polarice3.FireNBlood.entities.neutral.*;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.*;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;

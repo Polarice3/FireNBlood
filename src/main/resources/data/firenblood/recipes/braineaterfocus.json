@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "sfs",
+    "fef",
+    "sfs"
+  ],
+  "key":
+  {
+    "e":
+    {
+      "item": "firenblood:emptycore"
+    },
+    "f":
+    {
+      "item": "minecraft:glistering_melon_slice"
+    },
+    "s":
+    {
+      "item": "minecraft:experience_bottle"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:braineaterfocus",
+    "count": 1
+  }
+}

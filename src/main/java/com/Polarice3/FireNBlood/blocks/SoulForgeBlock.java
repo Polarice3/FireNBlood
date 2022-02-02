@@ -1,21 +1,27 @@
 package com.Polarice3.FireNBlood.blocks;
 /*
+
 import com.Polarice3.FireNBlood.tileentities.SoulForgeTileEntity;
 import net.minecraft.block.*;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ToolType;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -23,8 +29,13 @@ import java.util.Random;
 public class SoulForgeBlock extends ContainerBlock {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
-    protected SoulForgeBlock(AbstractBlock.Properties properties) {
-        super(properties);
+    public SoulForgeBlock() {
+        super(AbstractBlock.Properties.create(Material.ROCK)
+                .hardnessAndResistance(3.0F, 9.0F)
+                .sound(SoundType.STONE)
+                .harvestLevel(0)
+                .harvestTool(ToolType.PICKAXE)
+        );
         this.setDefaultState(this.stateContainer.getBaseState().with(LIT, Boolean.FALSE));
     }
 
@@ -32,6 +43,17 @@ public class SoulForgeBlock extends ContainerBlock {
     @Override
     public TileEntity createNewTileEntity(IBlockReader worldIn) {
         return new SoulForgeTileEntity();
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit){
+        if (!worldIn.isRemote()){
+            TileEntity tileEntity = worldIn.getTileEntity(pos);
+            if (tileEntity instanceof SoulForgeTileEntity){
+                NetworkHooks.openGui((ServerPlayerEntity) player, (SoulForgeTileEntity) tileEntity, pos);
+            }
+        }
+        return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
     }
 
     public boolean hasComparatorInputOverride(BlockState state) {
@@ -67,4 +89,5 @@ public class SoulForgeBlock extends ContainerBlock {
         builder.add(LIT);
     }
 
-}*/
+}
+*/

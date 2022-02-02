@@ -1,5 +1,7 @@
 package com.Polarice3.FireNBlood.entities.hostile;
 
+import com.Polarice3.FireNBlood.entities.hostile.cultists.ChannellerEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
 import com.Polarice3.FireNBlood.entities.neutral.MinionEntity;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -7,7 +9,6 @@ import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtGoal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
-import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.monster.HoglinEntity;
 import net.minecraft.entity.monster.WitchEntity;
 import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
@@ -60,7 +61,6 @@ public class ScorchEntity extends MinionEntity {
 
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(0, new SwimGoal(this));
         this.goalSelector.addGoal(4, new ScorchEntity.ChargeAttackGoal());
         this.goalSelector.addGoal(8, new ScorchEntity.MoveRandomGoal());
         this.goalSelector.addGoal(9, new LookAtGoal(this, PlayerEntity.class, 3.0F, 1.0F));

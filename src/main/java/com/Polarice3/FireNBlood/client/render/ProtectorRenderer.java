@@ -4,7 +4,7 @@ import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.APArmorModel;
 import com.Polarice3.FireNBlood.client.model.AbstractProtectorModel;
 import com.Polarice3.FireNBlood.client.render.layers.ProtectorLoyalLayer;
-import com.Polarice3.FireNBlood.entities.neutral.ProtectorEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.ProtectorEntity;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.layers.BipedArmorLayer;
 import net.minecraft.client.renderer.entity.layers.HeldItemLayer;

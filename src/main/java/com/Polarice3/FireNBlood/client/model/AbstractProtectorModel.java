@@ -1,13 +1,10 @@
 package com.Polarice3.FireNBlood.client.model;
 
-import com.Polarice3.FireNBlood.entities.neutral.AbstractProtectorEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEntity;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.entity.model.IHasArm;
-import net.minecraft.client.renderer.entity.model.IHasHead;
-import net.minecraft.client.renderer.entity.model.SegmentedModel;
 import net.minecraft.client.renderer.model.ModelHelper;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -20,7 +17,6 @@ import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.common.Mod;
 
 @OnlyIn(Dist.CLIENT)
 public class AbstractProtectorModel<T extends AbstractProtectorEntity> extends BipedModel<T> {

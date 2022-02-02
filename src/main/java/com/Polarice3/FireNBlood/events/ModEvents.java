@@ -1,38 +1,31 @@
 package com.Polarice3.FireNBlood.events;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.FireNBlood;
-import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
-import com.Polarice3.FireNBlood.entities.hostile.AbstractTaillessEntity;
-import com.Polarice3.FireNBlood.entities.hostile.ParasiteEntity;
-import com.Polarice3.FireNBlood.entities.hostile.TankEntity;
-import com.Polarice3.FireNBlood.entities.neutral.AbstractProtectorEntity;
-import com.Polarice3.FireNBlood.entities.neutral.MinionEntity;
-import com.Polarice3.FireNBlood.init.ModEntityType;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEntity;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.monster.*;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
-import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.spongepowered.asm.mixin.injection.selectors.TargetSelector;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,11 +53,13 @@ public class ModEvents {
     }*/
 
     private static final Map<ServerWorld, HexerSpawner> HEXER_SPAWNER_MAP = new HashMap<>();
+    private static final Map<ServerWorld, CultistsSpawner> CULTISTS_SPAWNER_MAP = new HashMap<>();
 
     @SubscribeEvent
     public static void worldLoad(WorldEvent.Load evt) {
         if (!evt.getWorld().isRemote() && evt.getWorld() instanceof ServerWorld) {
             HEXER_SPAWNER_MAP.put((ServerWorld) evt.getWorld(), new HexerSpawner((ServerWorld) evt.getWorld()));
+            CULTISTS_SPAWNER_MAP.put((ServerWorld) evt.getWorld(), new CultistsSpawner());
         }
     }
 
@@ -72,6 +67,7 @@ public class ModEvents {
     public static void worldUnload(WorldEvent.Unload evt) {
         if (!evt.getWorld().isRemote() && evt.getWorld() instanceof ServerWorld) {
             HEXER_SPAWNER_MAP.remove(evt.getWorld());
+            CULTISTS_SPAWNER_MAP.remove(evt.getWorld());
         }
     }
 
@@ -80,11 +76,35 @@ public class ModEvents {
         if(!tick.world.isRemote && tick.world instanceof ServerWorld){
             ServerWorld serverWorld = (ServerWorld)tick.world;
             HexerSpawner spawner = HEXER_SPAWNER_MAP.get(serverWorld);
+            CultistsSpawner spawner2 = CULTISTS_SPAWNER_MAP.get(serverWorld);
             if (spawner != null) {
                 spawner.tick();
             }
+            if (spawner2 != null){
+                spawner2.tick(serverWorld);
+            }
         }
 
+    }
+
+    @SubscribeEvent
+    public static void onPlayerFirstEntersWorld(PlayerEvent.PlayerLoggedInEvent event){
+        if (FNBConfig.StarterTotem.get() && !event.getPlayer().world.isRemote) {
+            CompoundNBT playerData = event.getPlayer().getPersistentData();
+            CompoundNBT data;
+
+            if (!playerData.contains(PlayerEntity.PERSISTED_NBT_TAG)) {
+                data = new CompoundNBT();
+            } else {
+                data = playerData.getCompound(PlayerEntity.PERSISTED_NBT_TAG);
+            }
+
+            if (!data.getBoolean("firenblood:gotTotem")) {
+                event.getPlayer().addItemStackToInventory(new ItemStack(RegistryHandler.GOLDTOTEM.get()));
+                data.putBoolean("firenblood:gotTotem", true);
+                playerData.put(PlayerEntity.PERSISTED_NBT_TAG, data);
+            }
+        }
     }
 
     @SubscribeEvent

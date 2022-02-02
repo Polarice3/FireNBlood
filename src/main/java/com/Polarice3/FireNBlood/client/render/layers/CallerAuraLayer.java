@@ -2,7 +2,7 @@ package com.Polarice3.FireNBlood.client.render.layers;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.CallerModel;
-import com.Polarice3.FireNBlood.entities.hostile.CallerEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.CallerEntity;
 import net.minecraft.client.renderer.entity.IEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.EnergyLayer;
 import net.minecraft.client.renderer.entity.model.EntityModel;

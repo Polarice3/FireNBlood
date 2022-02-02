@@ -2,9 +2,8 @@ package com.Polarice3.FireNBlood.client.render;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.SavagerModel;
-import com.Polarice3.FireNBlood.client.render.layers.ProtectorLoyalLayer;
 import com.Polarice3.FireNBlood.client.render.layers.SavagerLoyalLayer;
-import com.Polarice3.FireNBlood.entities.neutral.SavagerEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.SavagerEntity;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;

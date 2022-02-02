@@ -1,7 +1,7 @@
 package com.Polarice3.FireNBlood.entities.neutral;
 
-import com.Polarice3.FireNBlood.entities.hostile.AbstractTaillessEntity;
-import com.Polarice3.FireNBlood.entities.hostile.TaillessDruidEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.BrewerEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.potions.ModPotions;
 import net.minecraft.entity.*;
@@ -11,11 +11,9 @@ import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.effect.LightningBoltEntity;
-import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.monster.AbstractRaiderEntity;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.inventory.EquipmentSlotType;

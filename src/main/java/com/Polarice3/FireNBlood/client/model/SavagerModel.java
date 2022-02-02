@@ -1,12 +1,10 @@
 package com.Polarice3.FireNBlood.client.model;
 
-import com.Polarice3.FireNBlood.entities.neutral.SavagerEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.SavagerEntity;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.entity.model.SegmentedModel;
-import net.minecraft.client.renderer.model.ModelHelper;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.math.MathHelper;
 

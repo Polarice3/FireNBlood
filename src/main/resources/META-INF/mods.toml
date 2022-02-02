@@ -10,7 +10,7 @@ issueTrackerURL="https://github.com/Polarice3/FireNBlood/issues" #optional
 
 modId="firenblood" #mandatory
 
-version="1.16.5 - 1.3.1" #mandatory
+version="1.16.5 - 1.4.0" #mandatory
 
 displayName="Fire N' Blood" #mandatory
 
@@ -20,9 +20,10 @@ displayURL="https://github.com/Polarice3/FireNBlood" #optional
 
 logoFile="fnblogo.png" #optional
 
-credits="Special thanks to Technovision and TelepathicGrunt for their tutorials and diesieben07 for helping me with a problem!
+credits="Special thanks to Technovision, Cy4's Modding and TelepathicGrunt for their tutorials and diesieben07 for helping me with a problem!
 
-Credit to Alex666 for event, spawner and config codes, hollingsworth for Vex codes, and Ipsis for certain codes!" #optional
+Credit to Alex666 for event, spawner and config codes, hollingsworth for Vex codes,
+vemerion and MrCrayfish for wand and staff inventory codes and Ipsis for certain codes!" #optional
 
 authors="anogon" #optional
 

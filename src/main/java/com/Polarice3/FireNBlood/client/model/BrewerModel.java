@@ -1,6 +1,6 @@
 package com.Polarice3.FireNBlood.client.model;
 
-import com.Polarice3.FireNBlood.entities.neutral.BrewerEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.BrewerEntity;
 import net.minecraft.client.renderer.entity.model.WitchModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.math.MathHelper;

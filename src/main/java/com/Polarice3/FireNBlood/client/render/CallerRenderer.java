@@ -2,9 +2,8 @@ package com.Polarice3.FireNBlood.client.render;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.CallerModel;
-import com.Polarice3.FireNBlood.client.render.layers.BullmanDruidAuraLayer;
 import com.Polarice3.FireNBlood.client.render.layers.CallerAuraLayer;
-import com.Polarice3.FireNBlood.entities.hostile.CallerEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.CallerEntity;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;

@@ -1,6 +1,6 @@
 package com.Polarice3.FireNBlood.entities.ai;
 
-import com.Polarice3.FireNBlood.entities.neutral.AbstractProtectorEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEntity;
 import net.minecraft.entity.ICrossbowUser;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.LivingEntity;

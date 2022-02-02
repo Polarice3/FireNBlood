@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.events;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.items.GoldTotemItem;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
@@ -34,7 +35,7 @@ public class GoldTotemEvent {
             }
         }
 
-        if (event.getEntityLiving() instanceof PlayerEntity){
+        if (event.getEntityLiving() instanceof PlayerEntity && FNBConfig.TotemUndying.get()){
             if (event.getEntityLiving().isPotionActive(RegistryHandler.DEATHPROTECT.get())){
                 event.getEntityLiving().setHealth(1.0F);
                 event.getEntityLiving().clearActivePotions();

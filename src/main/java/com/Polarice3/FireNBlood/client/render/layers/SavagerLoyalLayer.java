@@ -2,7 +2,7 @@ package com.Polarice3.FireNBlood.client.render.layers;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.SavagerModel;
-import com.Polarice3.FireNBlood.entities.neutral.SavagerEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.SavagerEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.IRenderTypeBuffer;

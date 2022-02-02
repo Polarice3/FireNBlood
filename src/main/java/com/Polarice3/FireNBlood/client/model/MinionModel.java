@@ -1,14 +1,10 @@
 package com.Polarice3.FireNBlood.client.model;
 
-import com.Polarice3.FireNBlood.entities.ally.FriendlyScorchEntity;
-import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
-import com.Polarice3.FireNBlood.entities.hostile.TaillessWretchEntity;
 import com.Polarice3.FireNBlood.entities.neutral.MinionEntity;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;

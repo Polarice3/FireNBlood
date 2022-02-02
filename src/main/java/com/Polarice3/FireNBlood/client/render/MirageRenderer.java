@@ -2,7 +2,7 @@ package com.Polarice3.FireNBlood.client.render;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.MirageModel;
-import com.Polarice3.FireNBlood.entities.neutral.MirageEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.MirageEntity;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;

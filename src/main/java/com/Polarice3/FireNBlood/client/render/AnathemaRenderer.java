@@ -2,7 +2,7 @@ package com.Polarice3.FireNBlood.client.render;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.AnathemaModel;
-import com.Polarice3.FireNBlood.entities.masters.TaillessAnathemaEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.masters.TaillessAnathemaEntity;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;

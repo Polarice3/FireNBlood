@@ -2,7 +2,7 @@ package com.Polarice3.FireNBlood.client.render;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.BulldrakeModel;
-import com.Polarice3.FireNBlood.entities.hostile.TaillessHorrorEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.TaillessHorrorEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.MobRenderer;

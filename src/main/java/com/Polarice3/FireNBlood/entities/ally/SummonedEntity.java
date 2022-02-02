@@ -21,6 +21,7 @@ import net.minecraft.pathfinding.*;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
@@ -30,7 +31,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class SummonedEntity extends MonsterEntity {
-    protected static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.createKey(FriendlyVexEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+    protected static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.createKey(SummonedEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
     public LivingEntity owner;
     public boolean limitedLifespan;
     public int limitedLifeTicks;
@@ -42,10 +43,11 @@ public class SummonedEntity extends MonsterEntity {
 
     protected void registerGoals() {
         this.goalSelector.addGoal(8, new FollowOwnerGoal(this, 1.5D, 10.0F, 2.0F, false));
-        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, false, false, (entity) ->
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, true, false, (entity) ->
                 entity instanceof IMob
-                        && !(entity instanceof CreeperEntity)
-                        && !(entity instanceof ParasiteEntity)));
+                        && !(entity instanceof CreeperEntity && this.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING))
+                        && !(entity instanceof ParasiteEntity)
+                        && !(entity instanceof SummonedEntity && ((SummonedEntity) entity).getTrueOwner() == this.getTrueOwner())));
         this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
     }
@@ -57,6 +59,12 @@ public class SummonedEntity extends MonsterEntity {
                 this.limitedLifespan = false;
             } else if (this.limitedLifeTicks > 0){
                 this.limitedLifespan = true;
+            }
+        }
+        if (this.getAttackTarget() instanceof SummonedEntity){
+            SummonedEntity summonedEntity = (SummonedEntity) this.getAttackTarget();
+            if (summonedEntity.getTrueOwner() == this.getTrueOwner()){
+                this.setAttackTarget(null);
             }
         }
     }

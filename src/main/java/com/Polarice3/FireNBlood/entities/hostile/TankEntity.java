@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.entities.hostile;
 
+import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

@@ -1,8 +1,10 @@
 package com.Polarice3.FireNBlood.spells;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
@@ -18,19 +20,19 @@ public class CrippleSpell extends Spells{
     private static final Predicate<Entity> field_213690_b = Entity::isAlive;
 
     public int SoulCost() {
-        return 15;
+        return FNBConfig.CrippleCost.get();
     }
 
     public int CastDuration() {
-        return 60;
+        return FNBConfig.CrippleDuration.get();
     }
 
     public SoundEvent CastingSound() {
         return SoundEvents.ENTITY_ILLUSIONER_PREPARE_BLINDNESS;
     }
 
-    public void WandResult(World worldIn, LivingEntity entityLiving) {
-        for(LivingEntity entity : worldIn.getEntitiesWithinAABB(LivingEntity.class, entityLiving.getBoundingBox().grow(4.0D), field_213690_b)) {
+    public ItemStack WandResult(World worldIn, LivingEntity entityLiving) {
+        for(LivingEntity entity : worldIn.getEntitiesWithinAABB(LivingEntity.class, entityLiving.getBoundingBox().grow(8.0D), field_213690_b)) {
             if (!(entity == entityLiving)) {
                 entity.addPotionEffect(new EffectInstance(Effects.SLOWNESS, 1800));
                 entity.addPotionEffect(new EffectInstance(Effects.WEAKNESS, 1800));
@@ -50,10 +52,11 @@ public class CrippleSpell extends Spells{
         for(int i = 0; i < entityLiving.world.rand.nextInt(35) + 10; ++i) {
             entityLiving.world.addParticle(ParticleTypes.POOF, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), 0.0F, 0.0F, 0.0F);
         }
+        return null;
     }
 
     public void StaffResult(World worldIn, LivingEntity entityLiving) {
-        for(LivingEntity entity : worldIn.getEntitiesWithinAABB(LivingEntity.class, entityLiving.getBoundingBox().grow(8.0D), field_213690_b)) {
+        for(LivingEntity entity : worldIn.getEntitiesWithinAABB(LivingEntity.class, entityLiving.getBoundingBox().grow(16.0D), field_213690_b)) {
             if (!(entity == entityLiving)) {
                 entity.addPotionEffect(new EffectInstance(Effects.SLOWNESS, 1800, 1));
                 entity.addPotionEffect(new EffectInstance(Effects.WEAKNESS, 1800, 1));

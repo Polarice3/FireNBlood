@@ -1,7 +1,7 @@
 package com.Polarice3.FireNBlood.entities.hostile;
 
 import com.Polarice3.FireNBlood.entities.neutral.AcolyteEntity;
-import com.Polarice3.FireNBlood.entities.neutral.BrewerEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.BrewerEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.potions.ModPotions;
 import net.minecraft.entity.*;

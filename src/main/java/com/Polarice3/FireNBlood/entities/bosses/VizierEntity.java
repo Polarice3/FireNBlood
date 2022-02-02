@@ -1,8 +1,8 @@
 package com.Polarice3.FireNBlood.entities.bosses;
 
-import com.Polarice3.FireNBlood.entities.hostile.AbstractTaillessEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
 import com.Polarice3.FireNBlood.entities.hostile.IrkEntity;
-import com.Polarice3.FireNBlood.entities.neutral.AbstractProtectorEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.BlockState;

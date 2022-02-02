@@ -1,7 +1,6 @@
 package com.Polarice3.FireNBlood.items;
 
 import com.Polarice3.FireNBlood.FireNBlood;
-import com.Polarice3.FireNBlood.entities.masters.MinotaurEntity;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
@@ -14,12 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.UseAction;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 public class DiamondMaceItem extends Item implements IVanishable {

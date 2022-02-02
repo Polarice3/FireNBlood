@@ -1,6 +1,6 @@
 package com.Polarice3.FireNBlood.client.model;
 
-import com.Polarice3.FireNBlood.entities.neutral.MirageEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.MirageEntity;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.renderer.entity.model.TintedAgeableModel;
 import net.minecraft.client.renderer.model.ModelRenderer;

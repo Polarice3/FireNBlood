@@ -1,7 +1,7 @@
 package com.Polarice3.FireNBlood.entities.hostile;
 
 import com.Polarice3.FireNBlood.entities.neutral.MinionEntity;
-import com.Polarice3.FireNBlood.entities.neutral.MirageEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.MirageEntity;
 import com.Polarice3.FireNBlood.entities.neutral.MutatedEntity;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.BlockState;
@@ -16,7 +16,6 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;

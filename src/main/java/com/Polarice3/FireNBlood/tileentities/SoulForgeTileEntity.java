@@ -1,9 +1,11 @@
 package com.Polarice3.FireNBlood.tileentities;
 /*
 
+import com.Polarice3.FireNBlood.inventory.container.SoulForgeContainer;
 import com.Polarice3.FireNBlood.items.GoldTotemItem;
 import com.Polarice3.FireNBlood.items.crafting.SoulForgeRecipe;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ISidedInventory;
@@ -11,16 +13,16 @@ import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.AbstractCookingRecipe;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeItemHelper;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.LockableTileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import javax.annotation.Nullable;
 
@@ -35,7 +37,7 @@ public class SoulForgeTileEntity extends LockableTileEntity implements ISidedInv
     private int cookTime;
     private int cookTimeTotal;
     private int fuel;
-    protected final IIntArray soulforgeData = new IIntArray() {
+    public final IIntArray soulforgeData = new IIntArray() {
         public int get(int index) {
             switch(index) {
                 case 0:
@@ -64,7 +66,7 @@ public class SoulForgeTileEntity extends LockableTileEntity implements ISidedInv
         }
 
         public int size() {
-            return 4;
+            return 3;
         }
     };
 
@@ -232,12 +234,24 @@ public class SoulForgeTileEntity extends LockableTileEntity implements ISidedInv
 
     @Override
     protected ITextComponent getDefaultName() {
-        return null;
+        return new TranslationTextComponent("container.firenblood.soulforge");
     }
 
     @Override
     protected Container createMenu(int id, PlayerInventory player) {
-        return null;
+        return new SoulForgeContainer(id, player, this);
+    }
+
+    @Override
+    public CompoundNBT write(CompoundNBT compoundNBT){
+        super.write(compoundNBT);
+        return compoundNBT;
+    }
+
+    @Override
+    public void read(BlockState blockState, CompoundNBT compoundNBT){
+        super.read(blockState,compoundNBT);
+        this.items = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
     }
 }
 

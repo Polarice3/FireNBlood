@@ -1,8 +1,6 @@
 package com.Polarice3.FireNBlood.client.model;
 
-import com.Polarice3.FireNBlood.entities.neutral.AbstractProtectorEntity;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEntity;
 import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 

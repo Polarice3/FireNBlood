@@ -1,44 +1,37 @@
 package com.Polarice3.FireNBlood.inventory.container;
-/*import com.Polarice3.FireNBlood.utils.RegistryHandler;
+/*
+
+import com.Polarice3.FireNBlood.tileentities.SoulForgeTileEntity;
+import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.AbstractCookingRecipe;
-import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.AbstractFurnaceTileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIntArray;
-import net.minecraft.util.IntArray;
-import net.minecraft.world.World;
+import net.minecraft.util.IWorldPosCallable;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.Objects;
+
 public class SoulForgeContainer extends Container {
-    private final IInventory tileSoulForge;
+    public final SoulForgeTileEntity tileEntity;
+    private final IWorldPosCallable worldPosCallable;
     private final IIntArray field_216983_d;
-    protected final World world;
-    private final IRecipeType<? extends AbstractCookingRecipe> recipeType;
 
-    public SoulForgeContainer(int id, PlayerInventory playerInventory) {
-        this(id, playerInventory, new Inventory(3), new IntArray(4));
-    }
-
-    public SoulForgeContainer(int id, PlayerInventory playerInventory, IInventory inventory, IIntArray p_i50096_4_) {
-        super(ModContainerType.SOULFORGE, id);
-        assertInventorySize(inventory, 3);
-        assertIntArraySize(p_i50096_4_, 4);
-        this.recipeType = IRecipeType.SMELTING;
-        this.tileSoulForge = inventory;
-        this.field_216983_d = p_i50096_4_;
-        this.world = playerInventory.player.world;
-        this.addSlot(new InputSlot(inventory, 0, 56, 17));
-        this.addSlot(new FuelSlot(this, inventory, 1, 56, 53));
-        this.addSlot(new ResultSlot(playerInventory.player, inventory, 2, 116, 35));
-        this.trackIntArray(p_i50096_4_);
+    public SoulForgeContainer(int id, PlayerInventory playerInventory, SoulForgeTileEntity tileEntity) {
+        super(ModContainerType.SOULFORGE.get(), id);
+        this.tileEntity = tileEntity;
+        this.worldPosCallable = IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos());
+        this.addSlot(new InputSlot(playerInventory, 0, 51, 21));
+        this.addSlot(new FuelSlot(this, playerInventory, 1, 80, 54));
+        this.addSlot(new ResultSlot(playerInventory.player, playerInventory, 2, 113, 22));
+        this.field_216983_d = tileEntity.soulforgeData;
 
         for(int i = 0; i < 3; ++i) {
             for(int j = 0; j < 9; ++j) {
@@ -49,13 +42,25 @@ public class SoulForgeContainer extends Container {
         for(int k = 0; k < 9; ++k) {
             this.addSlot(new Slot(playerInventory, k, 8 + k * 18, 142));
         }
-
-        this.trackIntArray(p_i50096_4_);
-
     }
 
-    protected boolean hasRecipe(ItemStack stack) {
-        return this.world.getRecipeManager().getRecipe((IRecipeType)this.recipeType, new Inventory(stack), this.world).isPresent();
+    public SoulForgeContainer(int id, PlayerInventory playerInventory, PacketBuffer data) {
+        this(id, playerInventory, soulForgeTileEntity(playerInventory, data));
+    }
+
+    private static SoulForgeTileEntity soulForgeTileEntity(PlayerInventory playerInventory, PacketBuffer data){
+        Objects.requireNonNull(playerInventory, "Player Inventory cannot be null");
+        Objects.requireNonNull(data, "Packet Buffer cannot be null");
+        TileEntity tileEntity = playerInventory.player.world.getTileEntity(data.readBlockPos());
+        if (tileEntity instanceof SoulForgeTileEntity){
+            return (SoulForgeTileEntity) tileEntity;
+        }
+        throw new IllegalStateException("Wrong Tile Entity");
+    }
+
+    @Override
+    public boolean canInteractWith(PlayerEntity playerIn) {
+        return isWithinUsableDistance(worldPosCallable, playerIn, RegistryHandler.SOULFORGE.get());
     }
 
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
@@ -71,11 +76,13 @@ public class SoulForgeContainer extends Container {
 
                 slot.onSlotChange(itemstack1, itemstack);
             } else if (index != 1 && index != 0) {
-                if (this.hasRecipe(itemstack1)) {
+                */
+/*if (this.hasRecipe(itemstack1)) {
                     if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else
+                } else*//*
+
                 if (index >= 3 && index < 30) {
                     if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
                         return ItemStack.EMPTY;
@@ -103,36 +110,16 @@ public class SoulForgeContainer extends Container {
         return itemstack;
     }
 
-    @Override
-    public boolean canInteractWith(PlayerEntity playerIn) {
-        return this.tileSoulForge.isUsableByPlayer(playerIn);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public int func_216982_e() {
-        return this.field_216983_d.get(1);
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public int func_216981_f() {
-        return this.field_216983_d.get(0);
-    }
-
     @OnlyIn(Dist.CLIENT)
     public int getCookProgressionScaled() {
-        int i = this.field_216983_d.get(2);
-        int j = this.field_216983_d.get(3);
+        int i = this.field_216983_d.get(0);
+        int j = this.field_216983_d.get(2);
         return j != 0 && i != 0 ? i * 24 / j : 0;
     }
 
     @OnlyIn(Dist.CLIENT)
-    public int getBurnLeftScaled() {
-        int i = this.field_216983_d.get(1);
-        if (i == 0) {
-            i = 200;
-        }
-
-        return this.field_216983_d.get(0) * 13 / i;
+    public int getFuelTotal() {
+        return this.field_216983_d.get(1);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -145,16 +132,9 @@ public class SoulForgeContainer extends Container {
             super(iInventoryIn, index, xPosition, yPosition);
         }
 
-        *
-         * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
-
         public boolean isItemValid(ItemStack stack) {
             return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidIngredient(stack);
         }
-
-        *
-         * Returns the maximum stack size for a given slot (usually the same as getInventoryStackLimit(), but 1 in the
-         * case of armor slots)
 
         public int getSlotStackLimit() {
             return 64;
@@ -168,9 +148,6 @@ public class SoulForgeContainer extends Container {
             super(furnaceInventory, p_i50084_3_, p_i50084_4_, p_i50084_5_);
             this.furnaceContainer = furnaceContainer;
         }
-
-        *
-         * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
 
         public boolean isItemValid(ItemStack stack) {
             return stack.getItem() == RegistryHandler.GOLDTOTEM.get();
@@ -212,14 +189,10 @@ public class SoulForgeContainer extends Container {
 
         protected void onCrafting(ItemStack stack) {
             stack.onCrafting(this.player.world, this.player, this.removeCount);
-            if (!this.player.world.isRemote && this.inventory instanceof AbstractFurnaceTileEntity) {
-                ((AbstractFurnaceTileEntity)this.inventory).unlockRecipes(this.player);
-            }
-
             this.removeCount = 0;
-            net.minecraftforge.fml.hooks.BasicEventHooks.firePlayerSmeltedEvent(this.player, stack);
         }
     }
 
 
-}*/
+}
+*/
