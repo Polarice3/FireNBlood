@@ -23,28 +23,28 @@ public class FakeSeatEntity extends CreatureEntity {
         super.registerGoals();
     }
 
-    public double getMountedYOffset() {
+    public double getPassengersRidingOffset() {
         return -0.5D;
     }
 
-    public void livingTick() {
-        if (!this.isBeingRidden()){
+    public void aiStep() {
+        if (!this.isVehicle()){
             --this.lifetimer;
         }
         if (this.lifetimer == 0){
             this.remove();
         }
-        super.livingTick();
+        super.aiStep();
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 200.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 200.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.0D);
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        return super.attackEntityFrom(source, amount);
+    public boolean hurt(DamageSource source, float amount) {
+        return super.hurt(source, amount);
     }
 
     @Nullable
@@ -61,7 +61,7 @@ public class FakeSeatEntity extends CreatureEntity {
     }
 
     @Override
-    protected void registerData() {
-        super.registerData();
+    protected void defineSynchedData() {
+        super.defineSynchedData();
     }
 }

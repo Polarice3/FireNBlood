@@ -8,7 +8,7 @@ import net.minecraft.world.gen.feature.Features;
 import net.minecraft.world.gen.feature.IFeatureConfig;
 
 public class ConfiguredFeatures {
-    public static final ConfiguredFeature<?, ?> CONFIGURED_CURSEDTOTEM = register("cursedtotemfeature", RegistryFeatures.CURSEDTOTEM.get().withConfiguration(IFeatureConfig.NO_FEATURE_CONFIG).withPlacement(Features.Placements.HEIGHTMAP_PLACEMENT).chance(256));
+    public static final ConfiguredFeature<?, ?> CONFIGURED_CURSEDTOTEM = register("cursedtotemfeature", RegistryFeatures.CURSEDTOTEM.get().configured(IFeatureConfig.NONE).decorated(Features.Placements.HEIGHTMAP_SQUARE).chance(256));
 
     private static <FC extends IFeatureConfig> ConfiguredFeature<FC, ?> register(String key, ConfiguredFeature<FC, ?> configuredFeature) {
         return Registry.register(WorldGenRegistries.CONFIGURED_FEATURE, key, configuredFeature);

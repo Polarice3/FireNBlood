@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 
 public class SpiderlingMinionEntity extends SummonedEntity {
-    private static final DataParameter<Byte> CLIMBING = EntityDataManager.createKey(SpiderEntity.class, DataSerializers.BYTE);
+    private static final DataParameter<Byte> CLIMBING = EntityDataManager.defineId(SpiderEntity.class, DataSerializers.BYTE);
 
     public SpiderlingMinionEntity(EntityType<? extends SummonedEntity> type, World worldIn) {
         super(type, worldIn);
@@ -37,10 +37,10 @@ public class SpiderlingMinionEntity extends SummonedEntity {
     public void tick() {
         if (this.limitedLifespan && --this.limitedLifeTicks <= 0) {
             this.limitedLifeTicks = 20;
-            this.attackEntityFrom(DamageSource.STARVE, this.getMaxHealth());
+            this.hurt(DamageSource.STARVE, this.getMaxHealth());
         }
-        if (!this.world.isRemote) {
-            this.setBesideClimbableBlock(this.collidedHorizontally);
+        if (!this.level.isClientSide) {
+            this.setClimbing(this.horizontalCollision);
         }
         super.tick();
     }
@@ -56,80 +56,80 @@ public class SpiderlingMinionEntity extends SummonedEntity {
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 4.0D)
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 35.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, (double)0.3F)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 2.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 4.0D)
+                .add(Attributes.FOLLOW_RANGE, 35.0D)
+                .add(Attributes.MOVEMENT_SPEED, (double)0.3F)
+                .add(Attributes.ATTACK_DAMAGE, 2.0D);
     }
 
-    protected PathNavigator createNavigator(World worldIn) {
+    protected PathNavigator createNavigation(World worldIn) {
         return new ClimberPathNavigator(this, worldIn);
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(CLIMBING, (byte)0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(CLIMBING, (byte)0);
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_SPIDER_AMBIENT;
+        return SoundEvents.SPIDER_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_SPIDER_HURT;
+        return SoundEvents.SPIDER_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_SPIDER_DEATH;
+        return SoundEvents.SPIDER_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_SPIDER_STEP, 0.15F, 1.0F);
+        this.playSound(SoundEvents.SPIDER_STEP, 0.15F, 1.0F);
     }
 
-    public boolean isOnLadder() {
+    public boolean onClimbable() {
         return this.isBesideClimbableBlock();
     }
 
-    public void setMotionMultiplier(BlockState state, Vector3d motionMultiplierIn) {
-        if (!state.matchesBlock(Blocks.COBWEB)) {
-            super.setMotionMultiplier(state, motionMultiplierIn);
+    public void makeStuckInBlock(BlockState state, Vector3d motionMultiplierIn) {
+        if (!state.is(Blocks.COBWEB)) {
+            super.makeStuckInBlock(state, motionMultiplierIn);
         }
 
     }
 
-    public CreatureAttribute getCreatureAttribute() {
+    public CreatureAttribute getMobType() {
         return CreatureAttribute.ARTHROPOD;
     }
 
-    public boolean isPotionApplicable(EffectInstance potioneffectIn) {
-        if (potioneffectIn.getPotion() == Effects.POISON) {
+    public boolean canBeAffected(EffectInstance potioneffectIn) {
+        if (potioneffectIn.getEffect() == Effects.POISON) {
             net.minecraftforge.event.entity.living.PotionEvent.PotionApplicableEvent event = new net.minecraftforge.event.entity.living.PotionEvent.PotionApplicableEvent(this, potioneffectIn);
             net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
             return event.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW;
         }
-        return super.isPotionApplicable(potioneffectIn);
+        return super.canBeAffected(potioneffectIn);
     }
 
     public boolean isBesideClimbableBlock() {
-        return (this.dataManager.get(CLIMBING) & 1) != 0;
+        return (this.entityData.get(CLIMBING) & 1) != 0;
     }
 
-    public void setBesideClimbableBlock(boolean climbing) {
-        byte b0 = this.dataManager.get(CLIMBING);
+    public void setClimbing(boolean climbing) {
+        byte b0 = this.entityData.get(CLIMBING);
         if (climbing) {
             b0 = (byte)(b0 | 1);
         } else {
             b0 = (byte)(b0 & -2);
         }
 
-        this.dataManager.set(CLIMBING, b0);
+        this.entityData.set(CLIMBING, b0);
     }
 
     @Nullable
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        spawnDataIn = super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
         return spawnDataIn;
     }
 

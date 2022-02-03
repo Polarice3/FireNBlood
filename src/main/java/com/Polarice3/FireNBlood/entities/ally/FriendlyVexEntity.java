@@ -37,7 +37,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class FriendlyVexEntity extends MinionEntity {
-    protected static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.createKey(FriendlyVexEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+    protected static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.defineId(FriendlyVexEntity.class, DataSerializers.OPTIONAL_UUID);
     private LivingEntity owner;
     @Nullable
     private BlockPos boundOrigin;
@@ -46,13 +46,13 @@ public class FriendlyVexEntity extends MinionEntity {
 
     public FriendlyVexEntity(EntityType<? extends FriendlyVexEntity> p_i50190_1_, World p_i50190_2_) {
         super(p_i50190_1_, p_i50190_2_);
-        this.experienceValue = 0;
+        this.xpReward = 0;
     }
 
     public void tick() {
         if (this.limitedLifespan && --this.limitedLifeTicks <= 0) {
             this.limitedLifeTicks = 20;
-            this.attackEntityFrom(DamageSource.STARVE, 1.0F);
+            this.hurt(DamageSource.STARVE, 1.0F);
         }
         super.tick();
     }
@@ -73,9 +73,9 @@ public class FriendlyVexEntity extends MinionEntity {
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 14.0D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 4.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 14.0D)
+                .add(Attributes.ATTACK_DAMAGE, 4.0D);
     }
 
     public Team getTeam() {
@@ -89,7 +89,7 @@ public class FriendlyVexEntity extends MinionEntity {
         return super.getTeam();
     }
 
-    public boolean isOnSameTeam(Entity entityIn) {
+    public boolean isAlliedTo(Entity entityIn) {
         if (this.getOwnerId() != null) {
             LivingEntity livingentity = this.getTrueOwner();
             if (entityIn == livingentity) {
@@ -97,7 +97,7 @@ public class FriendlyVexEntity extends MinionEntity {
             }
 
             if (livingentity != null) {
-                return livingentity.isOnSameTeam(entityIn);
+                return livingentity.isAlliedTo(entityIn);
             }
         }
         if (entityIn instanceof FriendlyVexEntity && ((FriendlyVexEntity) entityIn).getTrueOwner() == this.getTrueOwner()){
@@ -109,16 +109,16 @@ public class FriendlyVexEntity extends MinionEntity {
         if (entityIn instanceof FriendlyTankEntity && ((FriendlyTankEntity) entityIn).getOwner() == this.getTrueOwner()){
             return true;
         }
-        return super.isOnSameTeam(entityIn);
+        return super.isAlliedTo(entityIn);
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(OWNER_UNIQUE_ID, Optional.empty());
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(OWNER_UNIQUE_ID, Optional.empty());
     }
 
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if (compound.contains("BoundX")) {
             this.boundOrigin = new BlockPos(compound.getInt("BoundX"), compound.getInt("BoundY"), compound.getInt("BoundZ"));
         }
@@ -127,11 +127,11 @@ public class FriendlyVexEntity extends MinionEntity {
             this.setLimitedLife(compound.getInt("LifeTicks"));
         }
         UUID uuid;
-        if (compound.hasUniqueId("Owner")) {
-            uuid = compound.getUniqueId("Owner");
+        if (compound.hasUUID("Owner")) {
+            uuid = compound.getUUID("Owner");
         } else {
             String s = compound.getString("Owner");
-            uuid = PreYggdrasilConverter.convertMobOwnerIfNeeded(this.getServer(), s);
+            uuid = PreYggdrasilConverter.convertMobOwnerIfNecessary(this.getServer(), s);
         }
 
         if (uuid != null) {
@@ -143,8 +143,8 @@ public class FriendlyVexEntity extends MinionEntity {
 
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         if (this.boundOrigin != null) {
             compound.putInt("BoundX", this.boundOrigin.getX());
             compound.putInt("BoundY", this.boundOrigin.getY());
@@ -155,7 +155,7 @@ public class FriendlyVexEntity extends MinionEntity {
             compound.putInt("LifeTicks", this.limitedLifeTicks);
         }
         if (this.getOwnerId() != null) {
-            compound.putUniqueId("Owner", this.getOwnerId());
+            compound.putUUID("Owner", this.getOwnerId());
         }
 
     }
@@ -163,7 +163,7 @@ public class FriendlyVexEntity extends MinionEntity {
     public LivingEntity getTrueOwner() {
         try {
             UUID uuid = this.getOwnerId();
-            return uuid == null ? null : this.world.getPlayerByUuid(uuid);
+            return uuid == null ? null : this.level.getPlayerByUUID(uuid);
         } catch (IllegalArgumentException illegalargumentexception) {
             return null;
         }
@@ -171,11 +171,11 @@ public class FriendlyVexEntity extends MinionEntity {
 
     @Nullable
     public UUID getOwnerId() {
-        return this.dataManager.get(OWNER_UNIQUE_ID).orElse((UUID)null);
+        return this.entityData.get(OWNER_UNIQUE_ID).orElse((UUID)null);
     }
 
     public void setOwnerId(@Nullable UUID p_184754_1_) {
-        this.dataManager.set(OWNER_UNIQUE_ID, Optional.ofNullable(p_184754_1_));
+        this.entityData.set(OWNER_UNIQUE_ID, Optional.ofNullable(p_184754_1_));
     }
 
     @Nullable
@@ -197,15 +197,15 @@ public class FriendlyVexEntity extends MinionEntity {
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_VEX_AMBIENT;
+        return SoundEvents.VEX_AMBIENT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_VEX_DEATH;
+        return SoundEvents.VEX_DEATH;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_VEX_HURT;
+        return SoundEvents.VEX_HURT;
     }
 
     public float getBrightness() {
@@ -213,70 +213,70 @@ public class FriendlyVexEntity extends MinionEntity {
     }
 
     @Nullable
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        this.setEquipmentBasedOnDifficulty(difficultyIn);
-        this.setEnchantmentBasedOnDifficulty(difficultyIn);
-        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        this.populateDefaultEquipmentSlots(difficultyIn);
+        this.populateDefaultEquipmentEnchantments(difficultyIn);
+        return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
-    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-        this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.IRON_SWORD));
+    protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+        this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.IRON_SWORD));
         this.setDropChance(EquipmentSlotType.MAINHAND, 0.0F);
     }
 
     class ChargeAttackGoal extends Goal {
         public ChargeAttackGoal() {
-            this.setMutexFlags(EnumSet.of(Flag.MOVE));
+            this.setFlags(EnumSet.of(Flag.MOVE));
         }
 
-        public boolean shouldExecute() {
-            if (FriendlyVexEntity.this.getAttackTarget() != null
-                    && !FriendlyVexEntity.this.getAttackTarget().isOnSameTeam(FriendlyVexEntity.this)
-                    && !FriendlyVexEntity.this.getMoveHelper().isUpdating()
-                    && FriendlyVexEntity.this.rand.nextInt(7) == 0) {
-                return FriendlyVexEntity.this.getDistanceSq(FriendlyVexEntity.this.getAttackTarget()) > 4.0D;
+        public boolean canUse() {
+            if (FriendlyVexEntity.this.getTarget() != null
+                    && !FriendlyVexEntity.this.getTarget().isAlliedTo(FriendlyVexEntity.this)
+                    && !FriendlyVexEntity.this.getMoveControl().hasWanted()
+                    && FriendlyVexEntity.this.random.nextInt(7) == 0) {
+                return FriendlyVexEntity.this.distanceToSqr(FriendlyVexEntity.this.getTarget()) > 4.0D;
             } else {
                 return false;
             }
         }
 
-        public boolean shouldContinueExecuting() {
-            return FriendlyVexEntity.this.getMoveHelper().isUpdating()
+        public boolean canContinueToUse() {
+            return FriendlyVexEntity.this.getMoveControl().hasWanted()
                     && FriendlyVexEntity.this.isCharging()
-                    && FriendlyVexEntity.this.getAttackTarget() != null
-                    && FriendlyVexEntity.this.getAttackTarget().isAlive();
+                    && FriendlyVexEntity.this.getTarget() != null
+                    && FriendlyVexEntity.this.getTarget().isAlive();
         }
 
-        public void startExecuting() {
-            LivingEntity livingentity = FriendlyVexEntity.this.getAttackTarget();
+        public void start() {
+            LivingEntity livingentity = FriendlyVexEntity.this.getTarget();
             assert livingentity != null;
             Vector3d vector3d = livingentity.getEyePosition(1.0F);
-            FriendlyVexEntity.this.moveController.setMoveTo(vector3d.x, vector3d.y, vector3d.z, 1.0D);
-            FriendlyVexEntity.this.setCharging(true);
-            FriendlyVexEntity.this.playSound(SoundEvents.ENTITY_VEX_CHARGE, 1.0F, 1.0F);
+            FriendlyVexEntity.this.moveControl.setWantedPosition(vector3d.x, vector3d.y, vector3d.z, 1.0D);
+            FriendlyVexEntity.this.setChargingCrossbow(true);
+            FriendlyVexEntity.this.playSound(SoundEvents.VEX_CHARGE, 1.0F, 1.0F);
         }
 
         /**
          * Reset the task's internal state. Called when this task is interrupted by another one
          */
-        public void resetTask() {
-            FriendlyVexEntity.this.setCharging(false);
+        public void stop() {
+            FriendlyVexEntity.this.setChargingCrossbow(false);
         }
 
         /**
          * Keep ticking a continuous task that has already been started
          */
         public void tick() {
-            LivingEntity livingentity = FriendlyVexEntity.this.getAttackTarget();
+            LivingEntity livingentity = FriendlyVexEntity.this.getTarget();
             assert livingentity != null;
             if (FriendlyVexEntity.this.getBoundingBox().intersects(livingentity.getBoundingBox())) {
-                FriendlyVexEntity.this.attackEntityAsMob(livingentity);
-                FriendlyVexEntity.this.setCharging(false);
+                FriendlyVexEntity.this.doHurtTarget(livingentity);
+                FriendlyVexEntity.this.setChargingCrossbow(false);
             } else {
-                double d0 = FriendlyVexEntity.this.getDistanceSq(livingentity);
+                double d0 = FriendlyVexEntity.this.distanceToSqr(livingentity);
                 if (d0 < 9.0D) {
                     Vector3d vector3d = livingentity.getEyePosition(1.0F);
-                    FriendlyVexEntity.this.moveController.setMoveTo(vector3d.x, vector3d.y, vector3d.z, 1.0D);
+                    FriendlyVexEntity.this.moveControl.setWantedPosition(vector3d.x, vector3d.y, vector3d.z, 1.0D);
                 }
             }
 
@@ -289,28 +289,28 @@ public class FriendlyVexEntity extends MinionEntity {
 
         public OwnerHurtTargetGoal(FriendlyVexEntity friendlyVexEntity) {
             super(friendlyVexEntity, false);
-            this.setMutexFlags(EnumSet.of(Flag.TARGET));
+            this.setFlags(EnumSet.of(Flag.TARGET));
         }
 
-        public boolean shouldExecute() {
+        public boolean canUse() {
             LivingEntity livingentity = FriendlyVexEntity.this.getTrueOwner();
             if (livingentity == null) {
                 return false;
             } else {
-                this.attacker = livingentity.getLastAttackedEntity();
-                int i = livingentity.getLastAttackedEntityTime();
-                return i != this.timestamp && this.isSuitableTarget(this.attacker, EntityPredicate.DEFAULT);
+                this.attacker = livingentity.getLastHurtMob();
+                int i = livingentity.getLastHurtMobTimestamp();
+                return i != this.timestamp && this.canAttack(this.attacker, EntityPredicate.DEFAULT);
             }
         }
 
-        public void startExecuting() {
-            this.goalOwner.setAttackTarget(this.attacker);
+        public void start() {
+            this.mob.setTarget(this.attacker);
             LivingEntity livingentity = FriendlyVexEntity.this.getTrueOwner();
             if (livingentity != null) {
-                this.timestamp = livingentity.getLastAttackedEntityTime();
+                this.timestamp = livingentity.getLastHurtMobTimestamp();
             }
 
-            super.startExecuting();
+            super.start();
         }
     }
 
@@ -320,58 +320,58 @@ public class FriendlyVexEntity extends MinionEntity {
 
         public OwnerHurtByTargetGoal(FriendlyVexEntity friendlyVexEntity) {
             super(friendlyVexEntity, false);
-            this.setMutexFlags(EnumSet.of(Flag.TARGET));
+            this.setFlags(EnumSet.of(Flag.TARGET));
         }
 
-        public boolean shouldExecute() {
+        public boolean canUse() {
             LivingEntity livingentity = FriendlyVexEntity.this.getTrueOwner();
             if (livingentity == null) {
                 return false;
             } else {
-                this.attacker = livingentity.getRevengeTarget();
-                int i = livingentity.getRevengeTimer();
-                return i != this.timestamp && this.isSuitableTarget(this.attacker, EntityPredicate.DEFAULT);
+                this.attacker = livingentity.getLastHurtByMob();
+                int i = livingentity.getLastHurtByMobTimestamp();
+                return i != this.timestamp && this.canAttack(this.attacker, EntityPredicate.DEFAULT);
             }
         }
 
-        public void startExecuting() {
-            this.goalOwner.setAttackTarget(this.attacker);
+        public void start() {
+            this.mob.setTarget(this.attacker);
             LivingEntity livingentity = FriendlyVexEntity.this.getTrueOwner();
             if (livingentity != null) {
-                this.timestamp = livingentity.getRevengeTimer();
+                this.timestamp = livingentity.getLastHurtByMobTimestamp();
             }
 
-            super.startExecuting();
+            super.start();
         }
     }
 
     class MoveRandomGoal extends Goal {
         public MoveRandomGoal() {
-            this.setMutexFlags(EnumSet.of(Flag.MOVE));
+            this.setFlags(EnumSet.of(Flag.MOVE));
         }
 
-        public boolean shouldExecute() {
-            return !FriendlyVexEntity.this.getMoveHelper().isUpdating()
-                    && FriendlyVexEntity.this.rand.nextInt(7) == 0
+        public boolean canUse() {
+            return !FriendlyVexEntity.this.getMoveControl().hasWanted()
+                    && FriendlyVexEntity.this.random.nextInt(7) == 0
                     && !FriendlyVexEntity.this.isCharging();
         }
 
-        public boolean shouldContinueExecuting() {
+        public boolean canContinueToUse() {
             return false;
         }
 
         public void tick() {
             BlockPos blockpos = FriendlyVexEntity.this.getBoundOrigin();
             if (blockpos == null) {
-                blockpos = FriendlyVexEntity.this.getPosition();
+                blockpos = FriendlyVexEntity.this.blockPosition();
             }
 
             for(int i = 0; i < 3; ++i) {
-                BlockPos blockpos1 = blockpos.add(FriendlyVexEntity.this.rand.nextInt(8) - 4, FriendlyVexEntity.this.rand.nextInt(6) - 2, FriendlyVexEntity.this.rand.nextInt(8) - 4);
-                if (FriendlyVexEntity.this.world.isAirBlock(blockpos1)) {
-                    FriendlyVexEntity.this.moveController.setMoveTo((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
-                    if (FriendlyVexEntity.this.getAttackTarget() == null) {
-                        FriendlyVexEntity.this.getLookController().setLookPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);
+                BlockPos blockpos1 = blockpos.offset(FriendlyVexEntity.this.random.nextInt(8) - 4, FriendlyVexEntity.this.random.nextInt(6) - 2, FriendlyVexEntity.this.random.nextInt(8) - 4);
+                if (FriendlyVexEntity.this.level.isEmptyBlock(blockpos1)) {
+                    FriendlyVexEntity.this.moveControl.setWantedPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
+                    if (FriendlyVexEntity.this.getTarget() == null) {
+                        FriendlyVexEntity.this.getLookControl().setLookAt((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);
                     }
                     break;
                 }
@@ -382,9 +382,9 @@ public class FriendlyVexEntity extends MinionEntity {
     public static class FollowOwnerGoal extends Goal {
         private final FriendlyVexEntity summonedEntity;
         private LivingEntity owner;
-        private final IWorldReader world;
+        private final IWorldReader level;
         private final double followSpeed;
-        private final PathNavigator navigator;
+        private final PathNavigator navigation;
         private int timeToRecalcPath;
         private final float maxDist;
         private final float minDist;
@@ -393,27 +393,27 @@ public class FriendlyVexEntity extends MinionEntity {
 
         public FollowOwnerGoal(FriendlyVexEntity summonedEntity, double speed, float minDist, float maxDist, boolean teleportToLeaves) {
             this.summonedEntity = summonedEntity;
-            this.world = summonedEntity.world;
+            this.level = summonedEntity.level;
             this.followSpeed = speed;
-            this.navigator = summonedEntity.getNavigator();
+            this.navigation = summonedEntity.getNavigation();
             this.minDist = minDist;
             this.maxDist = maxDist;
             this.teleportToLeaves = teleportToLeaves;
-            this.setMutexFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
-            if (!(summonedEntity.getNavigator() instanceof GroundPathNavigator) && !(summonedEntity.getNavigator() instanceof FlyingPathNavigator)) {
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+            if (!(summonedEntity.getNavigation() instanceof GroundPathNavigator) && !(summonedEntity.getNavigation() instanceof FlyingPathNavigator)) {
                 throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
             }
         }
 
-        public boolean shouldExecute() {
+        public boolean canUse() {
             LivingEntity livingentity = this.summonedEntity.getTrueOwner();
             if (livingentity == null) {
                 return false;
             } else if (livingentity.isSpectator()) {
                 return false;
-            } else if (this.summonedEntity.getDistanceSq(livingentity) < (double)(this.minDist * this.minDist)) {
+            } else if (this.summonedEntity.distanceToSqr(livingentity) < (double)(this.minDist * this.minDist)) {
                 return false;
-            } else if (this.summonedEntity.getAttackTarget() != null) {
+            } else if (this.summonedEntity.getTarget() != null) {
                 return false;
             } else if (this.summonedEntity.isCharging()) {
                 return false;
@@ -423,56 +423,56 @@ public class FriendlyVexEntity extends MinionEntity {
             }
         }
 
-        public boolean shouldContinueExecuting() {
-            if (this.summonedEntity.getAttackTarget() != null) {
+        public boolean canContinueToUse() {
+            if (this.summonedEntity.getTarget() != null) {
                 return false;
             } else if (this.summonedEntity.isCharging()) {
                 return false;
-            } else if (this.navigator.noPath()){
+            } else if (this.navigation.isDone()){
                 return false;
             } else {
-                return !(this.summonedEntity.getDistanceSq(this.owner) <= (double)(this.maxDist * this.maxDist));
+                return !(this.summonedEntity.distanceToSqr(this.owner) <= (double)(this.maxDist * this.maxDist));
             }
         }
 
-        public void startExecuting() {
+        public void start() {
             this.timeToRecalcPath = 0;
-            this.oldWaterCost = this.summonedEntity.getPathPriority(PathNodeType.WATER);
-            this.summonedEntity.setPathPriority(PathNodeType.WATER, 0.0F);
+            this.oldWaterCost = this.summonedEntity.getPathfindingMalus(PathNodeType.WATER);
+            this.summonedEntity.setPathfindingMalus(PathNodeType.WATER, 0.0F);
         }
 
-        public void resetTask() {
-            this.navigator.clearPath();
-            this.summonedEntity.setPathPriority(PathNodeType.WATER, this.oldWaterCost);
+        public void stop() {
+            this.navigation.stop();
+            this.summonedEntity.setPathfindingMalus(PathNodeType.WATER, this.oldWaterCost);
         }
 
         public void tick() {
-            this.summonedEntity.getLookController().setLookPositionWithEntity(this.owner, 10.0F, (float)this.summonedEntity.getVerticalFaceSpeed());
+            this.summonedEntity.getLookControl().setLookAt(this.owner, 10.0F, (float)this.summonedEntity.getMaxHeadXRot());
             if (--this.timeToRecalcPath <= 0) {
                 this.timeToRecalcPath = 10;
-                if (this.summonedEntity.getDistance(this.owner) > 8.0D) {
-                    double x = MathHelper.floor(this.owner.getPosX()) - 2;
+                if (this.summonedEntity.distanceTo(this.owner) > 8.0D) {
+                    double x = MathHelper.floor(this.owner.getX()) - 2;
                     double y = MathHelper.floor(this.owner.getBoundingBox().minY);
-                    double z = MathHelper.floor(this.owner.getPosZ()) - 2;
+                    double z = MathHelper.floor(this.owner.getZ()) - 2;
                     for(int l = 0; l <= 4; ++l) {
                         for(int i1 = 0; i1 <= 4; ++i1) {
                             if ((l < 1 || i1 < 1 || l > 3 || i1 > 3) && this.ValidPosition(new BlockPos(x + l, y + 2, z + i1))){
                                 float a = (float) ((x + l) + 0.5F);
                                 float b = (float) ((z + i1) + 0.5F);
-                                this.summonedEntity.getMoveHelper().setMoveTo(a, y, b, this.followSpeed);
-                                this.navigator.clearPath();
+                                this.summonedEntity.getMoveControl().setWantedPosition(a, y, b, this.followSpeed);
+                                this.navigation.stop();
                             }
                         }
                     }
                 }
-                if (this.summonedEntity.getDistanceSq(this.owner) > 144.0){
+                if (this.summonedEntity.distanceToSqr(this.owner) > 144.0){
                     this.tryToTeleportNearEntity();
                 }
             }
         }
 
         private void tryToTeleportNearEntity() {
-            BlockPos blockpos = this.owner.getPosition();
+            BlockPos blockpos = this.owner.blockPosition();
 
             for(int i = 0; i < 10; ++i) {
                 int j = this.getRandomNumber(-3, 3);
@@ -487,39 +487,39 @@ public class FriendlyVexEntity extends MinionEntity {
         }
 
         private boolean tryToTeleportToLocation(int x, int y, int z) {
-            if (Math.abs((double)x - this.owner.getPosX()) < 2.0D && Math.abs((double)z - this.owner.getPosZ()) < 2.0D) {
+            if (Math.abs((double)x - this.owner.getX()) < 2.0D && Math.abs((double)z - this.owner.getZ()) < 2.0D) {
                 return false;
             } else if (!this.isTeleportFriendlyBlock(new BlockPos(x, y, z))) {
                 return false;
             } else {
-                this.summonedEntity.setLocationAndAngles((double)x + 0.5D, (double)y, (double)z + 0.5D, this.summonedEntity.rotationYaw, this.summonedEntity.rotationPitch);
-                this.navigator.clearPath();
+                this.summonedEntity.moveTo((double)x + 0.5D, (double)y, (double)z + 0.5D, this.summonedEntity.yRot, this.summonedEntity.xRot);
+                this.navigation.stop();
                 return true;
             }
         }
 
         private boolean isTeleportFriendlyBlock(BlockPos pos) {
-            PathNodeType pathnodetype = WalkNodeProcessor.getFloorNodeType(this.world, pos.toMutable());
+            PathNodeType pathnodetype = WalkNodeProcessor.getBlockPathTypeStatic(this.level, pos.mutable());
             if (pathnodetype != PathNodeType.WALKABLE) {
                 return false;
             } else {
-                BlockState blockstate = this.world.getBlockState(pos.down());
+                BlockState blockstate = this.level.getBlockState(pos.below());
                 if (!this.teleportToLeaves && blockstate.getBlock() instanceof LeavesBlock) {
                     return false;
                 } else {
-                    BlockPos blockpos = pos.subtract(this.summonedEntity.getPosition());
-                    return this.world.hasNoCollisions(this.summonedEntity, this.summonedEntity.getBoundingBox().offset(blockpos));
+                    BlockPos blockpos = pos.subtract(this.summonedEntity.blockPosition());
+                    return this.level.noCollision(this.summonedEntity, this.summonedEntity.getBoundingBox().move(blockpos));
                 }
             }
         }
 
         protected boolean ValidPosition(BlockPos pos) {
-            BlockState blockstate = this.world.getBlockState(pos);
-            return (blockstate.isValidPosition(this.world, pos) && this.world.isAirBlock(pos.up()) && this.world.isAirBlock(pos.up(2)));
+            BlockState blockstate = this.level.getBlockState(pos);
+            return (blockstate.canSurvive(this.level, pos) && this.level.isEmptyBlock(pos.above()) && this.level.isEmptyBlock(pos.above(2)));
         }
 
         private int getRandomNumber(int min, int max) {
-            return this.summonedEntity.getRNG().nextInt(max - min + 1) + min;
+            return this.summonedEntity.getRandom().nextInt(max - min + 1) + min;
         }
     }
 }

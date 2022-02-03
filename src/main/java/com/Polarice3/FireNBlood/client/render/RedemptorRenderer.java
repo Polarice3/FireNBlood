@@ -30,7 +30,7 @@ public class RedemptorRenderer extends AbstractProtectorRenderer<RedemptorEntity
     }
 
     @Override
-    public ResourceLocation getEntityTexture(RedemptorEntity entity) {
+    public ResourceLocation getTextureLocation(RedemptorEntity entity) {
         return TEXTURE;
     }
 }

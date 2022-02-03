@@ -18,15 +18,15 @@ public class ScorchRenderer extends BipedRenderer<ScorchEntity, MinionModel<Scor
         super(renderManagerIn, new MinionModel<>(), 0.3F);
     }
 
-    protected int getBlockLight(ScorchEntity entityIn, BlockPos partialTicks) {
+    protected int getBlockLightLevel(ScorchEntity entityIn, BlockPos partialTicks) {
         return 15;
     }
 
-    public ResourceLocation getEntityTexture(ScorchEntity entity) {
+    public ResourceLocation getTextureLocation(ScorchEntity entity) {
         return entity.isCharging() ? CHARGING_TEXTURE : TEXTURE;
     }
 
-    protected void preRenderCallback(ScorchEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(ScorchEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         matrixStackIn.scale(0.4F, 0.4F, 0.4F);
     }
 }

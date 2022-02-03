@@ -49,7 +49,7 @@ public class MinotaurEntity extends ServantTaillessEntity {
     private static final Predicate<Entity> field_213690_b = (p_213685_0_) -> {
         return p_213685_0_.isAlive() && !(p_213685_0_ instanceof MinotaurEntity);
     };
-    protected static final DataParameter<Byte> MINOTAUR_FLAGS = EntityDataManager.createKey(MinotaurEntity.class, DataSerializers.BYTE);
+    protected static final DataParameter<Byte> MINOTAUR_FLAGS = EntityDataManager.defineId(MinotaurEntity.class, DataSerializers.BYTE);
     private int chargeTick;
 
     public MinotaurEntity(EntityType<? extends ServantTaillessEntity> type, World worldIn){
@@ -57,14 +57,14 @@ public class MinotaurEntity extends ServantTaillessEntity {
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 150.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.30D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 6.0D)
-                .createMutableAttribute(Attributes.ATTACK_KNOCKBACK, 1.0D)
-                .createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 0.9D)
-                .createMutableAttribute(Attributes.ARMOR, 7.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .add(Attributes.MAX_HEALTH, 150.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.30D)
+                .add(Attributes.ATTACK_DAMAGE, 6.0D)
+                .add(Attributes.ATTACK_KNOCKBACK, 1.0D)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 0.9D)
+                .add(Attributes.ARMOR, 7.0D);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class MinotaurEntity extends ServantTaillessEntity {
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, AbstractIllagerEntity.class, true));
-        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractTaillessEntity.class)).setCallsForHelp());
+        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractTaillessEntity.class)).setAlertOthers());
     }
 
     public AbstractTaillessEntity.ArmPose getArmPose() {
@@ -94,42 +94,42 @@ public class MinotaurEntity extends ServantTaillessEntity {
     }
 
     @Nullable
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        this.setEquipmentBasedOnDifficulty(difficultyIn);
-        this.setEnchantmentBasedOnDifficulty(difficultyIn);
-        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        this.populateDefaultEquipmentSlots(difficultyIn);
+        this.populateDefaultEquipmentEnchantments(difficultyIn);
+        return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
-    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-        this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(RegistryHandler.DIAMOND_MACE.get()));
+    protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+        this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(RegistryHandler.DIAMOND_MACE.get()));
     }
 
     @Override
-    protected int getExperiencePoints(PlayerEntity player){
-        return 50 + this.world.rand.nextInt(50);
+    protected int getExperienceReward(PlayerEntity player){
+        return 50 + this.level.random.nextInt(50);
     }
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_ZOMBIE_HORSE_AMBIENT;
+        return SoundEvents.ZOMBIE_HORSE_AMBIENT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_SKELETON_HORSE_DEATH;
+        return SoundEvents.SKELETON_HORSE_DEATH;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_POLAR_BEAR_HURT;
+        return SoundEvents.POLAR_BEAR_HURT;
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_COW_STEP, 0.25F, 1.0F);
+        this.playSound(SoundEvents.COW_STEP, 0.25F, 1.0F);
     }
 
-    public boolean isBurning() {
+    public boolean isOnFire() {
         return false;
     }
 
@@ -141,33 +141,33 @@ public class MinotaurEntity extends ServantTaillessEntity {
         return MinotaurEntity.this.getHealth() <= MinotaurEntity.this.getMaxHealth() / 2.0F;
     }
 
-    public boolean isImmuneToExplosions(){
+    public boolean ignoreExplosion(){
         return MinotaurEntity.this.SecondPhase();
     }
 
-    public boolean canDespawn(double distanceToClosestPlayer) {
+    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
         return false;
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(MINOTAUR_FLAGS, (byte)0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(MINOTAUR_FLAGS, (byte)0);
     }
 
     private boolean getMinotaurFlag(int mask) {
-        int i = this.dataManager.get(MINOTAUR_FLAGS);
+        int i = this.entityData.get(MINOTAUR_FLAGS);
         return (i & mask) != 0;
     }
 
     private void setMinotaurFlag(int mask, boolean value) {
-        int i = this.dataManager.get(MINOTAUR_FLAGS);
+        int i = this.entityData.get(MINOTAUR_FLAGS);
         if (value) {
             i = i | mask;
         } else {
             i = i & ~mask;
         }
 
-        this.dataManager.set(MINOTAUR_FLAGS, (byte)(i & 255));
+        this.entityData.set(MINOTAUR_FLAGS, (byte)(i & 255));
     }
 
     public boolean isWarning(){
@@ -178,32 +178,32 @@ public class MinotaurEntity extends ServantTaillessEntity {
         this.setMinotaurFlag(1,warning);
     }
 
-    protected void updateAITasks(){
+    protected void customServerAiStep(){
         if (SecondPhase()) {
-            if (this.ticksExisted % 20 == 0) {
+            if (this.tickCount % 20 == 0) {
                 this.heal(1.0F);
             }
-        } super.updateAITasks();
+        } super.customServerAiStep();
     }
 
     public void tick() {
         super.tick();
-        if (this.world.isRemote && this.isWarning()) {
+        if (this.level.isClientSide && this.isWarning()) {
             for (int i = 0; i < 2; ++i) {
-                float f = this.renderYawOffset * ((float) Math.PI / 180F) + MathHelper.cos((float) this.ticksExisted * 0.6662F) * 0.25F;
+                float f = this.yBodyRot * ((float) Math.PI / 180F) + MathHelper.cos((float) this.tickCount * 0.6662F) * 0.25F;
                 float f1 = MathHelper.cos(f);
                 float f2 = MathHelper.sin(f);
-                this.world.addParticle(ParticleTypes.ANGRY_VILLAGER, this.getPosXRandom(1.0D), this.getPosY() + 2.6D, this.getPosZRandom(1.0D), 0.7D, 0.5D, 0.2D);
-                this.world.addParticle(ParticleTypes.FLAME, this.getPosX() + (double) f1 * 0.6D, this.getPosY() + 1.8D, this.getPosZ() + (double) f2 * 0.6D, 0.0D, 0.0D, 0.0D);
+                this.level.addParticle(ParticleTypes.ANGRY_VILLAGER, this.getRandomX(1.0D), this.getY() + 2.6D, this.getRandomZ(1.0D), 0.7D, 0.5D, 0.2D);
+                this.level.addParticle(ParticleTypes.FLAME, this.getX() + (double) f1 * 0.6D, this.getY() + 1.8D, this.getZ() + (double) f2 * 0.6D, 0.0D, 0.0D, 0.0D);
             }
         }
     }
 
-    protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
-        super.dropSpecialItems(source, looting, recentlyHitIn);
-        ItemEntity itementity = this.entityDropItem(RegistryHandler.PADRE_EFFIGY.get());
+    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
+        super.dropCustomDeathLoot(source, looting, recentlyHitIn);
+        ItemEntity itementity = this.spawnAtLocation(RegistryHandler.PADRE_EFFIGY.get());
         if (itementity != null) {
-            itementity.setNoDespawn();
+            itementity.setExtendedLifetime();
         }
 
     }
@@ -214,17 +214,17 @@ public class MinotaurEntity extends ServantTaillessEntity {
         private RangeAttackGoal() {
         }
 
-        public boolean shouldExecute() {
-            LivingEntity livingentity = MinotaurEntity.this.getAttackTarget();
+        public boolean canUse() {
+            LivingEntity livingentity = MinotaurEntity.this.getTarget();
             if (livingentity == null) {
                 return false;
             } else if(MinotaurEntity.this.SecondPhase()){
-                if (MinotaurEntity.this.getPosY() < livingentity.getPosY()){
+                if (MinotaurEntity.this.getY() < livingentity.getY()){
                     return true;
                 } else {
                     return false;
                 }
-            } else if (MinotaurEntity.this.getDistance(livingentity) > 8.0D){
+            } else if (MinotaurEntity.this.distanceTo(livingentity) > 8.0D){
                 return true;
             } else {
                 return false;
@@ -232,31 +232,31 @@ public class MinotaurEntity extends ServantTaillessEntity {
         }
 
 
-        public void startExecuting() {
+        public void start() {
             this.attackTimer = 0;
         }
 
         public void tick(){
-            LivingEntity livingentity = MinotaurEntity.this.getAttackTarget();
+            LivingEntity livingentity = MinotaurEntity.this.getTarget();
                 ++this.attackTimer;
-                World world = MinotaurEntity.this.world;
+                World world = MinotaurEntity.this.level;
                 if (this.attackTimer == 20) {
                     double d1 = 4.0D;
-                    Vector3d vector3d = MinotaurEntity.this.getLook(1.0F);
-                    double d2 = livingentity.getPosX() - (MinotaurEntity.this.getPosX() + vector3d.x * 4.0D);
-                    double d3 = livingentity.getPosYHeight(0.5D) - (0.5D + MinotaurEntity.this.getPosYHeight(0.5D));
-                    double d4 = livingentity.getPosZ() - (MinotaurEntity.this.getPosZ() + vector3d.z * 4.0D);
+                    Vector3d vector3d = MinotaurEntity.this.getViewVector( 1.0F);
+                    double d2 = livingentity.getX() - (MinotaurEntity.this.getX() + vector3d.x * 4.0D);
+                    double d3 = livingentity.getY(0.5D) - (0.5D + MinotaurEntity.this.getY(0.5D));
+                    double d4 = livingentity.getZ() - (MinotaurEntity.this.getZ() + vector3d.z * 4.0D);
                     SoulFireballEntity soulfireballEntity = new SoulFireballEntity(world, MinotaurEntity.this, d2, d3, d4);
-                    soulfireballEntity.setPosition(MinotaurEntity.this.getPosX() + vector3d.x * 4.0D, MinotaurEntity.this.getPosYHeight(0.5D) + 0.5D, soulfireballEntity.getPosZ() + vector3d.z * 4.0D);
-                    world.addEntity(soulfireballEntity);
+                    soulfireballEntity.setPos(MinotaurEntity.this.getX() + vector3d.x * 4.0D, MinotaurEntity.this.getY(0.5D) + 0.5D, soulfireballEntity.getZ() + vector3d.z * 4.0D);
+                    level.addFreshEntity(soulfireballEntity);
                     if (!MinotaurEntity.this.isSilent()) {
-                        MinotaurEntity.this.world.playEvent(null, 1016, MinotaurEntity.this.getPosition(), 0);
+                        MinotaurEntity.this.level.levelEvent(null, 1016, MinotaurEntity.this.blockPosition(), 0);
                     }
                     this.attackTimer = -20;
                 }
-                double d0 = MinotaurEntity.this.getDistanceSq(livingentity);
+                double d0 = MinotaurEntity.this.distanceToSqr(livingentity);
                 if (d0 > 16.0D){
-                MinotaurEntity.this.getMoveHelper().setMoveTo(livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ(), 1.0D);
+                MinotaurEntity.this.getMoveControl().setWantedPosition(livingentity.getX(), livingentity.getY(), livingentity.getZ(), 1.0D);
             }
         }
     }
@@ -265,9 +265,9 @@ public class MinotaurEntity extends ServantTaillessEntity {
         protected int warmup;
         protected int roar;
 
-        public boolean shouldExecute() {
+        public boolean canUse() {
                 if (MinotaurEntity.this.isAggressive()){
-                    List<ServantTaillessEntity> list = MinotaurEntity.this.world.getEntitiesWithinAABB(ServantTaillessEntity.class, MinotaurEntity.this.getBoundingBox().grow(32.0D, 32.0D, 32.0D), field_213690_b);
+                    List<ServantTaillessEntity> list = MinotaurEntity.this.level.getEntitiesOfClass(ServantTaillessEntity.class, MinotaurEntity.this.getBoundingBox().inflate(32.0D, 32.0D, 32.0D), field_213690_b);
                     if (list.isEmpty()) {
                         return false;
                     } else {
@@ -283,16 +283,16 @@ public class MinotaurEntity extends ServantTaillessEntity {
                 if(this.roar == 1){
                     ModifiableAttributeInstance modifiableattributeinstance = MinotaurEntity.this.getAttribute(Attributes.MOVEMENT_SPEED);
                     modifiableattributeinstance.removeModifier(MODIFIER);
-                    modifiableattributeinstance.applyNonPersistentModifier(MODIFIER);
+                    modifiableattributeinstance.addTransientModifier(MODIFIER);
                     ModifiableAttributeInstance modifiableattributeinstance2 = MinotaurEntity.this.getAttribute(Attributes.ATTACK_SPEED);
                     modifiableattributeinstance2.removeModifier(MODIFIER);
-                    modifiableattributeinstance2.applyNonPersistentModifier(MODIFIER);
+                    modifiableattributeinstance2.addTransientModifier(MODIFIER);
                 }
                 if(this.roar >= 20) {
                     this.roaring();
-                    for (ServantTaillessEntity ally : MinotaurEntity.this.world.getEntitiesWithinAABB(ServantTaillessEntity.class, MinotaurEntity.this.getBoundingBox().grow(16.0D), field_213690_b)) {
-                        ally.addPotionEffect(new EffectInstance(Effects.SPEED, 1000, 1));
-                        ally.addPotionEffect(new EffectInstance(Effects.HASTE, 1000, 1));
+                    for (ServantTaillessEntity ally : MinotaurEntity.this.level.getEntitiesOfClass(ServantTaillessEntity.class, MinotaurEntity.this.getBoundingBox().inflate(16.0D), field_213690_b)) {
+                        ally.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 1000, 1));
+                        ally.addEffect(new EffectInstance(Effects.DIG_SPEED, 1000, 1));
                     }
                     this.roar = 0;
                     this.warmup = 0;
@@ -304,10 +304,10 @@ public class MinotaurEntity extends ServantTaillessEntity {
 
         private void roaring() {
             if (MinotaurEntity.this.isAlive()) {
-                MinotaurEntity.this.playSound(SoundEvents.ENTITY_SKELETON_HORSE_DEATH, 1.0F, 1.0F);
-                for(Entity entity : MinotaurEntity.this.world.getEntitiesWithinAABB(LivingEntity.class, MinotaurEntity.this.getBoundingBox().grow(4.0D), field_213690_b)) {
+                MinotaurEntity.this.playSound(SoundEvents.SKELETON_HORSE_DEATH, 1.0F, 1.0F);
+                for(Entity entity : MinotaurEntity.this.level.getEntitiesOfClass(LivingEntity.class, MinotaurEntity.this.getBoundingBox().inflate(4.0D), field_213690_b)) {
                     if (!(entity instanceof AbstractTaillessEntity)) {
-                        entity.attackEntityFrom(DamageSource.causeMobDamage(MinotaurEntity.this), 6.0F);
+                        entity.hurt(DamageSource.mobAttack(MinotaurEntity.this), 6.0F);
                     }
 
                     this.launch(entity);
@@ -316,20 +316,20 @@ public class MinotaurEntity extends ServantTaillessEntity {
                 Vector3d vector3d = MinotaurEntity.this.getBoundingBox().getCenter();
 
                 for(int i = 0; i < 40; ++i) {
-                    double d0 = MinotaurEntity.this.rand.nextGaussian() * 0.2D;
-                    double d1 = MinotaurEntity.this.rand.nextGaussian() * 0.2D;
-                    double d2 = MinotaurEntity.this.rand.nextGaussian() * 0.2D;
-                    MinotaurEntity.this.world.addParticle(ParticleTypes.POOF, vector3d.x, vector3d.y, vector3d.z, d0, d1, d2);
+                    double d0 = MinotaurEntity.this.random.nextGaussian() * 0.2D;
+                    double d1 = MinotaurEntity.this.random.nextGaussian() * 0.2D;
+                    double d2 = MinotaurEntity.this.random.nextGaussian() * 0.2D;
+                    MinotaurEntity.this.level.addParticle(ParticleTypes.POOF, vector3d.x, vector3d.y, vector3d.z, d0, d1, d2);
                 }
             }
 
         }
 
         private void launch(Entity p_213688_1_) {
-            double d0 = p_213688_1_.getPosX() - MinotaurEntity.this.getPosX();
-            double d1 = p_213688_1_.getPosZ() - MinotaurEntity.this.getPosZ();
+            double d0 = p_213688_1_.getX() - MinotaurEntity.this.getX();
+            double d1 = p_213688_1_.getZ() - MinotaurEntity.this.getZ();
             double d2 = Math.max(d0 * d0 + d1 * d1, 0.001D);
-            p_213688_1_.addVelocity(d0 / d2 * 4.0D, 0.2D, d1 / d2 * 4.0D);
+            p_213688_1_.push(d0 / d2 * 4.0D, 0.2D, d1 / d2 * 4.0D);
         }
     }
 
@@ -343,7 +343,7 @@ public class MinotaurEntity extends ServantTaillessEntity {
         }
 
         @Override
-        public boolean shouldExecute() {
+        public boolean canUse() {
             if (MinotaurEntity.this.isAggressive()) {
                 if (MinotaurEntity.this.SecondPhase()){
                     return true;
@@ -356,15 +356,15 @@ public class MinotaurEntity extends ServantTaillessEntity {
         }
 
         @Override
-        public boolean shouldContinueExecuting() {
-            LivingEntity livingentity = MinotaurEntity.this.getAttackTarget();
+        public boolean canContinueToUse() {
+            LivingEntity livingentity = MinotaurEntity.this.getTarget();
             if (livingentity == null) {
                 return false;
             } else if (!livingentity.isAlive()) {
                 return false;
             }  else if (!(livingentity instanceof PlayerEntity) || !((PlayerEntity)livingentity).isSpectator() && !((PlayerEntity)livingentity).isCreative()) {
-                return this.shouldExecute();
-            } else if (MinotaurEntity.this.isPotionActive(Effects.GLOWING)){
+                return this.canUse();
+            } else if (MinotaurEntity.this.hasEffect(Effects.GLOWING)){
                 return false;
             } else {
                 return false;
@@ -372,8 +372,8 @@ public class MinotaurEntity extends ServantTaillessEntity {
         }
 
         @Override
-        public void resetTask(){
-            MinotaurEntity.this.setAttackTarget((LivingEntity)null);
+        public void stop(){
+            MinotaurEntity.this.setTarget((LivingEntity)null);
             this.warmup = 0;
             MinotaurEntity.this.chargeTick = 0;
             MinotaurEntity.this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(MODIFIER);
@@ -409,50 +409,50 @@ public class MinotaurEntity extends ServantTaillessEntity {
         protected void Warning() {
             ModifiableAttributeInstance modifiableattributeinstance = MinotaurEntity.this.getAttribute(Attributes.MOVEMENT_SPEED);
             modifiableattributeinstance.removeModifier(MODIFIER);
-            modifiableattributeinstance.applyNonPersistentModifier(MODIFIER);
+            modifiableattributeinstance.addTransientModifier(MODIFIER);
             ModifiableAttributeInstance modifiableattributeinstance2 = MinotaurEntity.this.getAttribute(Attributes.ATTACK_SPEED);
             modifiableattributeinstance2.removeModifier(MODIFIER);
-            modifiableattributeinstance2.applyNonPersistentModifier(MODIFIER);
-            MinotaurEntity.this.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, 1.0F, 1.0F);
-            MinotaurEntity.this.addPotionEffect(new EffectInstance(Effects.RESISTANCE, 60));
+            modifiableattributeinstance2.addTransientModifier(MODIFIER);
+            MinotaurEntity.this.playSound(SoundEvents.ENDER_DRAGON_GROWL, 1.0F, 1.0F);
+            MinotaurEntity.this.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 60));
         }
 
         protected void explodePos() {
-            LivingEntity livingentity = MinotaurEntity.this.getAttackTarget();
+            LivingEntity livingentity = MinotaurEntity.this.getTarget();
             assert livingentity != null;
-            double d0 = Math.min(livingentity.getPosY(), MinotaurEntity.this.getPosY());
-            double d1 = Math.max(livingentity.getPosY(), MinotaurEntity.this.getPosY()) + 1.0D;
-            float f = (float) MathHelper.atan2(livingentity.getPosZ() - MinotaurEntity.this.getPosZ(), livingentity.getPosX() - MinotaurEntity.this.getPosX());
+            double d0 = Math.min(livingentity.getY(), MinotaurEntity.this.getY());
+            double d1 = Math.max(livingentity.getY(), MinotaurEntity.this.getY()) + 1.0D;
+            float f = (float) MathHelper.atan2(livingentity.getZ() - MinotaurEntity.this.getZ(), livingentity.getX() - MinotaurEntity.this.getX());
 /*            for (int l = 0; l < explodetimes; ++l) {
                 double d2 = distance * (double) (l + 1);
-                this.spawnExplosions(MinotaurEntity.this.getPosX() + (double) MathHelper.cos(f) * d2, MinotaurEntity.this.getPosZ() + (double) MathHelper.sin(f) * d2, d0, d1, f, l);
+                this.spawnExplosions(MinotaurEntity.this.getX() + (double) MathHelper.cos(f) * d2, MinotaurEntity.this.getZ() + (double) MathHelper.sin(f) * d2, d0, d1, f, l);
             }*/
             if (MinotaurEntity.this.chargeTick == 65){
                 double d2 = distance * (double) (4 + 1);
-                this.spawnExplosions(MinotaurEntity.this.getPosX() + (double) MathHelper.cos(f) * d2, MinotaurEntity.this.getPosZ() + (double) MathHelper.sin(f) * d2, d0, d1, f, 1);
+                this.spawnExplosions(MinotaurEntity.this.getX() + (double) MathHelper.cos(f) * d2, MinotaurEntity.this.getZ() + (double) MathHelper.sin(f) * d2, d0, d1, f, 1);
             }
             if (MinotaurEntity.this.chargeTick == 75){
                 double d2 = distance * (double) (3 + 1);
-                this.spawnExplosions(MinotaurEntity.this.getPosX() + (double) MathHelper.cos(f) * d2, MinotaurEntity.this.getPosZ() + (double) MathHelper.sin(f) * d2, d0, d1, f, 2);
+                this.spawnExplosions(MinotaurEntity.this.getX() + (double) MathHelper.cos(f) * d2, MinotaurEntity.this.getZ() + (double) MathHelper.sin(f) * d2, d0, d1, f, 2);
             }
             if (MinotaurEntity.this.chargeTick == 85){
                 double d2 = distance * (double) (2 + 1);
-                this.spawnExplosions(MinotaurEntity.this.getPosX() + (double) MathHelper.cos(f) * d2, MinotaurEntity.this.getPosZ() + (double) MathHelper.sin(f) * d2, d0, d1, f, 3);
+                this.spawnExplosions(MinotaurEntity.this.getX() + (double) MathHelper.cos(f) * d2, MinotaurEntity.this.getZ() + (double) MathHelper.sin(f) * d2, d0, d1, f, 3);
             }
             if (MinotaurEntity.this.chargeTick == 95){
                 double d2 = distance * (double) (1 + 1);
-                this.spawnExplosions(MinotaurEntity.this.getPosX() + (double) MathHelper.cos(f) * d2, MinotaurEntity.this.getPosZ() + (double) MathHelper.sin(f) * d2, d0, d1, f, 4);
+                this.spawnExplosions(MinotaurEntity.this.getX() + (double) MathHelper.cos(f) * d2, MinotaurEntity.this.getZ() + (double) MathHelper.sin(f) * d2, d0, d1, f, 4);
             }
         }
 
         protected boolean teleport(){
-            LivingEntity livingentity = MinotaurEntity.this.getAttackTarget();
+            LivingEntity livingentity = MinotaurEntity.this.getTarget();
             assert livingentity != null;
-            float f = (float) MathHelper.atan2(livingentity.getPosZ() - MinotaurEntity.this.getPosZ(), livingentity.getPosX() - MinotaurEntity.this.getPosX());
-            double x = MinotaurEntity.this.getPosX() + (double) MathHelper.cos(f) * (distance * (double) (5 + 1));
-            double z = MinotaurEntity.this.getPosZ() + (double) MathHelper.sin(f) * (distance * (double) (5 + 1));
-            net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(MinotaurEntity.this, x, MinotaurEntity.this.getPosY(), z, 0);
-            boolean flag2 = MinotaurEntity.this.attemptTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
+            float f = (float) MathHelper.atan2(livingentity.getZ() - MinotaurEntity.this.getZ(), livingentity.getX() - MinotaurEntity.this.getX());
+            double x = MinotaurEntity.this.getX() + (double) MathHelper.cos(f) * (distance * (double) (5 + 1));
+            double z = MinotaurEntity.this.getZ() + (double) MathHelper.sin(f) * (distance * (double) (5 + 1));
+            net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(MinotaurEntity.this, x, MinotaurEntity.this.getY(), z, 0);
+            boolean flag2 = MinotaurEntity.this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
             return flag2;
         }
 
@@ -462,14 +462,14 @@ public class MinotaurEntity extends ServantTaillessEntity {
             double d0 = 0.0D;
 
             do {
-                BlockPos blockpos1 = blockpos.down();
-                BlockState blockstate = MinotaurEntity.this.world.getBlockState(blockpos1);
-                if (blockstate.isSolidSide(MinotaurEntity.this.world, blockpos1, Direction.UP)) {
-                    if (!MinotaurEntity.this.world.isAirBlock(blockpos)) {
-                        BlockState blockstate1 = MinotaurEntity.this.world.getBlockState(blockpos);
-                        VoxelShape voxelshape = blockstate1.getCollisionShape(MinotaurEntity.this.world, blockpos);
+                BlockPos blockpos1 = blockpos.below();
+                BlockState blockstate = MinotaurEntity.this.level.getBlockState(blockpos1);
+                if (blockstate.isFaceSturdy(MinotaurEntity.this.level, blockpos1, Direction.UP)) {
+                    if (!MinotaurEntity.this.level.isEmptyBlock(blockpos)) {
+                        BlockState blockstate1 = MinotaurEntity.this.level.getBlockState(blockpos);
+                        VoxelShape voxelshape = blockstate1.getCollisionShape(MinotaurEntity.this.level, blockpos);
                         if (!voxelshape.isEmpty()) {
-                            d0 = voxelshape.getEnd(Direction.Axis.Y);
+                            d0 = voxelshape.max(Direction.Axis.Y);
                         }
                     }
 
@@ -477,11 +477,11 @@ public class MinotaurEntity extends ServantTaillessEntity {
                     break;
                 }
 
-                blockpos = blockpos.down();
+                blockpos = blockpos.below();
             } while(blockpos.getY() >= MathHelper.floor(p_190876_5_) - 1);
 
             if (flag) {
-                MinotaurEntity.this.world.createExplosion(MinotaurEntity.this, p_190876_1_, (double)blockpos.getY() + d0, p_190876_3_, (float) 3, Explosion.Mode.NONE);
+                MinotaurEntity.this.level.explode(MinotaurEntity.this, p_190876_1_, (double)blockpos.getY() + d0, p_190876_3_, (float) 3, Explosion.Mode.NONE);
             }
 
         }
@@ -491,7 +491,7 @@ public class MinotaurEntity extends ServantTaillessEntity {
         private int executed = 0;
 
         @Override
-        public boolean shouldExecute() {
+        public boolean canUse() {
             if (MinotaurEntity.this.SecondPhase()){
                 return true;
             } else {
@@ -501,11 +501,11 @@ public class MinotaurEntity extends ServantTaillessEntity {
 
         public void tick(){
                 if (executed == 0) {
-                    LightningBoltEntity lightning = new LightningBoltEntity(EntityType.LIGHTNING_BOLT, world);
-                    lightning.setPosition(MinotaurEntity.this.getPosX(), MinotaurEntity.this.getPosY(), MinotaurEntity.this.getPosZ());
-                    world.addEntity(lightning);
-                    MinotaurEntity.this.world.createExplosion(MinotaurEntity.this, MinotaurEntity.this.getPosX(), MinotaurEntity.this.getPosY(), MinotaurEntity.this.getPosZ(), (float) 3, Explosion.Mode.NONE);
-                    MinotaurEntity.this.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, 1.0F, 1.0F);
+                    LightningBoltEntity lightning = new LightningBoltEntity(EntityType.LIGHTNING_BOLT, level);
+                    lightning.setPos(MinotaurEntity.this.getX(), MinotaurEntity.this.getY(), MinotaurEntity.this.getZ());
+                    level.addFreshEntity(lightning);
+                    MinotaurEntity.this.level.explode(MinotaurEntity.this, MinotaurEntity.this.getX(), MinotaurEntity.this.getY(), MinotaurEntity.this.getZ(), (float) 3, Explosion.Mode.NONE);
+                    MinotaurEntity.this.playSound(SoundEvents.ENDER_DRAGON_GROWL, 1.0F, 1.0F);
                     executed = 1;
                 }
             }

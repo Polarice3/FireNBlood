@@ -34,8 +34,8 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 public class IrkEntity extends MonsterEntity implements ICrossbowUser {
-    protected static final DataParameter<Byte> IRK_FLAGS = EntityDataManager.createKey(IrkEntity.class, DataSerializers.BYTE);
-    private static final DataParameter<Boolean> DATA_CHARGING_STATE = EntityDataManager.createKey(IrkEntity.class, DataSerializers.BOOLEAN);
+    protected static final DataParameter<Byte> IRK_FLAGS = EntityDataManager.defineId(IrkEntity.class, DataSerializers.BYTE);
+    private static final DataParameter<Boolean> DATA_CHARGING_STATE = EntityDataManager.defineId(IrkEntity.class, DataSerializers.BOOLEAN);
     private MobEntity owner;
     @Nullable
     private BlockPos boundOrigin;
@@ -45,23 +45,23 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
 
     public IrkEntity(EntityType<? extends IrkEntity> p_i50190_1_, World p_i50190_2_) {
         super(p_i50190_1_, p_i50190_2_);
-        this.moveController = new IrkEntity.MoveHelperController(this);
-        this.experienceValue = 3;
+        this.moveControl = new IrkEntity.MoveHelperController(this);
+        this.xpReward = 3;
     }
 
     public void move(MoverType typeIn, Vector3d pos) {
         super.move(typeIn, pos);
-        this.doBlockCollisions();
+        this.checkInsideBlocks();
     }
 
     public void tick() {
-        this.noClip = true;
+        this.noPhysics = true;
         super.tick();
-        this.noClip = false;
+        this.noPhysics = false;
         this.setNoGravity(true);
         if (this.limitedLifespan && --this.limitedLifeTicks <= 0) {
             this.limitedLifeTicks = 20;
-            this.attackEntityFrom(DamageSource.STARVE, 1.0F);
+            this.hurt(DamageSource.STARVE, 1.0F);
         }
 
     }
@@ -74,33 +74,33 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
         this.goalSelector.addGoal(8, new IrkEntity.MoveRandomGoal());
         this.goalSelector.addGoal(9, new LookAtGoal(this, PlayerEntity.class, 3.0F, 1.0F));
         this.goalSelector.addGoal(10, new LookAtGoal(this, MobEntity.class, 8.0F));
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, AbstractRaiderEntity.class)).setCallsForHelp());
+        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, AbstractRaiderEntity.class)).setAlertOthers());
         this.targetSelector.addGoal(2, new IrkEntity.CopyOwnerTargetGoal(this));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 14.0D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 4.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 14.0D)
+                .add(Attributes.ATTACK_DAMAGE, 4.0D);
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(IRK_FLAGS, (byte)0);
-        this.dataManager.register(DATA_CHARGING_STATE, false);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(IRK_FLAGS, (byte)0);
+        this.entityData.define(DATA_CHARGING_STATE, false);
     }
 
-    public boolean func_230280_a_(ShootableItem p_230280_1_) {
+    public boolean canFireProjectileWeapon(ShootableItem p_230280_1_) {
         return p_230280_1_ == Items.CROSSBOW;
     }
 
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         ListNBT listnbt = compound.getList("Inventory", 10);
 
         for(int i = 0; i < listnbt.size(); ++i) {
-            ItemStack itemstack = ItemStack.read(listnbt.getCompound(i));
+            ItemStack itemstack = ItemStack.of(listnbt.getCompound(i));
             if (!itemstack.isEmpty()) {
                 this.inventory.addItem(itemstack);
             }
@@ -117,14 +117,14 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
 
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         ListNBT listnbt = new ListNBT();
 
-        for(int i = 0; i < this.inventory.getSizeInventory(); ++i) {
-            ItemStack itemstack = this.inventory.getStackInSlot(i);
+        for(int i = 0; i < this.inventory.getContainerSize(); ++i) {
+            ItemStack itemstack = this.inventory.getItem(i);
             if (!itemstack.isEmpty()) {
-                listnbt.add(itemstack.write(new CompoundNBT()));
+                listnbt.add(itemstack.save(new CompoundNBT()));
             }
         }
 
@@ -143,46 +143,46 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
 
     @OnlyIn(Dist.CLIENT)
     public boolean isCharging() {
-        return this.dataManager.get(DATA_CHARGING_STATE);
+        return this.entityData.get(DATA_CHARGING_STATE);
     }
 
-    public void setCharging(boolean isCharging) {
-        this.dataManager.set(DATA_CHARGING_STATE, isCharging);
+    public void setChargingCrossbow(boolean isCharging) {
+        this.entityData.set(DATA_CHARGING_STATE, isCharging);
     }
 
     @Override
-    public void fireProjectile(LivingEntity p_230284_1_, ItemStack p_230284_2_, ProjectileEntity p_230284_3_, float p_230284_4_) {
-        this.func_234279_a_(this, p_230284_1_, p_230284_3_, p_230284_4_, 1.6F);
+    public void shootCrossbowProjectile(LivingEntity p_230284_1_, ItemStack p_230284_2_, ProjectileEntity p_230284_3_, float p_230284_4_) {
+        this.shootCrossbowProjectile(this, p_230284_1_, p_230284_3_, p_230284_4_, 1.6F);
     }
 
     @OnlyIn(Dist.CLIENT)
     public AbstractIllagerEntity.ArmPose getArmPose() {
         if (this.isCharging()) {
             return AbstractIllagerEntity.ArmPose.CROSSBOW_CHARGE;
-        } else if (this.canEquip(Items.CROSSBOW)) {
+        } else if (this.isHolding(Items.CROSSBOW)) {
             return AbstractIllagerEntity.ArmPose.CROSSBOW_HOLD;
         } else {
             return this.isAggressive() ? AbstractIllagerEntity.ArmPose.ATTACKING : AbstractIllagerEntity.ArmPose.NEUTRAL;
         }
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        Entity entity = source.getTrueSource();
+    public boolean hurt(DamageSource source, float amount) {
+        Entity entity = source.getEntity();
         if (entity instanceof IrkEntity){
             return false;
         } else {
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         }
     }
 
-    public boolean isOnSameTeam(Entity entityIn) {
+    public boolean isAlliedTo(Entity entityIn) {
         if (entityIn == this) {
             return true;
-        } else if (super.isOnSameTeam(entityIn)) {
+        } else if (super.isAlliedTo(entityIn)) {
             return true;
         } else if (entityIn instanceof IrkEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;
-        } else if (entityIn instanceof LivingEntity && ((LivingEntity)entityIn).getCreatureAttribute() == CreatureAttribute.ILLAGER) {
+        } else if (entityIn instanceof LivingEntity && ((LivingEntity)entityIn).getMobType() == CreatureAttribute.ILLAGER) {
             return this.getTeam() == null && entityIn.getTeam() == null;
         } else {
             return false;
@@ -203,24 +203,24 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
     }
 
     private boolean getIrkFlag(int mask) {
-        int i = this.dataManager.get(IRK_FLAGS);
+        int i = this.entityData.get(IRK_FLAGS);
         return (i & mask) != 0;
     }
 
     private void setIrkFlag(int mask, boolean value) {
-        int i = this.dataManager.get(IRK_FLAGS);
+        int i = this.entityData.get(IRK_FLAGS);
         if (value) {
             i = i | mask;
         } else {
             i = i & ~mask;
         }
 
-        this.dataManager.set(IRK_FLAGS, (byte)(i & 255));
+        this.entityData.set(IRK_FLAGS, (byte)(i & 255));
     }
 
 
-    public void func_230283_U__() {
-        this.idleTime = 0;
+    public void onCrossbowAttackPerformed() {
+        this.noActionTime = 0;
     }
 
     public void setOwner(MobEntity ownerIn) {
@@ -233,15 +233,15 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_VEX_AMBIENT;
+        return SoundEvents.VEX_AMBIENT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_VEX_DEATH;
+        return SoundEvents.VEX_DEATH;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_VEX_HURT;
+        return SoundEvents.VEX_HURT;
     }
 
     public float getBrightness() {
@@ -249,28 +249,28 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
     }
 
     @Nullable
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        this.setEquipmentBasedOnDifficulty(difficultyIn);
-        this.setEnchantmentBasedOnDifficulty(difficultyIn);
-        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        this.populateDefaultEquipmentSlots(difficultyIn);
+        this.populateDefaultEquipmentEnchantments(difficultyIn);
+        return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
-    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-        this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.CROSSBOW));
+    protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+        this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.CROSSBOW));
         this.setDropChance(EquipmentSlotType.MAINHAND, 0.0F);
     }
 
-    public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
-        this.func_234281_b_(this, 1.6F);
+    public void performRangedAttack(LivingEntity target, float distanceFactor) {
+        this.performCrossbowAttack(this, 1.6F);
     }
 
-    public boolean replaceItemInInventory(int inventorySlot, ItemStack itemStackIn) {
-        if (super.replaceItemInInventory(inventorySlot, itemStackIn)) {
+    public boolean setSlot(int inventorySlot, ItemStack itemStackIn) {
+        if (super.setSlot(inventorySlot, itemStackIn)) {
             return true;
         } else {
             int i = inventorySlot - 300;
-            if (i >= 0 && i < this.inventory.getSizeInventory()) {
-                this.inventory.setInventorySlotContents(i, itemStackIn);
+            if (i >= 0 && i < this.inventory.getContainerSize()) {
+                this.inventory.setItem(i, itemStackIn);
                 return true;
             } else {
                 return false;
@@ -280,41 +280,41 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
 
     class AttackMoveGoal extends Goal{
 
-        public boolean shouldExecute() {
-            return IrkEntity.this.getAttackTarget() != null;
+        public boolean canUse() {
+            return IrkEntity.this.getTarget() != null;
         }
 
-        public boolean shouldContinueExecuting() {
-            return IrkEntity.this.getAttackTarget() != null && !IrkEntity.this.isCharging();
+        public boolean canContinueToUse() {
+            return IrkEntity.this.getTarget() != null && !IrkEntity.this.isCharging();
         }
 
         public void tick() {
-            LivingEntity livingEntity = IrkEntity.this.getAttackTarget();
+            LivingEntity livingEntity = IrkEntity.this.getTarget();
             assert livingEntity != null;
             Vector3d vector3d = livingEntity.getEyePosition(1.0F);
-            int Random = IrkEntity.this.world.rand.nextInt(2);
-            if (Random == 1) {
-                IrkEntity.this.moveController.setMoveTo(vector3d.x - IrkEntity.this.rand.nextInt(8), livingEntity.getPosY() + IrkEntity.this.rand.nextInt(4), vector3d.z - IrkEntity.this.rand.nextInt(8), 1.0D);
+            int random = IrkEntity.this.level.random.nextInt(2);
+            if (random == 1) {
+                IrkEntity.this.moveControl.setWantedPosition(vector3d.x - IrkEntity.this.random.nextInt(8), livingEntity.getY() + IrkEntity.this.random.nextInt(4), vector3d.z - IrkEntity.this.random.nextInt(8), 1.0D);
             } else {
-                IrkEntity.this.moveController.setMoveTo(vector3d.x + IrkEntity.this.rand.nextInt(8), livingEntity.getPosY() + IrkEntity.this.rand.nextInt(4), vector3d.z + IrkEntity.this.rand.nextInt(8), 1.0D);
+                IrkEntity.this.moveControl.setWantedPosition(vector3d.x + IrkEntity.this.random.nextInt(8), livingEntity.getY() + IrkEntity.this.random.nextInt(4), vector3d.z + IrkEntity.this.random.nextInt(8), 1.0D);
             }
         }
     }
 
     class CopyOwnerTargetGoal extends TargetGoal {
-        private final EntityPredicate field_220803_b = (new EntityPredicate()).setIgnoresLineOfSight().setUseInvisibilityCheck();
+        private final EntityPredicate field_220803_b = (new EntityPredicate()).allowUnseeable().ignoreInvisibilityTesting();
 
         public CopyOwnerTargetGoal(CreatureEntity creature) {
             super(creature, false);
         }
 
-        public boolean shouldExecute() {
-            return IrkEntity.this.owner != null && IrkEntity.this.owner.getAttackTarget() != null && this.isSuitableTarget(IrkEntity.this.owner.getAttackTarget(), this.field_220803_b);
+        public boolean canUse() {
+            return IrkEntity.this.owner != null && IrkEntity.this.owner.getTarget() != null && this.canAttack(IrkEntity.this.owner.getTarget(), this.field_220803_b);
         }
 
-        public void startExecuting() {
-            IrkEntity.this.setAttackTarget(IrkEntity.this.owner.getAttackTarget());
-            super.startExecuting();
+        public void start() {
+            IrkEntity.this.setTarget(IrkEntity.this.owner.getTarget());
+            super.start();
         }
     }
 
@@ -324,23 +324,23 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
         }
 
         public void tick() {
-            if (this.action == MovementController.Action.MOVE_TO) {
-                Vector3d vector3d = new Vector3d(this.posX - IrkEntity.this.getPosX(), this.posY - IrkEntity.this.getPosY(), this.posZ - IrkEntity.this.getPosZ());
+            if (this.operation == MovementController.Action.MOVE_TO) {
+                Vector3d vector3d = new Vector3d(this.wantedX - IrkEntity.this.getX(), this.wantedY - IrkEntity.this.getY(), this.wantedZ - IrkEntity.this.getZ());
                 double d0 = vector3d.length();
-                if (d0 < IrkEntity.this.getBoundingBox().getAverageEdgeLength()) {
-                    this.action = MovementController.Action.WAIT;
-                    IrkEntity.this.setMotion(IrkEntity.this.getMotion().scale(0.5D));
+                if (d0 < IrkEntity.this.getBoundingBox().getSize()) {
+                    this.operation = MovementController.Action.WAIT;
+                    IrkEntity.this.setDeltaMovement(IrkEntity.this.getDeltaMovement().scale(0.5D));
                 } else {
-                    IrkEntity.this.setMotion(IrkEntity.this.getMotion().add(vector3d.scale(this.speed * 0.05D / d0)));
-                    if (IrkEntity.this.getAttackTarget() == null) {
-                        Vector3d vector3d1 = IrkEntity.this.getMotion();
-                        IrkEntity.this.rotationYaw = -((float) MathHelper.atan2(vector3d1.x, vector3d1.z)) * (180F / (float)Math.PI);
-                        IrkEntity.this.renderYawOffset = IrkEntity.this.rotationYaw;
+                    IrkEntity.this.setDeltaMovement(IrkEntity.this.getDeltaMovement().add(vector3d.scale(this.speedModifier * 0.05D / d0)));
+                    if (IrkEntity.this.getTarget() == null) {
+                        Vector3d vector3d1 = IrkEntity.this.getDeltaMovement();
+                        IrkEntity.this.yRot = -((float) MathHelper.atan2(vector3d1.x, vector3d1.z)) * (180F / (float)Math.PI);
+                        IrkEntity.this.yBodyRot = IrkEntity.this.yRot;
                     } else {
-                        double d2 = IrkEntity.this.getAttackTarget().getPosX() - IrkEntity.this.getPosX();
-                        double d1 = IrkEntity.this.getAttackTarget().getPosZ() - IrkEntity.this.getPosZ();
-                        IrkEntity.this.rotationYaw = -((float)MathHelper.atan2(d2, d1)) * (180F / (float)Math.PI);
-                        IrkEntity.this.renderYawOffset = IrkEntity.this.rotationYaw;
+                        double d2 = IrkEntity.this.getTarget().getX() - IrkEntity.this.getX();
+                        double d1 = IrkEntity.this.getTarget().getZ() - IrkEntity.this.getZ();
+                        IrkEntity.this.yRot = -((float)MathHelper.atan2(d2, d1)) * (180F / (float)Math.PI);
+                        IrkEntity.this.yBodyRot = IrkEntity.this.yRot;
                     }
                 }
 
@@ -350,29 +350,29 @@ public class IrkEntity extends MonsterEntity implements ICrossbowUser {
 
     class MoveRandomGoal extends Goal {
         public MoveRandomGoal() {
-            this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE));
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
         }
 
-        public boolean shouldExecute() {
-            return !IrkEntity.this.getMoveHelper().isUpdating() && IrkEntity.this.rand.nextInt(7) == 0;
+        public boolean canUse() {
+            return !IrkEntity.this.getMoveControl().hasWanted() && IrkEntity.this.random.nextInt(7) == 0;
         }
 
-        public boolean shouldContinueExecuting() {
+        public boolean canContinueToUse() {
             return false;
         }
 
         public void tick() {
             BlockPos blockpos = IrkEntity.this.getBoundOrigin();
             if (blockpos == null) {
-                blockpos = IrkEntity.this.getPosition();
+                blockpos = IrkEntity.this.blockPosition();
             }
 
             for(int i = 0; i < 3; ++i) {
-                BlockPos blockpos1 = blockpos.add(IrkEntity.this.rand.nextInt(15) - 7, IrkEntity.this.getPosY() + 1.0D, IrkEntity.this.rand.nextInt(15) - 7);
-                if (IrkEntity.this.world.isAirBlock(blockpos1)) {
-                    IrkEntity.this.moveController.setMoveTo((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
-                    if (IrkEntity.this.getAttackTarget() == null) {
-                        IrkEntity.this.getLookController().setLookPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);
+                BlockPos blockpos1 = blockpos.offset(IrkEntity.this.random.nextInt(15) - 7, IrkEntity.this.getY() + 1.0D, IrkEntity.this.random.nextInt(15) - 7);
+                if (IrkEntity.this.level.isEmptyBlock(blockpos1)) {
+                    IrkEntity.this.moveControl.setWantedPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
+                    if (IrkEntity.this.getTarget() == null) {
+                        IrkEntity.this.getLookControl().setLookAt((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);
                     }
                     break;
                 }

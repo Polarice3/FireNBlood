@@ -29,19 +29,19 @@ public class SoulFireballEntity extends DamagingProjectileEntity {
         super(ModEntityType.SOUL_FIREBALL.get(), shooter, accelX, accelY, accelZ, worldIn);
     }
 
-    protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
-        super.onEntityHit(p_213868_1_);
-        if (!this.world.isRemote) {
+    protected void onHitEntity(EntityRayTraceResult p_213868_1_) {
+        super.onHitEntity(p_213868_1_);
+        if (!this.level.isClientSide) {
             Entity entity = p_213868_1_.getEntity();
-            if (!entity.isImmuneToFire()) {
-                Entity entity1 = this.getShooter();
-                int i = entity.getFireTimer();
-                entity.setFire(15);
-                boolean flag = entity.attackEntityFrom(DamageSource.causeIndirectMagicDamage(this, entity1), 6.0F);
+            if (!entity.fireImmune()) {
+                Entity entity1 = this.getOwner();
+                int i = entity.getRemainingFireTicks();
+                entity.setSecondsOnFire(15);
+                boolean flag = entity.hurt(DamageSource.indirectMagic(this, entity1), 6.0F);
                 if (!flag) {
-                    entity.forceFireTicks(i);
+                    entity.setRemainingFireTicks(i);
                 } else if (entity1 instanceof LivingEntity) {
-                    this.applyEnchantments((LivingEntity)entity1, entity);
+                    this.doEnchantDamageEffects((LivingEntity)entity1, entity);
                 }
             } else if (entity instanceof TaillessAnathemaEntity){
                 ((TaillessAnathemaEntity) entity).heal(5.0F);
@@ -53,25 +53,25 @@ public class SoulFireballEntity extends DamagingProjectileEntity {
     /**
      * Called when this EntityFireball hits a block or entity.
      */
-    protected void onImpact(RayTraceResult result) {
-        super.onImpact(result);
-        if (!this.world.isRemote) {
-            this.world.createExplosion(null, this.getPosX(), this.getPosY(), this.getPosZ(), 3.0F, Explosion.Mode.NONE);
+    protected void onHit(RayTraceResult result) {
+        super.onHit(result);
+        if (!this.level.isClientSide) {
+            this.level.explode(null, this.getX(), this.getY(), this.getZ(), 3.0F, Explosion.Mode.NONE);
             this.remove();
         }
     }
 
-    public boolean isBurning() {
+    public boolean isOnFire() {
         return false;
     }
 
-    public boolean isImmuneToExplosions(){return true;}
+    public boolean ignoreExplosion(){return true;}
 
     public boolean canBeCollidedWith() {
         return false;
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         return false;
     }
 
@@ -79,12 +79,12 @@ public class SoulFireballEntity extends DamagingProjectileEntity {
         return ParticleTypes.SOUL_FIRE_FLAME;
     }
 
-    protected boolean isFireballFiery() {
+    protected boolean shouldBurn() {
         return false;
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

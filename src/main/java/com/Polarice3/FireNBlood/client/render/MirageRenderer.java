@@ -17,7 +17,7 @@ public class MirageRenderer extends MobRenderer<MirageEntity, MirageModel<Mirage
     }
 
     @Override
-    public ResourceLocation getEntityTexture(MirageEntity entity) {
+    public ResourceLocation getTextureLocation(MirageEntity entity) {
         return entity.isAggressive() ? ANGRY : TEXTURE;
     }
 }

@@ -13,7 +13,7 @@ public abstract class AbstractProtectorRenderer <T extends AbstractProtectorEnti
         this.addLayer(new HeadLayer<>(this));
     }
 
-        protected void preRenderCallback(T entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+        protected void scale(T entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         float f = 0.9375F;
         matrixStackIn.scale(0.9375F, 0.9375F, 0.9375F);
     }

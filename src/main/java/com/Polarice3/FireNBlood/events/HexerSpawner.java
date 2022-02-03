@@ -25,15 +25,16 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.Random;
 
+
 public class HexerSpawner {
     private final Random random = new Random();
-    private final ServerWorld world;
+    private final ServerWorld level;
     private int field_221248_c;
     private int field_221249_d;
     private int field_221250_e;
 
     public HexerSpawner(ServerWorld p_i231576_1_) {
-        this.world = p_i231576_1_;
+        this.level = p_i231576_1_;
         this.field_221248_c = 1200;
         HexerWorldData worldinfo = HexerWorldData.get(p_i231576_1_);
         this.field_221249_d = worldinfo.getHexerSpawnDelay();
@@ -53,7 +54,7 @@ public class HexerSpawner {
         } else if (--this.field_221248_c > 0) {
             return 0;
         } else {
-            HexerWorldData worldinfo = HexerWorldData.get(world);
+            HexerWorldData worldinfo = HexerWorldData.get(level);
             this.field_221248_c = 1200;
             this.field_221249_d -= 1200;
             worldinfo.setHexerSpawnDelay(this.field_221249_d);
@@ -61,7 +62,7 @@ public class HexerSpawner {
                 return 0;
             } else {
                 this.field_221249_d = 24000;
-                if (!this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
+                if (!this.level.getGameRules().getBoolean(GameRules.RULE_DOMOBSPAWNING)) {
                     return 0;
                 } else {
                     int i = this.field_221250_e;
@@ -69,7 +70,7 @@ public class HexerSpawner {
                     worldinfo.setHexerSpawnChance(this.field_221250_e);
                     if (this.random.nextInt(100) > i) {
                         return 0;
-                    } else if (this.func_234562_a_(this.world)) {
+                    } else if (this.func_234562_a_(this.level)) {
                         this.field_221250_e = 25;
                         return 1;
                     } else {
@@ -87,16 +88,16 @@ public class HexerSpawner {
         } else if (this.random.nextInt(10) != 0) {
             return false;
         } else {
-            BlockPos blockpos = playerentity.getPosition();
+            BlockPos blockpos = playerentity.blockPosition();
             int i = 48;
-            PointOfInterestManager pointofinterestmanager = p_234562_1_.getPointOfInterestManager();
+            PointOfInterestManager pointofinterestmanager = p_234562_1_.getPoiManager();
             Optional<BlockPos> optional = pointofinterestmanager.find(PointOfInterestType.MEETING.getPredicate(), (p_221241_0_) -> {
                 return true;
             }, blockpos, 48, PointOfInterestManager.Status.ANY);
             BlockPos blockpos1 = optional.orElse(blockpos);
             BlockPos blockpos2 = this.func_234561_a_(p_234562_1_, blockpos1, 48);
             if (blockpos2 != null && this.func_234560_a_(p_234562_1_, blockpos2)) {
-                if (p_234562_1_.func_242406_i(blockpos2).equals(Optional.of(Biomes.THE_VOID))) {
+                if (p_234562_1_.getBiomeName(blockpos2).equals(Optional.of(Biomes.THE_VOID))) {
                     return false;
                 }
 
@@ -104,7 +105,7 @@ public class HexerSpawner {
                 if (hexerentity != null) {
                     hexerentity.setWanderer(true);
                     hexerentity.setDespawnDelay(48000);
-                    hexerentity.setHomePosAndDistance(blockpos1, 16);
+                    hexerentity.restrictTo(blockpos1, 16);
                     return true;
                 }
             }
@@ -122,7 +123,7 @@ public class HexerSpawner {
             int k = p_234561_2_.getZ() + this.random.nextInt(p_234561_3_ * 2) - p_234561_3_;
             int l = p_234561_1_.getHeight(Heightmap.Type.WORLD_SURFACE, j, k);
             BlockPos blockpos1 = new BlockPos(j, l, k);
-            if (WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, p_234561_1_, blockpos1, EntityType.WANDERING_TRADER)) {
+            if (WorldEntitySpawner.isSpawnPositionOk(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, p_234561_1_, blockpos1, EntityType.WANDERING_TRADER)) {
                 blockpos = blockpos1;
                 break;
             }
@@ -132,7 +133,7 @@ public class HexerSpawner {
     }
 
     private boolean func_234560_a_(IBlockReader p_234560_1_, BlockPos p_234560_2_) {
-        for(BlockPos blockpos : BlockPos.getAllInBoxMutable(p_234560_2_, p_234560_2_.add(1, 2, 1))) {
+        for(BlockPos blockpos : BlockPos.betweenClosed(p_234560_2_, p_234560_2_.offset(1, 2, 1))) {
             if (!p_234560_1_.getBlockState(blockpos).getCollisionShape(p_234560_1_, blockpos).isEmpty()) {
                 return false;
             }

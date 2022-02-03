@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 public class BulletEntity extends FlyingTaillessEntity {
-    protected static final DataParameter<Byte> BULLET_FLAGS = EntityDataManager.createKey(BulletEntity.class, DataSerializers.BYTE);
+    protected static final DataParameter<Byte> BULLET_FLAGS = EntityDataManager.defineId(BulletEntity.class, DataSerializers.BYTE);
 
     private MobEntity owner;
     @Nullable
@@ -39,13 +39,13 @@ public class BulletEntity extends FlyingTaillessEntity {
 
     public BulletEntity(EntityType<? extends FlyingTaillessEntity> type, World worldIn) {
         super(type, worldIn);
-        this.experienceValue = 0;
-        this.moveController = new BulletEntity.MoveHelperController(this);
+        this.xpReward = 0;
+        this.moveControl = new BulletEntity.MoveHelperController(this);
     }
 
     public void move(MoverType typeIn, Vector3d pos) {
         super.move(typeIn, pos);
-        this.doBlockCollisions();
+        this.checkInsideBlocks();
     }
 
     public void tick() {
@@ -53,16 +53,16 @@ public class BulletEntity extends FlyingTaillessEntity {
         this.setNoGravity(true);
         if (this.limitedLifespan && --this.limitedLifeTicks <= 0) {
             this.limitedLifeTicks = 20;
-            this.attackEntityFrom(DamageSource.STARVE, 1.0F);
+            this.hurt(DamageSource.STARVE, 1.0F);
         }
 
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 5.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.35D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .add(Attributes.MAX_HEALTH, 5.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.35D);
     }
 
     protected void registerGoals() {
@@ -72,40 +72,40 @@ public class BulletEntity extends FlyingTaillessEntity {
         this.goalSelector.addGoal(8, new BulletEntity.MoveRandomGoal());
         this.goalSelector.addGoal(9, new LookAtGoal(this, PlayerEntity.class, 3.0F, 1.0F));
         this.goalSelector.addGoal(10, new LookAtGoal(this, MobEntity.class, 8.0F));
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, AbstractRaiderEntity.class)).setCallsForHelp());
+        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, AbstractRaiderEntity.class)).setAlertOthers());
         this.targetSelector.addGoal(2, new BulletEntity.CopyOwnerTargetGoal(this));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractIllagerEntity.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true));
     }
 
-    protected void updateAITasks() {
-        super.updateAITasks();
+    protected void customServerAiStep() {
+        super.customServerAiStep();
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_POLAR_BEAR_AMBIENT_BABY;
+        return SoundEvents.POLAR_BEAR_AMBIENT_BABY;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_FOX_HURT;
+        return SoundEvents.FOX_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_PHANTOM_DEATH;
+        return SoundEvents.PHANTOM_DEATH;
     }
 
-    protected boolean isDespawnPeaceful() {
+    protected boolean shouldDespawnInPeaceful() {
         return true;
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(BULLET_FLAGS, (byte)0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(BULLET_FLAGS, (byte)0);
     }
 
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if (compound.contains("BoundX")) {
             this.boundOrigin = new BlockPos(compound.getInt("BoundX"), compound.getInt("BoundY"), compound.getInt("BoundZ"));
         }
@@ -116,8 +116,8 @@ public class BulletEntity extends FlyingTaillessEntity {
 
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         if (this.boundOrigin != null) {
             compound.putInt("BoundX", this.boundOrigin.getX());
             compound.putInt("BoundY", this.boundOrigin.getY());
@@ -148,31 +148,31 @@ public class BulletEntity extends FlyingTaillessEntity {
         this.limitedLifeTicks = limitedLifeTicksIn;
     }
 
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
     private boolean getBulletFlag(int mask) {
-        int i = this.dataManager.get(BULLET_FLAGS);
+        int i = this.entityData.get(BULLET_FLAGS);
         return (i & mask) != 0;
     }
 
     private void setBulletFlag(int mask, boolean value) {
-        int i = this.dataManager.get(BULLET_FLAGS);
+        int i = this.entityData.get(BULLET_FLAGS);
         if (value) {
             i = i | mask;
         } else {
             i = i & ~mask;
         }
 
-        this.dataManager.set(BULLET_FLAGS, (byte)(i & 255));
+        this.entityData.set(BULLET_FLAGS, (byte)(i & 255));
     }
 
     public boolean isCharging() {
         return this.getBulletFlag(1);
     }
 
-    public void setCharging(boolean charging) {
+    public void setChargingCrossbow(boolean charging) {
         this.setBulletFlag(1, charging);
     }
 
@@ -184,9 +184,9 @@ public class BulletEntity extends FlyingTaillessEntity {
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
-            if (BulletEntity.this.getAttackTarget() != null && !BulletEntity.this.getMoveHelper().isUpdating()) {
-                return true/*BulletEntity.this.getDistance(BulletEntity.this.getAttackTarget()) > 4.0D*/;
+        public boolean canUse() {
+            if (BulletEntity.this.getTarget() != null && !BulletEntity.this.getMoveControl().hasWanted()) {
+                return true/*BulletEntity.this.distanceTo(BulletEntity.this.getTarget()) > 4.0D*/;
             } else {
                 return false;
             }
@@ -195,22 +195,22 @@ public class BulletEntity extends FlyingTaillessEntity {
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
-        public boolean shouldContinueExecuting() {
-            return BulletEntity.this.getMoveHelper().isUpdating() && BulletEntity.this.isCharging() && BulletEntity.this.getAttackTarget() != null && BulletEntity.this.getAttackTarget().isAlive();
+        public boolean canContinueToUse() {
+            return BulletEntity.this.getMoveControl().hasWanted() && BulletEntity.this.isCharging() && BulletEntity.this.getTarget() != null && BulletEntity.this.getTarget().isAlive();
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
-            LivingEntity livingentity = BulletEntity.this.getAttackTarget();
+        public void start() {
+            LivingEntity livingentity = BulletEntity.this.getTarget();
             Vector3d vector3d = livingentity.getEyePosition(1.0F);
-            BulletEntity.this.moveController.setMoveTo(vector3d.x, vector3d.y, vector3d.z, 1.0D);
-            BulletEntity.this.setCharging(true);
+            BulletEntity.this.moveControl.setWantedPosition(vector3d.x, vector3d.y, vector3d.z, 1.0D);
+            BulletEntity.this.setChargingCrossbow(true);
         }
 
-        public void resetTask() {
-            BulletEntity.this.setCharging(false);
+        public void stop() {
+            BulletEntity.this.setChargingCrossbow(false);
         }
 
 
@@ -218,24 +218,24 @@ public class BulletEntity extends FlyingTaillessEntity {
          * Keep ticking a continuous task that has already been started
          */
         public void tick() {
-            LivingEntity livingentity = BulletEntity.this.getAttackTarget();
-            if (BulletEntity.this.getBoundingBox().grow(0.2D).intersects(livingentity.getBoundingBox())) {
+            LivingEntity livingentity = BulletEntity.this.getTarget();
+            if (BulletEntity.this.getBoundingBox().inflate(0.2D).intersects(livingentity.getBoundingBox())) {
                 this.explode();
             }
 
         }
 
         public void explode() {
-            if (!world.isRemote) {
+            if (!level.isClientSide) {
                 BulletEntity.this.dead = true;
-                world.createExplosion(BulletEntity.this, BulletEntity.this.getPosX(), BulletEntity.this.getPosY(), BulletEntity.this.getPosZ(), 1.5F, false, Explosion.Mode.NONE);
+                level.explode(BulletEntity.this, BulletEntity.this.getX(), BulletEntity.this.getY(), BulletEntity.this.getZ(), 1.5F, false, Explosion.Mode.NONE);
                 BulletEntity.this.remove();
             }
         }
     }
 
     class CopyOwnerTargetGoal extends TargetGoal {
-        private final EntityPredicate field_220803_b = (new EntityPredicate()).setIgnoresLineOfSight().setUseInvisibilityCheck();
+        private final EntityPredicate field_220803_b = (new EntityPredicate()).allowUnseeable().ignoreInvisibilityTesting();
 
         public CopyOwnerTargetGoal(CreatureEntity creature) {
             super(creature, false);
@@ -245,16 +245,16 @@ public class BulletEntity extends FlyingTaillessEntity {
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
-            return BulletEntity.this.owner != null && BulletEntity.this.owner.getAttackTarget() != null && this.isSuitableTarget(BulletEntity.this.owner.getAttackTarget(), this.field_220803_b);
+        public boolean canUse() {
+            return BulletEntity.this.owner != null && BulletEntity.this.owner.getTarget() != null && this.canAttack(BulletEntity.this.owner.getTarget(), this.field_220803_b);
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
-            BulletEntity.this.setAttackTarget(BulletEntity.this.owner.getAttackTarget());
-            super.startExecuting();
+        public void start() {
+            BulletEntity.this.setTarget(BulletEntity.this.owner.getTarget());
+            super.start();
         }
     }
 
@@ -264,23 +264,23 @@ public class BulletEntity extends FlyingTaillessEntity {
         }
 
         public void tick() {
-            if (this.action == MovementController.Action.MOVE_TO) {
-                Vector3d vector3d = new Vector3d(this.posX - BulletEntity.this.getPosX(), this.posY - BulletEntity.this.getPosY(), this.posZ - BulletEntity.this.getPosZ());
+            if (this.operation == MovementController.Action.MOVE_TO) {
+                Vector3d vector3d = new Vector3d(this.wantedX - BulletEntity.this.getX(), this.wantedY - BulletEntity.this.getY(), this.wantedZ - BulletEntity.this.getZ());
                 double d0 = vector3d.length();
-                if (d0 < BulletEntity.this.getBoundingBox().getAverageEdgeLength()) {
-                    this.action = MovementController.Action.WAIT;
-                    BulletEntity.this.setMotion(BulletEntity.this.getMotion().scale(0.5D));
+                if (d0 < BulletEntity.this.getBoundingBox().getSize()) {
+                    this.operation = MovementController.Action.WAIT;
+                    BulletEntity.this.setDeltaMovement(BulletEntity.this.getDeltaMovement().scale(0.5D));
                 } else {
-                    BulletEntity.this.setMotion(BulletEntity.this.getMotion().add(vector3d.scale(this.speed * 0.05D / d0)));
-                    if (BulletEntity.this.getAttackTarget() == null) {
-                        Vector3d vector3d1 = BulletEntity.this.getMotion();
-                        BulletEntity.this.rotationYaw = -((float)MathHelper.atan2(vector3d1.x, vector3d1.z)) * (180F / (float)Math.PI);
-                        BulletEntity.this.renderYawOffset = BulletEntity.this.rotationYaw;
+                    BulletEntity.this.setDeltaMovement(BulletEntity.this.getDeltaMovement().add(vector3d.scale(this.speedModifier * 0.05D / d0)));
+                    if (BulletEntity.this.getTarget() == null) {
+                        Vector3d vector3d1 = BulletEntity.this.getDeltaMovement();
+                        BulletEntity.this.yRot = -((float)MathHelper.atan2(vector3d1.x, vector3d1.z)) * (180F / (float)Math.PI);
+                        BulletEntity.this.yBodyRot = BulletEntity.this.yRot;
                     } else {
-                        double d2 = BulletEntity.this.getAttackTarget().getPosX() - BulletEntity.this.getPosX();
-                        double d1 = BulletEntity.this.getAttackTarget().getPosZ() - BulletEntity.this.getPosZ();
-                        BulletEntity.this.rotationYaw = -((float)MathHelper.atan2(d2, d1)) * (180F / (float)Math.PI);
-                        BulletEntity.this.renderYawOffset = BulletEntity.this.rotationYaw;
+                        double d2 = BulletEntity.this.getTarget().getX() - BulletEntity.this.getX();
+                        double d1 = BulletEntity.this.getTarget().getZ() - BulletEntity.this.getZ();
+                        BulletEntity.this.yRot = -((float)MathHelper.atan2(d2, d1)) * (180F / (float)Math.PI);
+                        BulletEntity.this.yBodyRot = BulletEntity.this.yRot;
                     }
                 }
 
@@ -290,21 +290,21 @@ public class BulletEntity extends FlyingTaillessEntity {
 
     class MoveRandomGoal extends Goal {
         public MoveRandomGoal() {
-            this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE));
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE));
         }
 
         /**
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
-            return !BulletEntity.this.getMoveHelper().isUpdating() && BulletEntity.this.rand.nextInt(7) == 0;
+        public boolean canUse() {
+            return !BulletEntity.this.getMoveControl().hasWanted() && BulletEntity.this.random.nextInt(7) == 0;
         }
 
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
-        public boolean shouldContinueExecuting() {
+        public boolean canContinueToUse() {
             return false;
         }
 
@@ -314,15 +314,15 @@ public class BulletEntity extends FlyingTaillessEntity {
         public void tick() {
             BlockPos blockpos = BulletEntity.this.getBoundOrigin();
             if (blockpos == null) {
-                blockpos = BulletEntity.this.getPosition();
+                blockpos = BulletEntity.this.blockPosition();
             }
 
             for(int i = 0; i < 3; ++i) {
-                BlockPos blockpos1 = blockpos.add(BulletEntity.this.rand.nextInt(15) - 7, BulletEntity.this.rand.nextInt(11) - 5, BulletEntity.this.rand.nextInt(15) - 7);
-                if (BulletEntity.this.world.isAirBlock(blockpos1)) {
-                    BulletEntity.this.moveController.setMoveTo((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
-                    if (BulletEntity.this.getAttackTarget() == null) {
-                        BulletEntity.this.getLookController().setLookPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);
+                BlockPos blockpos1 = blockpos.offset(BulletEntity.this.random.nextInt(15) - 7, BulletEntity.this.random.nextInt(11) - 5, BulletEntity.this.random.nextInt(15) - 7);
+                if (BulletEntity.this.level.isEmptyBlock(blockpos1)) {
+                    BulletEntity.this.moveControl.setWantedPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
+                    if (BulletEntity.this.getTarget() == null) {
+                        BulletEntity.this.getLookControl().setLookAt((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);
                     }
                     break;
                 }

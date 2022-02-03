@@ -22,8 +22,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import javax.annotation.Nullable;
 
 public class MutatedEntity extends AnimalEntity {
-    private static final DataParameter<Integer> STATE = EntityDataManager.createKey(CreeperEntity.class, DataSerializers.VARINT);
-    private static final DataParameter<Boolean> IGNITED = EntityDataManager.createKey(CreeperEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Integer> STATE = EntityDataManager.defineId(CreeperEntity.class, DataSerializers.INT);
+    private static final DataParameter<Boolean> IGNITED = EntityDataManager.defineId(CreeperEntity.class, DataSerializers.BOOLEAN);
     private int timeSinceIgnited;
     private int lastActiveTime;
     private int fuseTime = 20;
@@ -32,21 +32,27 @@ public class MutatedEntity extends AnimalEntity {
         super(type, worldIn);
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(STATE, -1);
-        this.dataManager.register(IGNITED, false);
+    @Nullable
+    @Override
+    public AgeableEntity getBreedOffspring(ServerWorld p_241840_1_, AgeableEntity p_241840_2_) {
+        return null;
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(STATE, -1);
+        this.entityData.define(IGNITED, false);
+    }
+
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
 
         compound.putShort("Fuse", (short)this.fuseTime);
         compound.putBoolean("ignited", this.hasIgnited());
     }
 
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if (compound.contains("Fuse", 99)) {
             this.fuseTime = compound.getShort("Fuse");
         }
@@ -58,19 +64,19 @@ public class MutatedEntity extends AnimalEntity {
     }
 
     public boolean hasIgnited() {
-        return this.dataManager.get(IGNITED);
+        return this.entityData.get(IGNITED);
     }
 
     public void ignite() {
-        this.dataManager.set(IGNITED, true);
+        this.entityData.set(IGNITED, true);
     }
 
     public int getMutatedState() {
-        return this.dataManager.get(STATE);
+        return this.entityData.get(STATE);
     }
 
     public void setMutatedState(int state) {
-        this.dataManager.set(STATE, state);
+        this.entityData.set(STATE, state);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -81,8 +87,8 @@ public class MutatedEntity extends AnimalEntity {
     public void tick() {
         if (this.isAlive()) {
             if (!this.hasIgnited()){
-                int random = this.world.rand.nextInt(36000) + 12000;
-                if (this.ticksExisted >= random){
+                int random = this.level.random.nextInt(36000) + 12000;
+                if (this.tickCount >= random){
                     this.ignite();
                 }
             }
@@ -93,7 +99,7 @@ public class MutatedEntity extends AnimalEntity {
 
             int i = this.getMutatedState();
             if (i > 0 && this.timeSinceIgnited == 0) {
-                this.playSound(SoundEvents.ENTITY_SKELETON_HORSE_DEATH, 1.0F, 0.5F);
+                this.playSound(SoundEvents.SKELETON_HORSE_DEATH, 1.0F, 0.5F);
             }
 
             this.timeSinceIgnited += i;
@@ -111,37 +117,32 @@ public class MutatedEntity extends AnimalEntity {
     }
 
     private void explode() {
-        if (!this.world.isRemote) {
+        if (!this.level.isClientSide) {
             this.dead = true;
-            this.world.createExplosion(this, this.getPosX(), this.getPosY(), this.getPosZ(), 1.0F, Explosion.Mode.NONE);
+            this.level.explode(this, this.getX(), this.getY(), this.getZ(), 1.0F, Explosion.Mode.NONE);
             this.remove();
-            for (int i = 0; i < 4 + this.world.rand.nextInt(4); ++i) {
-                ParasiteEntity parasiteEntity = new ParasiteEntity(ModEntityType.PARASITE.get(), world);
-                parasiteEntity.setPosition(this.getPosX(), this.getPosY(), this.getPosZ());
+            for (int i = 0; i < 4 + this.level.random.nextInt(4); ++i) {
+                ParasiteEntity parasiteEntity = new ParasiteEntity(ModEntityType.PARASITE.get(), level);
+                parasiteEntity.setPos(this.getX(), this.getY(), this.getZ());
                 parasiteEntity.setAttackAll(true);
-                world.addEntity(parasiteEntity);
+                level.addFreshEntity(parasiteEntity);
             }
         }
 
     }
 
 
-    public void onDeath(DamageSource cause) {
-        int random = this.world.rand.nextInt(8);
+    public void die(DamageSource cause) {
+        int random = this.level.random.nextInt(8);
         if (random == 0){
-            for (int i = 0; i < 2 + this.world.rand.nextInt(2); ++i) {
-                ParasiteEntity parasiteEntity = new ParasiteEntity(ModEntityType.PARASITE.get(), world);
-                parasiteEntity.setPosition(this.getPosX(), this.getPosY(), this.getPosZ());
+            for (int i = 0; i < 2 + this.level.random.nextInt(2); ++i) {
+                ParasiteEntity parasiteEntity = new ParasiteEntity(ModEntityType.PARASITE.get(), level);
+                parasiteEntity.setPos(this.getX(), this.getY(), this.getZ());
                 parasiteEntity.setAttackAll(true);
-                world.addEntity(parasiteEntity);
+                level.addFreshEntity(parasiteEntity);
             }
         }
-        super.onDeath(cause);
+        super.die(cause);
     }
 
-    @Nullable
-    @Override
-    public AgeableEntity createChild(ServerWorld world, AgeableEntity mate) {
-        return null;
-    }
 }

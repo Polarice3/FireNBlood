@@ -30,35 +30,35 @@ public class SpiderlingSpell extends ChargingSpells{
     }
 
     public SoundEvent CastingSound() {
-        return SoundEvents.ENTITY_EVOKER_PREPARE_SUMMON;
+        return SoundEvents.EVOKER_PREPARE_SUMMON;
     }
 
     public ItemStack WandResult(World worldIn, LivingEntity entityLiving) {
-        BlockPos blockpos = entityLiving.getPosition();
+        BlockPos blockpos = entityLiving.blockPosition();
         SpiderlingMinionEntity summonedentity = new SpiderlingMinionEntity(ModEntityType.SPIDERLING_MINION.get(), worldIn);
-        summonedentity.setOwnerId(entityLiving.getUniqueID());
-        summonedentity.moveToBlockPosAndAngles(blockpos, 0.0F, 0.0F);
+        summonedentity.setOwnerId(entityLiving.getUUID());
+        summonedentity.moveTo(blockpos, 0.0F, 0.0F);
         summonedentity.setLimitedLife(180);
-        worldIn.addEntity(summonedentity);
-        worldIn.playSound((PlayerEntity) null, entityLiving.getPosX(), entityLiving.getPosY(), entityLiving.getPosZ(), SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-        for(int i = 0; i < entityLiving.world.rand.nextInt(35) + 10; ++i) {
-            entityLiving.world.addParticle(ParticleTypes.POOF, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), 0.0F, 0.0F, 0.0F);
+        worldIn.addFreshEntity(summonedentity);
+        worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.EVOKER_CAST_SPELL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+        for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
+            entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         }
         return null;
     }
 
     public void StaffResult(World worldIn, LivingEntity entityLiving) {
-        BlockPos blockpos = entityLiving.getPosition();
-        for(int i1 = 0; i1 < 2 + entityLiving.world.rand.nextInt(4); ++i1) {
+        BlockPos blockpos = entityLiving.blockPosition();
+        for(int i1 = 0; i1 < 2 + entityLiving.level.random.nextInt(4); ++i1) {
             SpiderlingMinionEntity summonedentity = new SpiderlingMinionEntity(ModEntityType.SPIDERLING_MINION.get(), worldIn);
-            summonedentity.setOwnerId(entityLiving.getUniqueID());
-            summonedentity.moveToBlockPosAndAngles(blockpos, 0.0F, 0.0F);
+            summonedentity.setOwnerId(entityLiving.getUUID());
+            summonedentity.moveTo(blockpos, 0.0F, 0.0F);
             summonedentity.setLimitedLife(360);
-            worldIn.addEntity(summonedentity);
+            worldIn.addFreshEntity(summonedentity);
         }
-        worldIn.playSound((PlayerEntity) null, entityLiving.getPosX(), entityLiving.getPosY(), entityLiving.getPosZ(), SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-        for(int i = 0; i < entityLiving.world.rand.nextInt(35) + 10; ++i) {
-            entityLiving.world.addParticle(ParticleTypes.POOF, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), 0.0F, 0.0F, 0.0F);
+        worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.EVOKER_CAST_SPELL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+        for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
+            entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         }
     }
 

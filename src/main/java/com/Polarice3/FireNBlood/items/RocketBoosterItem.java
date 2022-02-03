@@ -16,40 +16,40 @@ import net.minecraft.world.World;
 
 public class RocketBoosterItem extends Item {
     public RocketBoosterItem() {
-        super(new Item.Properties().group(FireNBlood.TAB).maxDamage(256));
+        super(new Item.Properties().tab(FireNBlood.TAB).durability(256));
     }
 
-    public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
+    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
         return repair.getItem() == Items.FIRE_CHARGE;
     }
 
-    public ActionResultType onItemUse(ItemUseContext context) {
-        World world = context.getWorld();
+    public ActionResultType useOn(ItemUseContext context) {
+        World world = context.getLevel();
         PlayerEntity playerIn = context.getPlayer();
-        if (!world.isRemote) {
-            ItemStack itemstack = context.getItem();
-            Vector3d vector3d = context.getHitVec();
-            Direction direction = context.getFace();
-            FireworkRocketEntity fireworkrocketentity = new FireworkRocketEntity(world, context.getPlayer(), vector3d.x + (double)direction.getXOffset() * 0.15D, vector3d.y + (double)direction.getYOffset() * 0.15D, vector3d.z + (double)direction.getZOffset() * 0.15D, itemstack);
-            world.addEntity(fireworkrocketentity);
+        if (!world.isClientSide) {
+            ItemStack itemstack = context.getItemInHand();
+            Vector3d vector3d = context.getClickLocation();
+            Direction direction = context.getClickedFace();
+            FireworkRocketEntity fireworkrocketentity = new FireworkRocketEntity(world, context.getPlayer(), vector3d.x + (double)direction.getStepX() * 0.15D, vector3d.y + (double)direction.getStepY() * 0.15D, vector3d.z + (double)direction.getStepZ() * 0.15D, itemstack);
+            world.addFreshEntity(fireworkrocketentity);
         }
 
-        return ActionResultType.func_233537_a_(world.isRemote);
+        return ActionResultType.sidedSuccess(world.isClientSide);
     }
 
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
-        if (playerIn.isElytraFlying()) {
-            if (!worldIn.isRemote) {
-                worldIn.addEntity(new FireworkRocketEntity(worldIn, itemstack, playerIn));
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
+        if (playerIn.isFallFlying()) {
+            if (!worldIn.isClientSide) {
+                worldIn.addFreshEntity(new FireworkRocketEntity(worldIn, itemstack, playerIn));
             }
-            itemstack.damageItem(1, playerIn, (player) ->
-                    player.sendBreakAnimation(player.getActiveHand()));
-            return ActionResult.func_233538_a_(playerIn.getHeldItem(handIn), worldIn.isRemote());
+            itemstack.hurtAndBreak(1, playerIn, (player) ->
+                    player.broadcastBreakEvent(player.getUsedItemHand()));
+            return ActionResult.sidedSuccess(playerIn.getItemInHand(handIn), worldIn.isClientSide());
         } else {
-            itemstack.damageItem(1, playerIn, (player) ->
-                    player.sendBreakAnimation(player.getActiveHand()));
-            return ActionResult.resultPass(playerIn.getHeldItem(handIn));
+            itemstack.hurtAndBreak(1, playerIn, (player) ->
+                    player.broadcastBreakEvent(player.getUsedItemHand()));
+            return ActionResult.pass(playerIn.getItemInHand(handIn));
         }
     }
 }

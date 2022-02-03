@@ -15,7 +15,7 @@ public class PenanceRenderer extends MobRenderer<PenanceEntity, PenanceModel<Pen
     }
 
     @Override
-    public ResourceLocation getEntityTexture(PenanceEntity entity) {
+    public ResourceLocation getTextureLocation(PenanceEntity entity) {
         return TEXTURE;
     }
 }

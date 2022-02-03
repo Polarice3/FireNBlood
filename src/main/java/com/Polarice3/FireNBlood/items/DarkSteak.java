@@ -14,30 +14,30 @@ import net.minecraft.world.World;
 public class DarkSteak extends Item {
     public DarkSteak() {
         super(new Item.Properties()
-                .group(FireNBlood.TAB)
+                .tab(FireNBlood.TAB)
                 .food(new Food.Builder()
-                        .hunger(4)
-                        .saturation(0.8F)
-                        .setAlwaysEdible()
+                        .nutrition(4)
+                        .saturationMod(0.8F)
+                        .alwaysEat()
                         .build())
         );
     }
 
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        super.onItemUseFinish(stack, worldIn, entityLiving);
-        int random = worldIn.rand.nextInt(15);
+    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
+        super.finishUsingItem(stack, worldIn, entityLiving);
+        int random = worldIn.random.nextInt(15);
         if (random == 0) {
-            EffectInstance effectinstance1 = entityLiving.getActivePotionEffect(RegistryHandler.EVIL_EYE.get());
+            EffectInstance effectinstance1 = entityLiving.getEffect(RegistryHandler.EVIL_EYE.get());
             if (effectinstance1 == null) {
                 EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, 0);
-                entityLiving.addPotionEffect(effectinstance);
+                entityLiving.addEffect(effectinstance);
             } else {
                 int amp = effectinstance1.getAmplifier();
                 int i = amp + 1;
                 i = MathHelper.clamp(i, 0, 5);
-                entityLiving.removeActivePotionEffect(RegistryHandler.EVIL_EYE.get());
+                entityLiving.removeEffectNoUpdate(RegistryHandler.EVIL_EYE.get());
                 EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, i);
-                entityLiving.addPotionEffect(effectinstance);
+                entityLiving.addEffect(effectinstance);
             }
         }
 
@@ -48,7 +48,7 @@ public class DarkSteak extends Item {
         return 32;
     }
 
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAction getUseAnimation(ItemStack stack) {
         return UseAction.EAT;
     }
 

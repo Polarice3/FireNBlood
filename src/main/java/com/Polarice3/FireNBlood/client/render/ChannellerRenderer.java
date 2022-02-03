@@ -26,16 +26,16 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 public class ChannellerRenderer extends MobRenderer<ChannellerEntity, ChannellerModel> {
     public static final ResourceLocation BEAM_TEXTURES = new ResourceLocation("textures/entity/end_crystal/end_crystal_beam.png");
     protected static final ResourceLocation TEXTURE = new ResourceLocation(FireNBlood.MOD_ID, "textures/entity/channeller.png");
-    private static final RenderType BEAM_RENDER_TYPE = RenderType.getEntitySmoothCutout(BEAM_TEXTURES);
+    private static final RenderType BEAM_RENDER_TYPE = RenderType.entitySmoothCutout(BEAM_TEXTURES);
 
     public ChannellerRenderer(EntityRendererManager renderManagerIn) {
         super(renderManagerIn, new ChannellerModel(), 0.5F);
     }
 
-    private Vector3d getPosition(LivingEntity entityLivingBaseIn, double p_177110_2_, float p_177110_4_) {
-        double d0 = MathHelper.lerp((double)p_177110_4_, entityLivingBaseIn.lastTickPosX, entityLivingBaseIn.getPosX());
-        double d1 = MathHelper.lerp((double)p_177110_4_, entityLivingBaseIn.lastTickPosY, entityLivingBaseIn.getPosY()) + p_177110_2_;
-        double d2 = MathHelper.lerp((double)p_177110_4_, entityLivingBaseIn.lastTickPosZ, entityLivingBaseIn.getPosZ());
+    private Vector3d blockPosition(LivingEntity entityLivingBaseIn, double p_177110_2_, float p_177110_4_) {
+        double d0 = MathHelper.lerp((double)p_177110_4_, entityLivingBaseIn.xOld, entityLivingBaseIn.getX());
+        double d1 = MathHelper.lerp((double)p_177110_4_, entityLivingBaseIn.yOld, entityLivingBaseIn.getY()) + p_177110_2_;
+        double d2 = MathHelper.lerp((double)p_177110_4_, entityLivingBaseIn.zOld, entityLivingBaseIn.getZ());
         return new Vector3d(d0, d1, d2);
     }
 
@@ -46,9 +46,9 @@ public class ChannellerRenderer extends MobRenderer<ChannellerEntity, Channeller
             if (livingEntityIn.getAllyTarget() != null) {
                 LivingEntity livingentity = livingEntityIn.getAllyTarget();
                 if (livingentity != null) {
-                    Vector3d vector3d = this.getPosition(livingentity, (double)livingentity.getHeight() * 0.5D, 1.0F);
-                    Vector3d vector3d1 = this.getPosition(livingEntityIn, (double)livingEntityIn.getEyeHeight(), 1.0F);
-                    return camera.isBoundingBoxInFrustum(new AxisAlignedBB(vector3d1.x, vector3d1.y, vector3d1.z, vector3d.x, vector3d.y, vector3d.z));
+                    Vector3d vector3d = this.blockPosition(livingentity, (double)livingentity.getBbHeight() * 0.5D, 1.0F);
+                    Vector3d vector3d1 = this.blockPosition(livingEntityIn, (double)livingEntityIn.getEyeHeight(), 1.0F);
+                    return camera.isVisible(new AxisAlignedBB(vector3d1.x, vector3d1.y, vector3d1.z, vector3d.x, vector3d.y, vector3d.z));
                 }
             }
 
@@ -59,22 +59,22 @@ public class ChannellerRenderer extends MobRenderer<ChannellerEntity, Channeller
     public void render(ChannellerEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
         LivingEntity target = entityIn.getAllyTarget();
-        if (target != null && !target.getShouldBeDead() && entityIn.isPraying()) {
+        if (target != null && !target.isDeadOrDying() && entityIn.isPraying()) {
             float f = partialTicks/4;
-            float f1 = (float)entityIn.world.getGameTime() + partialTicks;
+            float f1 = (float)entityIn.level.getGameTime() + partialTicks;
             float f2 = f1 * 0.5F % 1.0F;
             float f3 = entityIn.getEyeHeight();
-            matrixStackIn.push();
+            matrixStackIn.pushPose();
             matrixStackIn.translate(0.0D, (double)f3, 0.0D);
-            Vector3d vector3d = this.getPosition(target, (double)target.getHeight() * 0.5D, partialTicks);
-            Vector3d vector3d1 = this.getPosition(entityIn, (double)f3, partialTicks);
+            Vector3d vector3d = this.blockPosition(target, (double)target.getBbHeight() * 0.5D, partialTicks);
+            Vector3d vector3d1 = this.blockPosition(entityIn, (double)f3, partialTicks);
             Vector3d vector3d2 = vector3d.subtract(vector3d1);
             float f4 = (float)(vector3d2.length());
             vector3d2 = vector3d2.normalize();
             float f5 = (float)Math.acos(vector3d2.y);
             float f6 = (float)Math.atan2(vector3d2.z, vector3d2.x);
-            matrixStackIn.rotate(Vector3f.YP.rotationDegrees((((float)Math.PI / 2F) - f6) * (180F / (float)Math.PI)));
-            matrixStackIn.rotate(Vector3f.XP.rotationDegrees(f5 * (180F / (float)Math.PI)));
+            matrixStackIn.mulPose(Vector3f.YP.rotationDegrees((((float)Math.PI / 2F) - f6) * (180F / (float)Math.PI)));
+            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(f5 * (180F / (float)Math.PI)));
             int i = 1;
             float f7 = f1 * 0.05F * -1.5F;
             float f8 = f * f;
@@ -104,9 +104,9 @@ public class ChannellerRenderer extends MobRenderer<ChannellerEntity, Channeller
             float f29 = -1.0F + f2;
             float f30 = f4 * 2.5F + f29;
             IVertexBuilder ivertexbuilder = bufferIn.getBuffer(BEAM_RENDER_TYPE);
-            MatrixStack.Entry matrixstack$entry = matrixStackIn.getLast();
-            Matrix4f matrix4f = matrixstack$entry.getMatrix();
-            Matrix3f matrix3f = matrixstack$entry.getNormal();
+            MatrixStack.Entry matrixstack$entry = matrixStackIn.last();
+            Matrix4f matrix4f = matrixstack$entry.pose();
+            Matrix3f matrix3f = matrixstack$entry.normal();
             func_229108_a_(ivertexbuilder, matrix4f, matrix3f, f19, f4, f20, j, k, l, 0.4999F, f30);
             func_229108_a_(ivertexbuilder, matrix4f, matrix3f, f19, 0.0F, f20, j, k, l, 0.4999F, f29);
             func_229108_a_(ivertexbuilder, matrix4f, matrix3f, f21, 0.0F, f22, j, k, l, 0.0F, f29);
@@ -116,7 +116,7 @@ public class ChannellerRenderer extends MobRenderer<ChannellerEntity, Channeller
             func_229108_a_(ivertexbuilder, matrix4f, matrix3f, f25, 0.0F, f26, j, k, l, 0.0F, f29);
             func_229108_a_(ivertexbuilder, matrix4f, matrix3f, f25, f4, f26, j, k, l, 0.0F, f30);
             float f31 = 0.0F;
-            if (entityIn.ticksExisted % 2 == 0) {
+            if (entityIn.tickCount % 2 == 0) {
                 f31 = 0.5F;
             }
 
@@ -124,19 +124,19 @@ public class ChannellerRenderer extends MobRenderer<ChannellerEntity, Channeller
             func_229108_a_(ivertexbuilder, matrix4f, matrix3f, f13, f4, f14, j, k, l, 1.0F, f31 + 0.5F);
             func_229108_a_(ivertexbuilder, matrix4f, matrix3f, f17, f4, f18, j, k, l, 1.0F, f31);
             func_229108_a_(ivertexbuilder, matrix4f, matrix3f, f15, f4, f16, j, k, l, 0.5F, f31);
-            matrixStackIn.pop();
+            matrixStackIn.popPose();
         }
     }
 
     private static void func_229108_a_(IVertexBuilder p_229108_0_, Matrix4f p_229108_1_, Matrix3f p_229108_2_, float p_229108_3_, float p_229108_4_, float p_229108_5_, int p_229108_6_, int p_229108_7_, int p_229108_8_, float p_229108_9_, float p_229108_10_) {
-        p_229108_0_.pos(p_229108_1_, p_229108_3_, p_229108_4_, p_229108_5_).color(p_229108_6_, p_229108_7_, p_229108_8_, 255).tex(p_229108_9_, p_229108_10_).overlay(OverlayTexture.NO_OVERLAY).lightmap(15728880).normal(p_229108_2_, 0.0F, 1.0F, 0.0F).endVertex();
+        p_229108_0_.vertex(p_229108_1_, p_229108_3_, p_229108_4_, p_229108_5_).color(p_229108_6_, p_229108_7_, p_229108_8_, 255).uv(p_229108_9_, p_229108_10_).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(15728880).normal(p_229108_2_, 0.0F, 1.0F, 0.0F).endVertex();
     }
 
-    public ResourceLocation getEntityTexture(ChannellerEntity entity) {
+    public ResourceLocation getTextureLocation(ChannellerEntity entity) {
         return TEXTURE;
     }
 
-    protected void preRenderCallback(ChannellerEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(ChannellerEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         float f = 0.9375F;
         matrixStackIn.scale(0.9375F, 0.9375F, 0.9375F);
     }

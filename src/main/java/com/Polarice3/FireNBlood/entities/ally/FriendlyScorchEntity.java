@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class FriendlyScorchEntity extends MinionEntity {
-    protected static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.createKey(FriendlyScorchEntity.class, DataSerializers.OPTIONAL_UNIQUE_ID);
+    protected static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.defineId(FriendlyScorchEntity.class, DataSerializers.OPTIONAL_UUID);
     private LivingEntity owner;
     @Nullable
     private BlockPos boundOrigin;
@@ -41,22 +41,22 @@ public class FriendlyScorchEntity extends MinionEntity {
 
     public FriendlyScorchEntity(EntityType<? extends FriendlyScorchEntity> p_i50190_1_, World p_i50190_2_) {
         super(p_i50190_1_, p_i50190_2_);
-        this.experienceValue = 0;
+        this.xpReward = 0;
     }
 
     public void tick() {
         if (this.limitedLifespan && --this.limitedLifeTicks <= 0) {
             this.limitedLifeTicks = 20;
-            this.attackEntityFrom(DamageSource.STARVE, 1.0F);
+            this.hurt(DamageSource.STARVE, 1.0F);
         }
-        Vector3d vector3d = this.getMotion();
-        double d0 = this.getPosX() + vector3d.x;
-        double d1 = this.getPosY() + vector3d.y;
-        double d2 = this.getPosZ() + vector3d.z;
+        Vector3d vector3d = this.getDeltaMovement();
+        double d0 = this.getX() + vector3d.x;
+        double d1 = this.getY() + vector3d.y;
+        double d2 = this.getZ() + vector3d.z;
         if (this.isCharging()){
-            this.world.addParticle(ParticleTypes.FLAME, d0 + world.rand.nextDouble()/2, d1 + 0.5D, d2 + world.rand.nextDouble()/2, 0.0D, 0.0D, 0.0D);
+            this.level.addParticle(ParticleTypes.FLAME, d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
         } else{
-            this.world.addParticle(ParticleTypes.SMOKE, d0 + world.rand.nextDouble()/2, d1 + 0.5D, d2 + world.rand.nextDouble()/2, 0.0D, 0.0D, 0.0D);
+            this.level.addParticle(ParticleTypes.SMOKE, d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
         }
         super.tick();
     }
@@ -70,44 +70,43 @@ public class FriendlyScorchEntity extends MinionEntity {
         this.goalSelector.addGoal(10, new LookAtGoal(this, MobEntity.class, 8.0F));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, false, false, (entity) ->
                 entity instanceof IMob
-                        && entity != this.owner
-                        && Objects.equals(entity.getAttackingEntity(), this.getOwnerfromUUID())));
+                        && entity != this.owner));
         this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 14.0D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 4.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 14.0D)
+                .add(Attributes.ATTACK_DAMAGE, 4.0D);
     }
 
-    public boolean attackEntityAsMob(Entity entityIn) {
-        boolean flag = super.attackEntityAsMob(entityIn);
+    public boolean doHurtTarget(Entity entityIn) {
+        boolean flag = super.doHurtTarget(entityIn);
         if (flag && entityIn instanceof LivingEntity) {
-            entityIn.setFire(30);
+            entityIn.setSecondsOnFire(30);
         }
         return flag;
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         if (source.isExplosion()){
             return false;
         } else {
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         }
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(OWNER_UNIQUE_ID, Optional.empty());
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(OWNER_UNIQUE_ID, Optional.empty());
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if (compound.contains("BoundX")) {
             this.boundOrigin = new BlockPos(compound.getInt("BoundX"), compound.getInt("BoundY"), compound.getInt("BoundZ"));
         }
@@ -116,11 +115,11 @@ public class FriendlyScorchEntity extends MinionEntity {
             this.setLimitedLife(compound.getInt("LifeTicks"));
         }
         UUID uuid;
-        if (compound.hasUniqueId("Owner")) {
-            uuid = compound.getUniqueId("Owner");
+        if (compound.hasUUID("Owner")) {
+            uuid = compound.getUUID("Owner");
         } else {
             String s = compound.getString("Owner");
-            uuid = PreYggdrasilConverter.convertMobOwnerIfNeeded(this.getServer(), s);
+            uuid = PreYggdrasilConverter.convertMobOwnerIfNecessary(this.getServer(), s);
         }
 
         if (uuid != null) {
@@ -132,8 +131,8 @@ public class FriendlyScorchEntity extends MinionEntity {
 
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         if (this.boundOrigin != null) {
             compound.putInt("BoundX", this.boundOrigin.getX());
             compound.putInt("BoundY", this.boundOrigin.getY());
@@ -144,12 +143,12 @@ public class FriendlyScorchEntity extends MinionEntity {
             compound.putInt("LifeTicks", this.limitedLifeTicks);
         }
         if (this.getOwnerId() != null) {
-            compound.putUniqueId("Owner", this.getOwnerId());
+            compound.putUUID("Owner", this.getOwnerId());
         }
 
     }
 
-    public boolean isWaterSensitive() {
+    public boolean isSensitiveToWater() {
         return true;
     }
 
@@ -160,7 +159,7 @@ public class FriendlyScorchEntity extends MinionEntity {
     public LivingEntity getOwnerfromUUID() {
         try {
             UUID uuid = this.getOwnerId();
-            return uuid == null ? null : this.world.getPlayerByUuid(uuid);
+            return uuid == null ? null : this.level.getPlayerByUUID(uuid);
         } catch (IllegalArgumentException illegalargumentexception) {
             return null;
         }
@@ -168,11 +167,11 @@ public class FriendlyScorchEntity extends MinionEntity {
 
     @Nullable
     public UUID getOwnerId() {
-        return this.dataManager.get(OWNER_UNIQUE_ID).orElse((UUID)null);
+        return this.entityData.get(OWNER_UNIQUE_ID).orElse((UUID)null);
     }
 
     public void setOwnerId(@Nullable UUID p_184754_1_) {
-        this.dataManager.set(OWNER_UNIQUE_ID, Optional.ofNullable(p_184754_1_));
+        this.entityData.set(OWNER_UNIQUE_ID, Optional.ofNullable(p_184754_1_));
     }
 
     @Nullable
@@ -194,15 +193,15 @@ public class FriendlyScorchEntity extends MinionEntity {
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_VEX_AMBIENT;
+        return SoundEvents.VEX_AMBIENT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_VEX_DEATH;
+        return SoundEvents.VEX_DEATH;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_VEX_HURT;
+        return SoundEvents.VEX_HURT;
     }
 
     public float getBrightness() {
@@ -210,25 +209,25 @@ public class FriendlyScorchEntity extends MinionEntity {
     }
 
     @Nullable
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        this.setEquipmentBasedOnDifficulty(difficultyIn);
-        this.setEnchantmentBasedOnDifficulty(difficultyIn);
-        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        this.populateDefaultEquipmentSlots(difficultyIn);
+        this.populateDefaultEquipmentEnchantments(difficultyIn);
+        return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
-    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-        this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
+    protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+        this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
         this.setDropChance(EquipmentSlotType.MAINHAND, 0.0F);
     }
 
     class ChargeAttackGoal extends Goal {
         public ChargeAttackGoal() {
-            this.setMutexFlags(EnumSet.of(Flag.MOVE));
+            this.setFlags(EnumSet.of(Flag.MOVE));
         }
 
-        public boolean shouldExecute() {
-            if (FriendlyScorchEntity.this.getAttackTarget() != null && FriendlyScorchEntity.this.getAttackTarget() != FriendlyScorchEntity.this.owner && !FriendlyScorchEntity.this.getMoveHelper().isUpdating() && FriendlyScorchEntity.this.rand.nextInt(7) == 0) {
-                return FriendlyScorchEntity.this.getDistanceSq(FriendlyScorchEntity.this.getAttackTarget()) > 4.0D;
+        public boolean canUse() {
+            if (FriendlyScorchEntity.this.getTarget() != null && FriendlyScorchEntity.this.getTarget() != FriendlyScorchEntity.this.owner && !FriendlyScorchEntity.this.getMoveControl().hasWanted() && FriendlyScorchEntity.this.random.nextInt(7) == 0) {
+                return FriendlyScorchEntity.this.distanceToSqr(FriendlyScorchEntity.this.getTarget()) > 4.0D;
             } else {
                 return false;
             }
@@ -237,41 +236,41 @@ public class FriendlyScorchEntity extends MinionEntity {
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
-        public boolean shouldContinueExecuting() {
-            return FriendlyScorchEntity.this.getMoveHelper().isUpdating() && FriendlyScorchEntity.this.isCharging() && FriendlyScorchEntity.this.getAttackTarget() != null && FriendlyScorchEntity.this.getAttackTarget().isAlive();
+        public boolean canContinueToUse() {
+            return FriendlyScorchEntity.this.getMoveControl().hasWanted() && FriendlyScorchEntity.this.isCharging() && FriendlyScorchEntity.this.getTarget() != null && FriendlyScorchEntity.this.getTarget().isAlive();
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
-            LivingEntity livingentity = FriendlyScorchEntity.this.getAttackTarget();
+        public void start() {
+            LivingEntity livingentity = FriendlyScorchEntity.this.getTarget();
             Vector3d vector3d = livingentity.getEyePosition(1.0F);
-            FriendlyScorchEntity.this.moveController.setMoveTo(vector3d.x, vector3d.y, vector3d.z, 1.0D);
-            FriendlyScorchEntity.this.setCharging(true);
-            FriendlyScorchEntity.this.playSound(SoundEvents.ENTITY_VEX_CHARGE, 1.0F, 1.0F);
+            FriendlyScorchEntity.this.moveControl.setWantedPosition(vector3d.x, vector3d.y, vector3d.z, 1.0D);
+            FriendlyScorchEntity.this.setChargingCrossbow(true);
+            FriendlyScorchEntity.this.playSound(SoundEvents.VEX_CHARGE, 1.0F, 1.0F);
         }
 
         /**
          * Reset the task's internal state. Called when this task is interrupted by another one
          */
-        public void resetTask() {
-            FriendlyScorchEntity.this.setCharging(false);
+        public void stop() {
+            FriendlyScorchEntity.this.setChargingCrossbow(false);
         }
 
         /**
          * Keep ticking a continuous task that has already been started
          */
         public void tick() {
-            LivingEntity livingentity = FriendlyScorchEntity.this.getAttackTarget();
+            LivingEntity livingentity = FriendlyScorchEntity.this.getTarget();
             if (FriendlyScorchEntity.this.getBoundingBox().intersects(livingentity.getBoundingBox())) {
-                FriendlyScorchEntity.this.attackEntityAsMob(livingentity);
-                FriendlyScorchEntity.this.setCharging(false);
+                FriendlyScorchEntity.this.doHurtTarget(livingentity);
+                FriendlyScorchEntity.this.setChargingCrossbow(false);
             } else {
-                double d0 = FriendlyScorchEntity.this.getDistanceSq(livingentity);
+                double d0 = FriendlyScorchEntity.this.distanceToSqr(livingentity);
                 if (d0 < 9.0D) {
                     Vector3d vector3d = livingentity.getEyePosition(1.0F);
-                    FriendlyScorchEntity.this.moveController.setMoveTo(vector3d.x, vector3d.y, vector3d.z, 1.0D);
+                    FriendlyScorchEntity.this.moveControl.setWantedPosition(vector3d.x, vector3d.y, vector3d.z, 1.0D);
                 }
             }
 
@@ -284,29 +283,29 @@ public class FriendlyScorchEntity extends MinionEntity {
 
         public OwnerHurtTargetGoal(FriendlyScorchEntity friendlyVexEntity) {
             super(friendlyVexEntity, false);
-            this.setMutexFlags(EnumSet.of(Flag.TARGET));
+            this.setFlags(EnumSet.of(Flag.TARGET));
         }
 
         /**
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
+        public boolean canUse() {
             LivingEntity livingentity = FriendlyScorchEntity.this.getTrueOwner();
-            this.attacker = livingentity.getLastAttackedEntity();
-            int i = livingentity.getLastAttackedEntityTime();
-            return i != this.timestamp && this.isSuitableTarget(this.attacker, EntityPredicate.DEFAULT);
+            this.attacker = livingentity.getLastHurtMob();
+            int i = livingentity.getLastHurtMobTimestamp();
+            return i != this.timestamp && this.canAttack(this.attacker, EntityPredicate.DEFAULT);
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
-            this.goalOwner.setAttackTarget(this.attacker);
+        public void start() {
+            this.mob.setTarget(this.attacker);
             LivingEntity livingentity = FriendlyScorchEntity.this.getTrueOwner();
-            this.timestamp = livingentity.getLastAttackedEntityTime();
+            this.timestamp = livingentity.getLastHurtMobTimestamp();
 
-            super.startExecuting();
+            super.start();
         }
     }
 
@@ -316,49 +315,49 @@ public class FriendlyScorchEntity extends MinionEntity {
 
         public OwnerHurtByTargetGoal(FriendlyScorchEntity friendlyVexEntity) {
             super(friendlyVexEntity, false);
-            this.setMutexFlags(EnumSet.of(Flag.TARGET));
+            this.setFlags(EnumSet.of(Flag.TARGET));
         }
 
         /**
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
+        public boolean canUse() {
             LivingEntity livingentity = FriendlyScorchEntity.this.getTrueOwner();
-            this.attacker = livingentity.getRevengeTarget();
-            int i = livingentity.getRevengeTimer();
-            return i != this.timestamp && this.isSuitableTarget(this.attacker, EntityPredicate.DEFAULT);
+            this.attacker = livingentity.getLastHurtByMob();
+            int i = livingentity.getLastHurtByMobTimestamp();
+            return i != this.timestamp && this.canAttack(this.attacker, EntityPredicate.DEFAULT);
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
-            this.goalOwner.setAttackTarget(this.attacker);
+        public void start() {
+            this.mob.setTarget(this.attacker);
             LivingEntity livingentity = FriendlyScorchEntity.this.getTrueOwner();
-            this.timestamp = livingentity.getRevengeTimer();
+            this.timestamp = livingentity.getLastHurtByMobTimestamp();
 
-            super.startExecuting();
+            super.start();
         }
     }
 
     class MoveRandomGoal extends Goal {
         public MoveRandomGoal() {
-            this.setMutexFlags(EnumSet.of(Flag.MOVE));
+            this.setFlags(EnumSet.of(Flag.MOVE));
         }
 
         /**
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
-            return !FriendlyScorchEntity.this.getMoveHelper().isUpdating() && FriendlyScorchEntity.this.rand.nextInt(7) == 0;
+        public boolean canUse() {
+            return !FriendlyScorchEntity.this.getMoveControl().hasWanted() && FriendlyScorchEntity.this.random.nextInt(7) == 0;
         }
 
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
-        public boolean shouldContinueExecuting() {
+        public boolean canContinueToUse() {
             return false;
         }
 
@@ -368,15 +367,15 @@ public class FriendlyScorchEntity extends MinionEntity {
         public void tick() {
             BlockPos blockpos = FriendlyScorchEntity.this.getBoundOrigin();
             if (blockpos == null) {
-                blockpos = FriendlyScorchEntity.this.getPosition();
+                blockpos = FriendlyScorchEntity.this.blockPosition();
             }
 
             for(int i = 0; i < 3; ++i) {
-                BlockPos blockpos1 = blockpos.add(FriendlyScorchEntity.this.rand.nextInt(15) - 7, FriendlyScorchEntity.this.rand.nextInt(11) - 5, FriendlyScorchEntity.this.rand.nextInt(15) - 7);
-                if (FriendlyScorchEntity.this.world.isAirBlock(blockpos1)) {
-                    FriendlyScorchEntity.this.moveController.setMoveTo((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
-                    if (FriendlyScorchEntity.this.getAttackTarget() == null) {
-                        FriendlyScorchEntity.this.getLookController().setLookPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);
+                BlockPos blockpos1 = blockpos.offset(FriendlyScorchEntity.this.random.nextInt(15) - 7, FriendlyScorchEntity.this.random.nextInt(11) - 5, FriendlyScorchEntity.this.random.nextInt(15) - 7);
+                if (FriendlyScorchEntity.this.level.isEmptyBlock(blockpos1)) {
+                    FriendlyScorchEntity.this.moveControl.setWantedPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
+                    if (FriendlyScorchEntity.this.getTarget() == null) {
+                        FriendlyScorchEntity.this.getLookControl().setLookAt((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);
                     }
                     break;
                 }

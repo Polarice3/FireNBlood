@@ -15,15 +15,15 @@ public class IrkRenderer extends BipedRenderer<IrkEntity, IrkModel> {
         super(renderManagerIn, new IrkModel(), 0.3F);
     }
 
-    protected int getBlockLight(IrkEntity entityIn, BlockPos partialTicks) {
+    protected int getBlockLightLevel(IrkEntity entityIn, BlockPos partialTicks) {
         return 15;
     }
 
-    public ResourceLocation getEntityTexture(IrkEntity entity) {
+    public ResourceLocation getTextureLocation(IrkEntity entity) {
         return VEX_TEXTURE;
     }
 
-    protected void preRenderCallback(IrkEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(IrkEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         matrixStackIn.scale(0.4F, 0.4F, 0.4F);
     }
 }

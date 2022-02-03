@@ -25,8 +25,8 @@ public class TankCoreBlock extends Block {
     private BlockPattern tankpattern;
 
     public TankCoreBlock() {
-        super(AbstractBlock.Properties.create(Material.ROCK)
-                .hardnessAndResistance(3.5F)
+        super(AbstractBlock.Properties.of(Material.STONE)
+                .strength(3.5F)
                 .sound(SoundType.STONE)
                 .harvestLevel(0)
                 .harvestTool(ToolType.PICKAXE)
@@ -40,8 +40,8 @@ public class TankCoreBlock extends Block {
         }
     }*/
 
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
-        if (worldIn.isRemote) {
+    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit) {
+        if (worldIn.isClientSide) {
             return ActionResultType.SUCCESS;
         } else {
             this.trySpawnTank(worldIn, pos);
@@ -49,25 +49,25 @@ public class TankCoreBlock extends Block {
         }
     }
     private void trySpawnTank(World world, BlockPos pos) {
-        BlockPattern.PatternHelper blockpattern$patternhelper = this.getTankpattern().match(world, pos);
+        BlockPattern.PatternHelper blockpattern$patternhelper = this.getTankpattern().find(world, pos);
         if (blockpattern$patternhelper != null) {
-            for(int i = 0; i < this.getTankpattern().getThumbLength(); ++i) {
-                CachedBlockInfo cachedblockinfo = blockpattern$patternhelper.translateOffset(0, i, 0);
-                world.setBlockState(cachedblockinfo.getPos(), Blocks.AIR.getDefaultState(), 2);
-                world.playEvent(2001, cachedblockinfo.getPos(), Block.getStateId(cachedblockinfo.getBlockState()));
+            for(int i = 0; i < this.getTankpattern().getHeight(); ++i) {
+                CachedBlockInfo cachedblockinfo = blockpattern$patternhelper.getBlock(0, i, 0);
+                world.setBlock(cachedblockinfo.getPos(), Blocks.AIR.defaultBlockState(), 2);
+                world.levelEvent(2001, cachedblockinfo.getPos(), Block.getId(cachedblockinfo.getState()));
             }
             FriendlyTankEntity tankEntity = ModEntityType.FRIENDTANK.get().create(world);
-            BlockPos blockpos1 = blockpattern$patternhelper.translateOffset(0, 2, 0).getPos();
+            BlockPos blockpos1 = blockpattern$patternhelper.getBlock(0, 2, 0).getPos();
             assert tankEntity != null;
-            tankEntity.setLocationAndAngles((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.05D, (double)blockpos1.getZ() + 0.5D, 0.0F, 0.0F);
-            world.addEntity(tankEntity);
-            for(ServerPlayerEntity serverplayerentity : world.getEntitiesWithinAABB(ServerPlayerEntity.class, tankEntity.getBoundingBox().grow(5.0D))) {
+            tankEntity.moveTo((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.05D, (double)blockpos1.getZ() + 0.5D, 0.0F, 0.0F);
+            world.addFreshEntity(tankEntity);
+            for(ServerPlayerEntity serverplayerentity : world.getEntitiesOfClass(ServerPlayerEntity.class, tankEntity.getBoundingBox().inflate(5.0D))) {
                 CriteriaTriggers.SUMMONED_ENTITY.trigger(serverplayerentity, tankEntity);
             }
 
-            for(int l = 0; l < this.getTankpattern().getThumbLength(); ++l) {
-                CachedBlockInfo cachedblockinfo3 = blockpattern$patternhelper.translateOffset(0, l, 0);
-                world.updateBlock(cachedblockinfo3.getPos(), Blocks.AIR);
+            for(int l = 0; l < this.getTankpattern().getHeight(); ++l) {
+                CachedBlockInfo cachedblockinfo3 = blockpattern$patternhelper.getBlock(0, l, 0);
+                world.blockUpdated(cachedblockinfo3.getPos(), Blocks.AIR);
             }
         }
     }

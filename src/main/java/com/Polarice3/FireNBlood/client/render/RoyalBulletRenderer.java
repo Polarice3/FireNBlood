@@ -17,13 +17,13 @@ public class RoyalBulletRenderer extends MobRenderer<RoyalBulletEntity, RoyalBul
     }
 
     @Override
-    public ResourceLocation getEntityTexture(RoyalBulletEntity entity) {
+    public ResourceLocation getTextureLocation(RoyalBulletEntity entity) {
         return TEXTURE;
     }
 
-    protected void applyRotations(RoyalBulletEntity entityLiving, MatrixStack matrixStackIn, float ageInTicks, float rotationYaw, float partialTicks) {
-        super.applyRotations(entityLiving, matrixStackIn, ageInTicks, rotationYaw, partialTicks);
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(entityLiving.rotationPitch));
+    protected void setupRotations(RoyalBulletEntity entityLiving, MatrixStack matrixStackIn, float ageInTicks, float yRot, float partialTicks) {
+        super.setupRotations(entityLiving, matrixStackIn, ageInTicks, yRot, partialTicks);
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(entityLiving.xRot));
     }
 
 }

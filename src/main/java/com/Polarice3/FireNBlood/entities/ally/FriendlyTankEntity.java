@@ -49,20 +49,20 @@ public class FriendlyTankEntity extends TankEntity {
 
     public FriendlyTankEntity(EntityType<? extends TankEntity> type, World worldIn) {
         super(type, worldIn);
-        this.setPathPriority(PathNodeType.WATER, -1.0F);
-        this.setPathPriority(PathNodeType.DANGER_FIRE, 0.0F);
-        this.setPathPriority(PathNodeType.DAMAGE_FIRE, 0.0F);
-        this.stepHeight = 1.0F;
+        this.setPathfindingMalus(PathNodeType.WATER, -1.0F);
+        this.setPathfindingMalus(PathNodeType.DANGER_FIRE, 0.0F);
+        this.setPathfindingMalus(PathNodeType.DAMAGE_FIRE, 0.0F);
+        this.maxUpStep = 1.0F;
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 256.0D)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 100.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.2D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 6.0D)
-                .createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
-                .createMutableAttribute(Attributes.ARMOR, 10.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 256.0D)
+                .add(Attributes.MAX_HEALTH, 100.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.2D)
+                .add(Attributes.ATTACK_DAMAGE, 6.0D)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
+                .add(Attributes.ARMOR, 10.0D);
     }
 
     @Override
@@ -73,8 +73,7 @@ public class FriendlyTankEntity extends TankEntity {
         this.goalSelector.addGoal(6, new FollowOwnerGoal(this, 1.0D, 20.0F, 4.0F, false));
         this.goalSelector.addGoal(8, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, false, false, (p_234199_0_) -> {
-            return p_234199_0_ instanceof IMob
-                    && Objects.equals(p_234199_0_.getAttackingEntity(), this.owner);
+            return p_234199_0_ instanceof IMob;
         }));
         this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
@@ -91,7 +90,7 @@ public class FriendlyTankEntity extends TankEntity {
         return super.getTeam();
     }
 
-    public boolean isOnSameTeam(Entity entityIn) {
+    public boolean isAlliedTo(Entity entityIn) {
         if (this.getOwner() != null) {
             LivingEntity livingentity = this.getOwner();
             if (entityIn == livingentity) {
@@ -99,7 +98,7 @@ public class FriendlyTankEntity extends TankEntity {
             }
 
             if (livingentity != null) {
-                return livingentity.isOnSameTeam(entityIn);
+                return livingentity.isAlliedTo(entityIn);
             }
         }
         if (entityIn instanceof FriendlyTankEntity && ((FriendlyTankEntity) entityIn).getOwner() == this.getOwner()){
@@ -108,13 +107,13 @@ public class FriendlyTankEntity extends TankEntity {
         if (entityIn instanceof SummonedEntity && ((SummonedEntity) entityIn).getTrueOwner() == this.getOwner()){
             return true;
         }
-        return super.isOnSameTeam(entityIn);
+        return super.isAlliedTo(entityIn);
     }
 
     @Override
     protected SoundEvent getAmbientSound() {
         if (!this.isQueuedToSit()) {
-            return SoundEvents.BLOCK_FIRE_AMBIENT;
+            return SoundEvents.FIRE_AMBIENT;
         } else {
             return null;
         }
@@ -126,17 +125,17 @@ public class FriendlyTankEntity extends TankEntity {
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_IRON_GOLEM_DEATH;
+        return SoundEvents.IRON_GOLEM_DEATH;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.BLOCK_ANVIL_LAND;
+        return SoundEvents.ANVIL_LAND;
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_IRON_GOLEM_STEP, 0.25F, 1.0F);
+        this.playSound(SoundEvents.IRON_GOLEM_STEP, 0.25F, 1.0F);
     }
 
     public boolean canBeSteered() {
@@ -156,23 +155,23 @@ public class FriendlyTankEntity extends TankEntity {
         this.owner = ownerIn;
     }
 
-    public boolean canDespawn(double distanceToClosestPlayer) {
+    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
         return false;
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        Entity entity = source.getImmediateSource();
+    public boolean hurt(DamageSource source, float amount) {
+        Entity entity = source.getDirectEntity();
         if (this.isInvulnerableTo(source)) {
             return false;
         } else if (entity instanceof AbstractArrowEntity) {
             return false;
         } else {
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         }
     }
 
     @Override
-    public boolean canBeLeashedTo(PlayerEntity player) {
+    public boolean canBeLeashed(PlayerEntity player) {
         return false;
     }
 
@@ -184,11 +183,11 @@ public class FriendlyTankEntity extends TankEntity {
         this.sitting = p_233687_1_;
     }
 
-    public void livingTick() {
-            if (this.world.isRemote) {
+    public void aiStep() {
+            if (this.level.isClientSide) {
                 if (!this.isQueuedToSit()) {
                     for (int i = 0; i < 2; ++i) {
-                        this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.getPosXRandom(0.5D), this.getPosYRandom(), this.getPosZRandom(0.5D), 0.0D, 0.0D, 0.0D);
+                        this.level.addParticle(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
                     }
                 }
             }
@@ -196,7 +195,7 @@ public class FriendlyTankEntity extends TankEntity {
                 this.FireCharge();
             }
 
-        super.livingTick();
+        super.aiStep();
     }
 
     public Cracks func_226512_l_() {
@@ -204,54 +203,54 @@ public class FriendlyTankEntity extends TankEntity {
     }
 
     protected void mountTo(PlayerEntity player) {
-        if (!this.world.isRemote) {
-            player.rotationYaw = this.rotationYaw;
-            player.rotationPitch = this.rotationPitch;
+        if (!this.level.isClientSide) {
+            player.yRot = this.yRot;
+            player.xRot = this.xRot;
             player.startRiding(this);
         }
     }
 
     public void travel(Vector3d travelVector) {
         if (this.isAlive()) {
-            if (this.isBeingRidden() && this.canBeSteered()) {
+            if (this.isVehicle() && this.canBeSteered()) {
                 if (this.attackTimer < 20) {
                     ++this.attackTimer;
                 }
                 LivingEntity livingentity = (LivingEntity) this.getControllingPassenger();
-                this.rotationYaw = livingentity.rotationYaw;
-                this.prevRotationYaw = this.rotationYaw;
-                this.rotationPitch = livingentity.rotationPitch * 0.5F;
-                this.setRotation(this.rotationYaw, this.rotationPitch);
-                this.renderYawOffset = this.rotationYaw;
-                this.rotationYawHead = this.renderYawOffset;
-                float f = livingentity.moveStrafing * 0.5F;
-                float f1 = livingentity.moveForward;
+                this.yRot = livingentity.yRot;
+                this.yRotO = this.yRot;
+                this.xRot = livingentity.xRot * 0.5F;
+                this.setRot(this.yRot, this.xRot);
+                this.yBodyRot = this.yRot;
+                this.yHeadRot = this.yBodyRot;
+                float f = livingentity.xxa * 0.5F;
+                float f1 = livingentity.zza;
                 if (f1 <= 0.0F) {
                     f1 *= 0.25F;
                 }
 
-                this.jumpMovementFactor = this.getAIMoveSpeed() * 0.1F;
-                if (this.canPassengerSteer()) {
-                    this.setAIMoveSpeed((float) this.getAttributeValue(Attributes.MOVEMENT_SPEED));
+                this.flyingSpeed = this.getSpeed() * 0.1F;
+                if (this.isControlledByLocalInstance()) {
+                    this.setSpeed((float) this.getAttributeValue(Attributes.MOVEMENT_SPEED));
                     super.travel(new Vector3d((double) f, travelVector.y, (double) f1));
                 } else if (livingentity instanceof PlayerEntity) {
-                    this.setMotion(Vector3d.ZERO);
+                    this.setDeltaMovement(Vector3d.ZERO);
                 }
 
-                if (livingentity.swingProgressInt == -1) {
+                if (livingentity.swingTime == -1) {
                     if (this.attackTimes < 3) {
                         if (this.attackTimer >= 20) {
-                            World world = FriendlyTankEntity.this.world;
-                            Vector3d vector3d = FriendlyTankEntity.this.getLook(1.0F);
-                            Random random = world.rand;
+                            World world = FriendlyTankEntity.this.level;
+                            Vector3d vector3d = FriendlyTankEntity.this.getViewVector( 1.0F);
+                            Random random = level.random;
                             double d2 = random.nextGaussian() * 0.05D + (double) vector3d.x;
                             double d3 = random.nextGaussian() * 0.05D + (double) vector3d.y;
                             double d4 = random.nextGaussian() * 0.05D + (double) vector3d.z;
                             FireballEntity fireballentity = new FireballEntity(world, FriendlyTankEntity.this, d2, d3, d4);
-                            fireballentity.setPosition(FriendlyTankEntity.this.getPosX() + vector3d.x * 2.0D, FriendlyTankEntity.this.getPosYHeight(0.5D) + 0.25D, fireballentity.getPosZ() + vector3d.z * 2.0D);
-                            world.addEntity(fireballentity);
+                            fireballentity.setPos(FriendlyTankEntity.this.getX() + vector3d.x * 2.0D, FriendlyTankEntity.this.getY(0.5D) + 0.25D, fireballentity.getZ() + vector3d.z * 2.0D);
+                            level.addFreshEntity(fireballentity);
                             if (!FriendlyTankEntity.this.isSilent()) {
-                                FriendlyTankEntity.this.world.playEvent(null, 1016, FriendlyTankEntity.this.getPosition(), 0);
+                                FriendlyTankEntity.this.level.levelEvent(null, 1016, FriendlyTankEntity.this.blockPosition(), 0);
                             }
                             this.attackTimer = 0;
                             this.attackTimes = this.attackTimes + 1;
@@ -260,17 +259,17 @@ public class FriendlyTankEntity extends TankEntity {
                         this.FireCharging = true;
                     }
                 }
-                for (Entity entity : FriendlyTankEntity.this.world.getEntitiesWithinAABB(LivingEntity.class, FriendlyTankEntity.this.getBoundingBox().grow(1.5D), field_213690_b)) {
+                for (Entity entity : FriendlyTankEntity.this.level.getEntitiesOfClass(LivingEntity.class, FriendlyTankEntity.this.getBoundingBox().inflate(1.5D), field_213690_b)) {
                     if (!(entity instanceof PlayerEntity)) {
-                        FriendlyTankEntity.this.attackEntityAsMob(entity);
+                        FriendlyTankEntity.this.doHurtTarget(entity);
                         this.launch(entity);
                     }
                 }
             }
 
-            this.func_233629_a_(this, false);
+            this.calculateEntityAnimation(this, false);
             } else {
-                this.jumpMovementFactor = 0.02F;
+                this.flyingSpeed = 0.02F;
                 super.travel(travelVector);
             }
     }
@@ -278,17 +277,17 @@ public class FriendlyTankEntity extends TankEntity {
     public void FireCharge(){
         if (this.attackTimer >= 20) {
             ++this.attackStep;
-            World world = FriendlyTankEntity.this.world;
-            Vector3d vector3d = FriendlyTankEntity.this.getLook(1.0F);
-            Random random = world.rand;
+            World world = FriendlyTankEntity.this.level;
+            Vector3d vector3d = FriendlyTankEntity.this.getViewVector( 1.0F);
+            Random random = level.random;
             double d2 = random.nextGaussian() * 0.05D + (double) vector3d.x;
             double d3 = random.nextGaussian() * 0.05D + (double) vector3d.y;
             double d4 = random.nextGaussian() * 0.05D + (double) vector3d.z;
             SmallFireballEntity fireballentity = new SmallFireballEntity(world, FriendlyTankEntity.this, d2, d3, d4);
-            fireballentity.setPosition(FriendlyTankEntity.this.getPosX() + vector3d.x * 2.0D, FriendlyTankEntity.this.getPosYHeight(0.5D) + 0.25D, fireballentity.getPosZ() + vector3d.z * 2.0D);
-            world.addEntity(fireballentity);
+            fireballentity.setPos(FriendlyTankEntity.this.getX() + vector3d.x * 2.0D, FriendlyTankEntity.this.getY(0.5D) + 0.25D, fireballentity.getZ() + vector3d.z * 2.0D);
+            level.addFreshEntity(fireballentity);
             if (!FriendlyTankEntity.this.isSilent()) {
-                FriendlyTankEntity.this.world.playEvent(null, 1016, FriendlyTankEntity.this.getPosition(), 0);
+                FriendlyTankEntity.this.level.levelEvent(null, 1016, FriendlyTankEntity.this.blockPosition(), 0);
             }
             if (this.attackStep >= 20) {
                 this.attackTimes = 0;
@@ -300,17 +299,17 @@ public class FriendlyTankEntity extends TankEntity {
     }
 
     private void launch(Entity p_213688_1_) {
-        double d0 = p_213688_1_.getPosX() - FriendlyTankEntity.this.getPosX();
-        double d1 = p_213688_1_.getPosZ() - FriendlyTankEntity.this.getPosZ();
+        double d0 = p_213688_1_.getX() - FriendlyTankEntity.this.getX();
+        double d1 = p_213688_1_.getZ() - FriendlyTankEntity.this.getZ();
         double d2 = Math.max(d0 * d0 + d1 * d1, 0.001D);
-        p_213688_1_.addVelocity(d0 / d2 * 2.0D, 0.2D, d1 / d2 * 2.0D);
+        p_213688_1_.push(d0 / d2 * 2.0D, 0.2D, d1 / d2 * 2.0D);
     }
 
 
     public int speed = 0;
 
-    public ActionResultType getEntityInteractionResult(PlayerEntity p_230254_1_, Hand p_230254_2_) {
-        ItemStack itemstack = p_230254_1_.getHeldItem(p_230254_2_);
+    public ActionResultType mobInteract(PlayerEntity p_230254_1_, Hand p_230254_2_) {
+        ItemStack itemstack = p_230254_1_.getItemInHand(p_230254_2_);
         Item item = itemstack.getItem();
         if (this.getOwner() != null && !p_230254_1_.isCrouching() && item != Items.REDSTONE_BLOCK && item != Items.IRON_INGOT  && !this.isQueuedToSit()) {
             this.mountTo(p_230254_1_);
@@ -320,45 +319,45 @@ public class FriendlyTankEntity extends TankEntity {
             if (item == Items.COMPARATOR){
                 if (this.getOwner() != null) {return ActionResultType.PASS;}
                 else {
-                    if (!p_230254_1_.abilities.isCreativeMode) {
+                    if (!p_230254_1_.abilities.instabuild) {
                     itemstack.shrink(1);
                     }
                     this.setOwner(p_230254_1_);
-                    this.navigator.clearPath();
-                    this.setAttackTarget((LivingEntity)null);
+                    this.navigation.stop();
+                    this.setTarget((LivingEntity)null);
                     this.setSitting(true);
-                    this.world.setEntityState(this, (byte)7);
+                    this.level.broadcastEntityEvent(this, (byte)7);
                     return ActionResultType.SUCCESS;
                 }
             } else {
                 if (item == Items.REDSTONE_BLOCK && speed <= 8){
-                    if (!p_230254_1_.abilities.isCreativeMode) {
+                    if (!p_230254_1_.abilities.instabuild) {
                         itemstack.shrink(1);
                     }
                     speed = speed + 1;
                     for(int i = 0; i < 7; ++i) {
-                        double d0 = this.rand.nextGaussian() * 0.02D;
-                        double d1 = this.rand.nextGaussian() * 0.02D;
-                        double d2 = this.rand.nextGaussian() * 0.02D;
-                        this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
+                        double d0 = this.random.nextGaussian() * 0.02D;
+                        double d1 = this.random.nextGaussian() * 0.02D;
+                        double d2 = this.random.nextGaussian() * 0.02D;
+                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
-                    this.playSound(SoundEvents.BLOCK_ANVIL_USE,1.0f,1.0f);
-                    this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.getBaseAttributeValue(Attributes.MOVEMENT_SPEED) + 0.025D);
+                    this.playSound(SoundEvents.ANVIL_USE,1.0f,1.0f);
+                    this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(this.getAttributeBaseValue(Attributes.MOVEMENT_SPEED) + 0.025D);
                     return ActionResultType.SUCCESS;
                 } else {
                     if (p_230254_1_.isCrouching() && this.getOwner() != null){
-                        ActionResultType actionresulttype = super.getEntityInteractionResult(p_230254_1_, p_230254_2_);
-                        if (!actionresulttype.isSuccessOrConsume() || this.isOwner(p_230254_1_)) {
+                        ActionResultType actionresulttype = super.mobInteract(p_230254_1_, p_230254_2_);
+                        if (!actionresulttype.consumesAction() || this.isOwner(p_230254_1_)) {
                             for(int i = 0; i < 7; ++i) {
-                                double d0 = this.rand.nextGaussian() * 0.02D;
-                                double d1 = this.rand.nextGaussian() * 0.02D;
-                                double d2 = this.rand.nextGaussian() * 0.02D;
-                                this.world.addParticle(ParticleTypes.POOF, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
+                                double d0 = this.random.nextGaussian() * 0.02D;
+                                double d1 = this.random.nextGaussian() * 0.02D;
+                                double d2 = this.random.nextGaussian() * 0.02D;
+                                this.level.addParticle(ParticleTypes.POOF, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                             }
                             this.setSitting(!this.isQueuedToSit());
-                            this.isJumping = false;
-                            this.navigator.clearPath();
-                            this.setAttackTarget((LivingEntity)null);
+                            this.jumping = false;
+                            this.navigation.stop();
+                            this.setTarget((LivingEntity)null);
                             return ActionResultType.SUCCESS;
                         }
                         return actionresulttype;
@@ -373,28 +372,28 @@ public class FriendlyTankEntity extends TankEntity {
             if (this.getHealth() == f) {
                 return ActionResultType.PASS;
             } else {
-                float f1 = 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F;
-                this.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0F, f1);
-                if (!p_230254_1_.abilities.isCreativeMode) {
+                float f1 = 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F;
+                this.playSound(SoundEvents.IRON_GOLEM_REPAIR, 1.0F, f1);
+                if (!p_230254_1_.abilities.instabuild) {
                     itemstack.shrink(1);
                 }
 
-                return ActionResultType.func_233537_a_(this.world.isRemote);
+                return ActionResultType.sidedSuccess(this.level.isClientSide);
             }
         }
     }
 
     protected void applyYawToEntity(Entity entityToUpdate) {
-        entityToUpdate.setRenderYawOffset(this.rotationYaw);
-        float f = MathHelper.wrapDegrees(entityToUpdate.rotationYaw - this.rotationYaw);
+        entityToUpdate.setYBodyRot(this.yRot);
+        float f = MathHelper.wrapDegrees(entityToUpdate.yRot - this.yRot);
         float f1 = MathHelper.clamp(f, -105.0F, 105.0F);
-        entityToUpdate.prevRotationYaw += f1 - f;
-        entityToUpdate.rotationYaw += f1 - f;
-        entityToUpdate.setRotationYawHead(entityToUpdate.rotationYaw);
+        entityToUpdate.yRotO += f1 - f;
+        entityToUpdate.yRot += f1 - f;
+        entityToUpdate.setYHeadRot(entityToUpdate.yRot);
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void applyOrientationToEntity(Entity entityToUpdate) {
+    public void onPassengerTurned(Entity entityToUpdate) {
         this.applyYawToEntity(entityToUpdate);
     }
 
@@ -403,12 +402,12 @@ public class FriendlyTankEntity extends TankEntity {
         public int attackTimes = 0;
 
         @Override
-        public boolean shouldExecute() {
-            if (FriendlyTankEntity.this.getAttackTarget() == null) {
+        public boolean canUse() {
+            if (FriendlyTankEntity.this.getTarget() == null) {
                 return false;
             } else if (FriendlyTankEntity.this.isQueuedToSit()){
                 return false;
-            } else if (FriendlyTankEntity.this.isBeingRidden()){
+            } else if (FriendlyTankEntity.this.isVehicle()){
                 return false;
             }
             else {
@@ -416,43 +415,43 @@ public class FriendlyTankEntity extends TankEntity {
             }
         }
 
-        public void startExecuting() {
+        public void start() {
             this.attackTimer = 0;
         }
 
         public void tick() {
-            LivingEntity livingentity = FriendlyTankEntity.this.getAttackTarget();
+            LivingEntity livingentity = FriendlyTankEntity.this.getTarget();
             assert livingentity != null;
-            if (livingentity.getDistanceSq(FriendlyTankEntity.this) < 4096.0D && FriendlyTankEntity.this.canEntityBeSeen(livingentity)) {
-                FriendlyTankEntity.this.getLookController().setLookPositionWithEntity(livingentity, 10.0F, 10.0F);
+            if (livingentity.distanceToSqr(FriendlyTankEntity.this) < 4096.0D && FriendlyTankEntity.this.canSee(livingentity)) {
+                FriendlyTankEntity.this.getLookControl().setLookAt(livingentity, 10.0F, 10.0F);
                 ++this.attackTimer;
-                World world = FriendlyTankEntity.this.world;
+                World world = FriendlyTankEntity.this.level;
                 if (this.attackTimes < 3) {
                     if (this.attackTimer >= 20) {
                         this.attackTimes = this.attackTimes + 1;
-                        Vector3d vector3d = FriendlyTankEntity.this.getLook(1.0F);
-                        double d2 = livingentity.getPosX() - (FriendlyTankEntity.this.getPosX() + vector3d.x * 2.0D);
-                        double d3 = livingentity.getPosYHeight(0.5D) - (0.5D + FriendlyTankEntity.this.getPosYHeight(0.5D));
-                        double d4 = livingentity.getPosZ() - (FriendlyTankEntity.this.getPosZ() + vector3d.z * 2.0D);
+                        Vector3d vector3d = FriendlyTankEntity.this.getViewVector( 1.0F);
+                        double d2 = livingentity.getX() - (FriendlyTankEntity.this.getX() + vector3d.x * 2.0D);
+                        double d3 = livingentity.getY(0.5D) - (0.5D + FriendlyTankEntity.this.getY(0.5D));
+                        double d4 = livingentity.getZ() - (FriendlyTankEntity.this.getZ() + vector3d.z * 2.0D);
                         FireballEntity fireballentity = new FireballEntity(world, FriendlyTankEntity.this, d2, d3, d4);
-                        fireballentity.setPosition(FriendlyTankEntity.this.getPosX() + vector3d.x * 2.0D, FriendlyTankEntity.this.getPosYHeight(0.5D) + 0.25D, fireballentity.getPosZ() + vector3d.z * 2.0D);
-                        world.addEntity(fireballentity);
+                        fireballentity.setPos(FriendlyTankEntity.this.getX() + vector3d.x * 2.0D, FriendlyTankEntity.this.getY(0.5D) + 0.25D, fireballentity.getZ() + vector3d.z * 2.0D);
+                        level.addFreshEntity(fireballentity);
                         if (!FriendlyTankEntity.this.isSilent()) {
-                            FriendlyTankEntity.this.world.playEvent(null, 1016, FriendlyTankEntity.this.getPosition(), 0);
+                            FriendlyTankEntity.this.level.levelEvent(null, 1016, FriendlyTankEntity.this.blockPosition(), 0);
                         }
                         this.attackTimer = -40;
                     }
                 } else {
                     if (this.attackTimer >= 20) {
-                        Vector3d vector3d = FriendlyTankEntity.this.getLook(1.0F);
-                        double d2 = livingentity.getPosX() - (FriendlyTankEntity.this.getPosX() + vector3d.x * 2.0D);
-                        double d3 = livingentity.getPosYHeight(0.5D) - (0.5D + FriendlyTankEntity.this.getPosYHeight(0.5D));
-                        double d4 = livingentity.getPosZ() - (FriendlyTankEntity.this.getPosZ() + vector3d.z * 2.0D);
+                        Vector3d vector3d = FriendlyTankEntity.this.getViewVector( 1.0F);
+                        double d2 = livingentity.getX() - (FriendlyTankEntity.this.getX() + vector3d.x * 2.0D);
+                        double d3 = livingentity.getY(0.5D) - (0.5D + FriendlyTankEntity.this.getY(0.5D));
+                        double d4 = livingentity.getZ() - (FriendlyTankEntity.this.getZ() + vector3d.z * 2.0D);
                         SmallFireballEntity smallfireballentity = new SmallFireballEntity(world, FriendlyTankEntity.this, d2, d3, d4);
-                        smallfireballentity.setPosition(FriendlyTankEntity.this.getPosX() + vector3d.x * 2.0D, FriendlyTankEntity.this.getPosYHeight(0.5D) + 0.25D, smallfireballentity.getPosZ() + vector3d.z * 2.0D);
-                        world.addEntity(smallfireballentity);
+                        smallfireballentity.setPos(FriendlyTankEntity.this.getX() + vector3d.x * 2.0D, FriendlyTankEntity.this.getY(0.5D) + 0.25D, smallfireballentity.getZ() + vector3d.z * 2.0D);
+                        level.addFreshEntity(smallfireballentity);
                         if (!FriendlyTankEntity.this.isSilent()) {
-                            FriendlyTankEntity.this.world.playEvent(null, 1016, FriendlyTankEntity.this.getPosition(), 0);
+                            FriendlyTankEntity.this.level.levelEvent(null, 1016, FriendlyTankEntity.this.blockPosition(), 0);
                         }
                         if (this.attackTimer >= 40) {
                             this.attackTimes = 0;
@@ -460,23 +459,23 @@ public class FriendlyTankEntity extends TankEntity {
                         }
                     }
                 }
-                double d0 = FriendlyTankEntity.this.getDistanceSq(livingentity);
+                double d0 = FriendlyTankEntity.this.distanceToSqr(livingentity);
                 if (d0 > 16.0D) {
-                    FriendlyTankEntity.this.getMoveHelper().setMoveTo(livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ(), 1.0D);
+                    FriendlyTankEntity.this.getMoveControl().setWantedPosition(livingentity.getX(), livingentity.getY(), livingentity.getZ(), 1.0D);
                 }
-                for (Entity entity : FriendlyTankEntity.this.world.getEntitiesWithinAABB(LivingEntity.class, FriendlyTankEntity.this.getBoundingBox().grow(1.5D), field_213690_b)) {
+                for (Entity entity : FriendlyTankEntity.this.level.getEntitiesOfClass(LivingEntity.class, FriendlyTankEntity.this.getBoundingBox().inflate(1.5D), field_213690_b)) {
                     if (!(entity instanceof PlayerEntity)) {
-                        FriendlyTankEntity.this.attackEntityAsMob(entity);
+                        FriendlyTankEntity.this.doHurtTarget(entity);
                         this.launch(entity);
                     }
                 }
             }
         }
             private void launch(Entity p_213688_1_) {
-                double d0 = p_213688_1_.getPosX() - FriendlyTankEntity.this.getPosX();
-                double d1 = p_213688_1_.getPosZ() - FriendlyTankEntity.this.getPosZ();
+                double d0 = p_213688_1_.getX() - FriendlyTankEntity.this.getX();
+                double d1 = p_213688_1_.getZ() - FriendlyTankEntity.this.getZ();
                 double d2 = Math.max(d0 * d0 + d1 * d1, 0.001D);
-                p_213688_1_.addVelocity(d0 / d2 * 2.0D, 0.2D, d1 / d2 * 2.0D);
+                p_213688_1_.push(d0 / d2 * 2.0D, 0.2D, d1 / d2 * 2.0D);
             }
 
     }
@@ -486,13 +485,13 @@ public class FriendlyTankEntity extends TankEntity {
 
         public SitGoal(FriendlyTankEntity entityIn) {
             this.friendlyTankEntity = entityIn;
-            this.setMutexFlags(EnumSet.of(Flag.JUMP, Flag.MOVE));
+            this.setFlags(EnumSet.of(Flag.JUMP, Flag.MOVE));
         }
 
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
-        public boolean shouldContinueExecuting() {
+        public boolean canContinueToUse() {
             return this.friendlyTankEntity.isQueuedToSit();
         }
 
@@ -500,10 +499,10 @@ public class FriendlyTankEntity extends TankEntity {
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
+        public boolean canUse() {
             if (this.friendlyTankEntity.getOwner() == null) {
                 return false;
-            } else if (this.friendlyTankEntity.isInWaterOrBubbleColumn()) {
+            } else if (this.friendlyTankEntity.isInWaterOrBubble()) {
                 return false;
             } else if (!this.friendlyTankEntity.isOnGround()) {
                 return false;
@@ -512,7 +511,7 @@ public class FriendlyTankEntity extends TankEntity {
                 if (livingentity == null) {
                     return true;
                 } else {
-                    return (!(this.friendlyTankEntity.getDistanceSq(livingentity) < 144.0D) || livingentity.getRevengeTarget() == null) && this.friendlyTankEntity.isQueuedToSit();
+                    return (!(this.friendlyTankEntity.distanceToSqr(livingentity) < 144.0D) || livingentity.getLastHurtByMob() == null) && this.friendlyTankEntity.isQueuedToSit();
                 }
             }
         }
@@ -520,15 +519,15 @@ public class FriendlyTankEntity extends TankEntity {
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
-            this.friendlyTankEntity.getNavigator().clearPath();
+        public void start() {
+            this.friendlyTankEntity.getNavigation().stop();
             this.friendlyTankEntity.setSitting(true);
         }
 
         /**
          * Reset the task's internal state. Called when this task is interrupted by another one
          */
-        public void resetTask() {
+        public void stop() {
             this.friendlyTankEntity.setSitting(false);
         }
     }
@@ -536,9 +535,9 @@ public class FriendlyTankEntity extends TankEntity {
     public class FollowOwnerGoal extends Goal {
         private final FriendlyTankEntity friendlyTankEntity;
         private LivingEntity owner;
-        private final IWorldReader world;
+        private final IWorldReader level;
         private final double followSpeed;
-        private final PathNavigator navigator;
+        private final PathNavigator navigation;
         private int timeToRecalcPath;
         private final float maxDist;
         private final float minDist;
@@ -547,14 +546,14 @@ public class FriendlyTankEntity extends TankEntity {
 
         public FollowOwnerGoal(FriendlyTankEntity hireable, double speed, float minDist, float maxDist, boolean teleportToLeaves) {
             this.friendlyTankEntity = hireable;
-            this.world = hireable.world;
+            this.level = hireable.level;
             this.followSpeed = speed;
-            this.navigator = hireable.getNavigator();
+            this.navigation = hireable.getNavigation();
             this.minDist = minDist;
             this.maxDist = maxDist;
             this.teleportToLeaves = teleportToLeaves;
-            this.setMutexFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
-            if (!(hireable.getNavigator() instanceof GroundPathNavigator) && !(hireable.getNavigator() instanceof FlyingPathNavigator)) {
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+            if (!(hireable.getNavigation() instanceof GroundPathNavigator) && !(hireable.getNavigation() instanceof FlyingPathNavigator)) {
                 throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
             }
         }
@@ -563,7 +562,7 @@ public class FriendlyTankEntity extends TankEntity {
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
+        public boolean canUse() {
             LivingEntity livingentity = this.friendlyTankEntity.getOwner();
             if (livingentity == null) {
                 return false;
@@ -571,7 +570,7 @@ public class FriendlyTankEntity extends TankEntity {
                 return false;
             } else if (this.friendlyTankEntity.isQueuedToSit()) {
                 return false;
-            } else if (this.friendlyTankEntity.getDistanceSq(livingentity) < (double)(this.minDist * this.minDist)) {
+            } else if (this.friendlyTankEntity.distanceToSqr(livingentity) < (double)(this.minDist * this.minDist)) {
                 return false;
             } else {
                 this.owner = livingentity;
@@ -582,46 +581,46 @@ public class FriendlyTankEntity extends TankEntity {
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
-        public boolean shouldContinueExecuting() {
-            if (this.navigator.noPath()) {
+        public boolean canContinueToUse() {
+            if (this.navigation.isDone()) {
                 return false;
             } else if (this.friendlyTankEntity.isQueuedToSit()) {
                 return false;
             } else {
-                return !(this.friendlyTankEntity.getDistanceSq(this.owner) <= (double)(this.maxDist * this.maxDist));
+                return !(this.friendlyTankEntity.distanceToSqr(this.owner) <= (double)(this.maxDist * this.maxDist));
             }
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
+        public void start() {
             this.timeToRecalcPath = 0;
-            this.oldWaterCost = this.friendlyTankEntity.getPathPriority(PathNodeType.WATER);
-            this.friendlyTankEntity.setPathPriority(PathNodeType.WATER, 0.0F);
+            this.oldWaterCost = this.friendlyTankEntity.getPathfindingMalus(PathNodeType.WATER);
+            this.friendlyTankEntity.setPathfindingMalus(PathNodeType.WATER, 0.0F);
         }
 
         /**
          * Reset the task's internal state. Called when this task is interrupted by another one
          */
-        public void resetTask() {
+        public void stop() {
             this.owner = null;
-            this.navigator.clearPath();
-            this.friendlyTankEntity.setPathPriority(PathNodeType.WATER, this.oldWaterCost);
+            this.navigation.stop();
+            this.friendlyTankEntity.setPathfindingMalus(PathNodeType.WATER, this.oldWaterCost);
         }
 
         /**
          * Keep ticking a continuous task that has already been started
          */
         public void tick() {
-            this.friendlyTankEntity.getLookController().setLookPositionWithEntity(this.owner, 10.0F, (float)this.friendlyTankEntity.getVerticalFaceSpeed());
+            this.friendlyTankEntity.getLookControl().setLookAt(this.owner, 10.0F, (float)this.friendlyTankEntity.getMaxHeadXRot());
             if (--this.timeToRecalcPath <= 0) {
                 this.timeToRecalcPath = 10;
-                if (!this.friendlyTankEntity.getLeashed() && !this.friendlyTankEntity.isPassenger()) {
-                    if (this.friendlyTankEntity.getDistanceSq(this.owner) >= 144.0D) {
+                if (!this.friendlyTankEntity.isLeashed() && !this.friendlyTankEntity.isPassenger()) {
+                    if (this.friendlyTankEntity.distanceToSqr(this.owner) >= 144.0D) {
                         this.tryToTeleportNearEntity();
                     } else {
-                        this.navigator.tryMoveToEntityLiving(this.owner, this.followSpeed);
+                        this.navigation.moveTo(this.owner, this.followSpeed);
                     }
 
                 }
@@ -629,7 +628,7 @@ public class FriendlyTankEntity extends TankEntity {
         }
 
         private void tryToTeleportNearEntity() {
-            BlockPos blockpos = this.owner.getPosition();
+            BlockPos blockpos = this.owner.blockPosition();
 
             for(int i = 0; i < 10; ++i) {
                 int j = this.getRandomNumber(-3, 3);
@@ -644,34 +643,34 @@ public class FriendlyTankEntity extends TankEntity {
         }
 
         private boolean tryToTeleportToLocation(int x, int y, int z) {
-            if (Math.abs((double)x - this.owner.getPosX()) < 2.0D && Math.abs((double)z - this.owner.getPosZ()) < 2.0D) {
+            if (Math.abs((double)x - this.owner.getX()) < 2.0D && Math.abs((double)z - this.owner.getZ()) < 2.0D) {
                 return false;
             } else if (!this.isTeleportFriendlyBlock(new BlockPos(x, y, z))) {
                 return false;
             } else {
-                this.friendlyTankEntity.setLocationAndAngles((double)x + 0.5D, (double)y, (double)z + 0.5D, this.friendlyTankEntity.rotationYaw, this.friendlyTankEntity.rotationPitch);
-                this.navigator.clearPath();
+                this.friendlyTankEntity.moveTo((double)x + 0.5D, (double)y, (double)z + 0.5D, this.friendlyTankEntity.yRot, this.friendlyTankEntity.xRot);
+                this.navigation.stop();
                 return true;
             }
         }
 
         private boolean isTeleportFriendlyBlock(BlockPos pos) {
-            PathNodeType pathnodetype = WalkNodeProcessor.getFloorNodeType(this.world, pos.toMutable());
+            PathNodeType pathnodetype = WalkNodeProcessor.getBlockPathTypeStatic(this.level, pos.mutable());
             if (pathnodetype != PathNodeType.WALKABLE) {
                 return false;
             } else {
-                BlockState blockstate = this.world.getBlockState(pos.down());
+                BlockState blockstate = this.level.getBlockState(pos.below());
                 if (!this.teleportToLeaves && blockstate.getBlock() instanceof LeavesBlock) {
                     return false;
                 } else {
-                    BlockPos blockpos = pos.subtract(this.friendlyTankEntity.getPosition());
-                    return this.world.hasNoCollisions(this.friendlyTankEntity, this.friendlyTankEntity.getBoundingBox().offset(blockpos));
+                    BlockPos blockpos = pos.subtract(this.friendlyTankEntity.blockPosition());
+                    return this.level.noCollision(this.friendlyTankEntity, this.friendlyTankEntity.getBoundingBox().move(blockpos));
                 }
             }
         }
 
         private int getRandomNumber(int min, int max) {
-            return this.friendlyTankEntity.getRNG().nextInt(max - min + 1) + min;
+            return this.friendlyTankEntity.getRandom().nextInt(max - min + 1) + min;
         }
     }
 
@@ -681,35 +680,35 @@ public class FriendlyTankEntity extends TankEntity {
 
         public OwnerHurtTargetGoal(FriendlyTankEntity friendlyTankEntity) {
             super(friendlyTankEntity, false);
-            this.setMutexFlags(EnumSet.of(Flag.TARGET));
+            this.setFlags(EnumSet.of(Flag.TARGET));
         }
 
         /**
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
+        public boolean canUse() {
             LivingEntity livingentity = FriendlyTankEntity.this.getOwner();
             if (livingentity == null) {
                 return false;
             } else {
-                this.attacker = livingentity.getLastAttackedEntity();
-                int i = livingentity.getLastAttackedEntityTime();
-                return i != this.timestamp && this.isSuitableTarget(this.attacker, EntityPredicate.DEFAULT);
+                this.attacker = livingentity.getLastHurtMob();
+                int i = livingentity.getLastHurtMobTimestamp();
+                return i != this.timestamp && this.canAttack(this.attacker, EntityPredicate.DEFAULT);
             }
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
-            this.goalOwner.setAttackTarget(this.attacker);
+        public void start() {
+            this.mob.setTarget(this.attacker);
             LivingEntity livingentity = FriendlyTankEntity.this.getOwner();
             if (livingentity != null) {
-                this.timestamp = livingentity.getLastAttackedEntityTime();
+                this.timestamp = livingentity.getLastHurtMobTimestamp();
             }
 
-            super.startExecuting();
+            super.start();
         }
     }
 
@@ -719,35 +718,35 @@ public class FriendlyTankEntity extends TankEntity {
 
         public OwnerHurtByTargetGoal(FriendlyTankEntity friendlyTankEntity) {
             super(friendlyTankEntity, false);
-            this.setMutexFlags(EnumSet.of(Flag.TARGET));
+            this.setFlags(EnumSet.of(Flag.TARGET));
         }
 
         /**
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
+        public boolean canUse() {
             LivingEntity livingentity = FriendlyTankEntity.this.getOwner();
             if (livingentity == null) {
                 return false;
             } else {
-                this.attacker = livingentity.getRevengeTarget();
-                int i = livingentity.getRevengeTimer();
-                return i != this.timestamp && this.isSuitableTarget(this.attacker, EntityPredicate.DEFAULT);
+                this.attacker = livingentity.getLastHurtByMob();
+                int i = livingentity.getLastHurtByMobTimestamp();
+                return i != this.timestamp && this.canAttack(this.attacker, EntityPredicate.DEFAULT);
             }
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
-            this.goalOwner.setAttackTarget(this.attacker);
+        public void start() {
+            this.mob.setTarget(this.attacker);
             LivingEntity livingentity = FriendlyTankEntity.this.getOwner();
             if (livingentity != null) {
-                this.timestamp = livingentity.getRevengeTimer();
+                this.timestamp = livingentity.getLastHurtByMobTimestamp();
             }
 
-            super.startExecuting();
+            super.start();
         }
     }
 

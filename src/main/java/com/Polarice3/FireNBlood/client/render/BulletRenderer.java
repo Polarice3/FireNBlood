@@ -17,13 +17,13 @@ public class BulletRenderer extends MobRenderer<BulletEntity, BulletModel<Bullet
     }
 
     @Override
-    public ResourceLocation getEntityTexture(BulletEntity entity) {
+    public ResourceLocation getTextureLocation(BulletEntity entity) {
         return TEXTURE;
     }
 
-    protected void applyRotations(BulletEntity entityLiving, MatrixStack matrixStackIn, float ageInTicks, float rotationYaw, float partialTicks) {
-        super.applyRotations(entityLiving, matrixStackIn, ageInTicks, rotationYaw, partialTicks);
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(entityLiving.rotationPitch));
+    protected void setupRotations(BulletEntity entityLiving, MatrixStack matrixStackIn, float ageInTicks, float yRot, float partialTicks) {
+        super.setupRotations(entityLiving, matrixStackIn, ageInTicks, yRot, partialTicks);
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(entityLiving.xRot));
     }
 
 }

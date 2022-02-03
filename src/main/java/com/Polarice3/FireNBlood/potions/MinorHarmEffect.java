@@ -14,20 +14,20 @@ public class MinorHarmEffect extends ModEffects{
     }
 
     public void performEffect(LivingEntity entityLivingBaseIn, int amplifier) {
-        if (!entityLivingBaseIn.isEntityUndead()){
-            entityLivingBaseIn.attackEntityFrom(DamageSource.MAGIC, (float)(2 << amplifier));
+        if (!entityLivingBaseIn.isInvertedHealAndHarm()){
+            entityLivingBaseIn.hurt(DamageSource.MAGIC, (float)(2 << amplifier));
         } else {
             entityLivingBaseIn.heal((float)Math.max(2 << amplifier, 0));
         }
     }
 
-    public void affectEntity(@Nullable Entity source, @Nullable Entity indirectSource, LivingEntity entityLivingBaseIn, int amplifier, double health) {
-        if (!entityLivingBaseIn.isEntityUndead()) {
+    public void applyInstantenousEffect(@Nullable Entity source, @Nullable Entity indirectSource, LivingEntity entityLivingBaseIn, int amplifier, double health) {
+        if (!entityLivingBaseIn.isInvertedHealAndHarm()) {
             int j = (int) (health * (double) (2 << amplifier) + 0.5D);
             if (source == null) {
-                entityLivingBaseIn.attackEntityFrom(DamageSource.MAGIC, (float) j);
+                entityLivingBaseIn.hurt(DamageSource.MAGIC, (float) j);
             } else {
-                entityLivingBaseIn.attackEntityFrom(DamageSource.causeIndirectMagicDamage(source, indirectSource), (float) j);
+                entityLivingBaseIn.hurt(DamageSource.indirectMagic(source, indirectSource), (float) j);
             }
             this.performEffect(entityLivingBaseIn, amplifier);
         } else {

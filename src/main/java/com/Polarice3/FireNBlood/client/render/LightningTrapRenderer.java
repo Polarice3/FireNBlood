@@ -12,7 +12,7 @@ public class LightningTrapRenderer extends EntityRenderer<LightningTrapEntity> {
         super(renderManager);
     }
 
-    public ResourceLocation getEntityTexture(LightningTrapEntity entity) {
-        return AtlasTexture.LOCATION_BLOCKS_TEXTURE;
+    public ResourceLocation getTextureLocation(LightningTrapEntity entity) {
+        return AtlasTexture.LOCATION_BLOCKS;
     }
 }

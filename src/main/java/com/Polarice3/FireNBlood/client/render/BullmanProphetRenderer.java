@@ -19,7 +19,7 @@ public class BullmanProphetRenderer extends MobRenderer<TaillessProphetEntity, B
     }
 
     @Override
-    public ResourceLocation getEntityTexture(TaillessProphetEntity entity) {
+    public ResourceLocation getTextureLocation(TaillessProphetEntity entity) {
         return TEXTURE;
     }
 }

@@ -57,7 +57,7 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void worldLoad(WorldEvent.Load evt) {
-        if (!evt.getWorld().isRemote() && evt.getWorld() instanceof ServerWorld) {
+        if (!evt.getWorld().isClientSide() && evt.getWorld() instanceof ServerWorld) {
             HEXER_SPAWNER_MAP.put((ServerWorld) evt.getWorld(), new HexerSpawner((ServerWorld) evt.getWorld()));
             CULTISTS_SPAWNER_MAP.put((ServerWorld) evt.getWorld(), new CultistsSpawner());
         }
@@ -65,7 +65,7 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void worldUnload(WorldEvent.Unload evt) {
-        if (!evt.getWorld().isRemote() && evt.getWorld() instanceof ServerWorld) {
+        if (!evt.getWorld().isClientSide() && evt.getWorld() instanceof ServerWorld) {
             HEXER_SPAWNER_MAP.remove(evt.getWorld());
             CULTISTS_SPAWNER_MAP.remove(evt.getWorld());
         }
@@ -73,7 +73,7 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onServerTick(TickEvent.WorldTickEvent tick){
-        if(!tick.world.isRemote && tick.world instanceof ServerWorld){
+        if(!tick.world.isClientSide && tick.world instanceof ServerWorld){
             ServerWorld serverWorld = (ServerWorld)tick.world;
             HexerSpawner spawner = HEXER_SPAWNER_MAP.get(serverWorld);
             CultistsSpawner spawner2 = CULTISTS_SPAWNER_MAP.get(serverWorld);
@@ -89,7 +89,7 @@ public class ModEvents {
 
     @SubscribeEvent
     public static void onPlayerFirstEntersWorld(PlayerEvent.PlayerLoggedInEvent event){
-        if (FNBConfig.StarterTotem.get() && !event.getPlayer().world.isRemote) {
+        if (FNBConfig.StarterTotem.get() && !event.getPlayer().level.isClientSide) {
             CompoundNBT playerData = event.getPlayer().getPersistentData();
             CompoundNBT data;
 
@@ -100,7 +100,7 @@ public class ModEvents {
             }
 
             if (!data.getBoolean("firenblood:gotTotem")) {
-                event.getPlayer().addItemStackToInventory(new ItemStack(RegistryHandler.GOLDTOTEM.get()));
+                event.getPlayer().addItem(new ItemStack(RegistryHandler.GOLDTOTEM.get()));
                 data.putBoolean("firenblood:gotTotem", true);
                 playerData.put(PlayerEntity.PERSISTED_NBT_TAG, data);
             }
@@ -143,13 +143,13 @@ public class ModEvents {
     @SubscribeEvent
     public static void onPlayerEquipment(TickEvent.PlayerTickEvent event){
         PlayerEntity player = event.player;
-        if (player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.FURRED_HELMET.get()
-                && player.getItemStackFromSlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.FURRED_CHESTPLATE.get()
-                && player.getItemStackFromSlot(EquipmentSlotType.LEGS).getItem() == RegistryHandler.FURRED_LEGGINGS.get()
-                && player.getItemStackFromSlot(EquipmentSlotType.FEET).getItem() == RegistryHandler.FURRED_BOOTS.get()
+        if (player.getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.FURRED_HELMET.get()
+                && player.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.FURRED_CHESTPLATE.get()
+                && player.getItemBySlot(EquipmentSlotType.LEGS).getItem() == RegistryHandler.FURRED_LEGGINGS.get()
+                && player.getItemBySlot(EquipmentSlotType.FEET).getItem() == RegistryHandler.FURRED_BOOTS.get()
         ){
-            player.addPotionEffect(new EffectInstance(Effects.SPEED, 100));
-            player.addPotionEffect(new EffectInstance(Effects.HASTE, 100));
+            player.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 100));
+            player.addEffect(new EffectInstance(Effects.DIG_SPEED, 100));
         }
     }
 
@@ -161,7 +161,7 @@ public class ModEvents {
             AbstractProtectorEntity protector = (AbstractProtectorEntity) target;
             MobEntity attacker = (MobEntity) entity;
             if (protector.isDying()){
-                attacker.setAttackTarget(null);
+                attacker.setTarget(null);
             }
         }
     }
@@ -170,10 +170,10 @@ public class ModEvents {
     public static void GoldTouchDeath(LivingDeathEvent event){
         Entity killed = event.getEntity();
         if (killed instanceof CreatureEntity){
-            if (((CreatureEntity) killed).isPotionActive(RegistryHandler.GOLDTOUCHED.get())){
-                int amp = Objects.requireNonNull(((CreatureEntity) killed).getActivePotionEffect(RegistryHandler.GOLDTOUCHED.get())).getAmplifier();
+            if (((CreatureEntity) killed).hasEffect(RegistryHandler.GOLDTOUCHED.get())){
+                int amp = Objects.requireNonNull(((CreatureEntity) killed).getEffect(RegistryHandler.GOLDTOUCHED.get())).getAmplifier();
                 for(int i = 0; i < 8 * amp + 1; ++i) {
-                    killed.entityDropItem(new ItemStack(Items.GOLD_NUGGET));
+                    killed.spawnAtLocation(new ItemStack(Items.GOLD_NUGGET));
                 }
             }
         }

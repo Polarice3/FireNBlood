@@ -27,20 +27,20 @@ public class RegistryHandler {
     public static DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, FireNBlood.MOD_ID);
     public static DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, FireNBlood.MOD_ID);
     public static final DeferredRegister<Effect> EFFECTS = DeferredRegister.create(ForgeRegistries.POTIONS, FireNBlood.MOD_ID);
-    public static KeyBinding[] keyBindings;
+//    public static KeyBinding[] keyBindings;
 
     public static void init(){
         ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         EFFECTS.register(FMLJavaModLoadingContext.get().getModEventBus());
-        keyBindings = new KeyBinding[1];
+/*        keyBindings = new KeyBinding[1];
 
         keyBindings[0] = new KeyBinding("key.firenblood.magic", 67, "key.firenblood.category");
 
         for (int i = 0; i < keyBindings.length; ++i)
         {
             ClientRegistry.registerKeyBinding(keyBindings[i]);
-        }
+        }*/
     }
 
     //Items
@@ -91,21 +91,21 @@ public class RegistryHandler {
     public static final RegistryObject<Item> SOULSTAFF = ITEMS.register("soulstaff", SoulStaff::new);
     //Armors
     public static final RegistryObject<Item> FURRED_HELMET = ITEMS.register("furred_helmet", () ->
-            new ArmorItem(ModArmorMaterial.FURRED, EquipmentSlotType.HEAD, new Item.Properties().group(FireNBlood.TAB)));
+            new ArmorItem(ModArmorMaterial.FURRED, EquipmentSlotType.HEAD, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> FURRED_CHESTPLATE = ITEMS.register("furred_chestplate", () ->
-            new ArmorItem(ModArmorMaterial.FURRED, EquipmentSlotType.CHEST, new Item.Properties().group(FireNBlood.TAB)));
+            new ArmorItem(ModArmorMaterial.FURRED, EquipmentSlotType.CHEST, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> FURRED_LEGGINGS = ITEMS.register("furred_leggings", () ->
-            new ArmorItem(ModArmorMaterial.FURRED, EquipmentSlotType.LEGS, new Item.Properties().group(FireNBlood.TAB)));
+            new ArmorItem(ModArmorMaterial.FURRED, EquipmentSlotType.LEGS, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> FURRED_BOOTS = ITEMS.register("furred_boots", () ->
-            new ArmorItem(ModArmorMaterial.FURRED, EquipmentSlotType.FEET, new Item.Properties().group(FireNBlood.TAB)));
+            new ArmorItem(ModArmorMaterial.FURRED, EquipmentSlotType.FEET, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> DARKHELM = ITEMS.register("darkhelm", () ->
-            new DarkRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.HEAD, new Item.Properties().group(FireNBlood.TAB)));
+            new DarkRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.HEAD, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> DARKROBE = ITEMS.register("darkrobe", () ->
-            new DarkRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.CHEST, new Item.Properties().group(FireNBlood.TAB)));
+            new DarkRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.CHEST, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> NECROHELM = ITEMS.register("necrohelm", () ->
-            new NecroRobeArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.HEAD, new Item.Properties().group(FireNBlood.TAB)));
+            new NecroRobeArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.HEAD, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> NECROROBE = ITEMS.register("necrorobe", () ->
-            new NecroRobeArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.CHEST, new Item.Properties().group(FireNBlood.TAB)));
+            new NecroRobeArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.CHEST, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> APOSTLEHELM = ITEMS.register("apostlehelm", () ->
             new ApostleRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.HEAD, new Item.Properties()));
     public static final RegistryObject<Item> APOSTLEROBE = ITEMS.register("apostlerobe", () ->
@@ -126,42 +126,42 @@ public class RegistryHandler {
 
     //Slabs
     public static final RegistryObject<Block> CURSED_STONE_SLAB_BLOCK = BLOCKS.register("cursed_stone_slab",
-        () -> new SlabBlock(AbstractBlock.Properties.create(Material.ROCK, MaterialColor.STONE)
-                .hardnessAndResistance(3.0F, 9.0F)
+        () -> new SlabBlock(AbstractBlock.Properties.of(Material.STONE, MaterialColor.STONE)
+                .strength(3.0F, 9.0F)
                 .sound(SoundType.STONE)
                 .harvestLevel(0)
                 .harvestTool(ToolType.PICKAXE)));
     public static final RegistryObject<Block> CURSED_BRICK_SLAB_BLOCK = BLOCKS.register("cursed_bricks_slab",
-            () -> new SlabBlock(AbstractBlock.Properties.create(Material.ROCK, MaterialColor.STONE)
-                    .hardnessAndResistance(3.0F, 9.0F)
+            () -> new SlabBlock(AbstractBlock.Properties.of(Material.STONE, MaterialColor.STONE)
+                    .strength(3.0F, 9.0F)
                     .sound(SoundType.STONE)
                     .harvestLevel(0)
                     .harvestTool(ToolType.PICKAXE)));
     public static final RegistryObject<Block> CURSED_TILES_SLAB_BLOCK = BLOCKS.register("cursed_tiles_slab",
-            () -> new SlabBlock(AbstractBlock.Properties.create(Material.ROCK, MaterialColor.STONE)
-                    .hardnessAndResistance(3.0F, 9.0F)
+            () -> new SlabBlock(AbstractBlock.Properties.of(Material.STONE, MaterialColor.STONE)
+                    .strength(3.0F, 9.0F)
                     .sound(SoundType.STONE)
                     .harvestLevel(0)
                     .harvestTool(ToolType.PICKAXE)));
     //Stairs
     public static final RegistryObject<Block> CURSED_STONE_STAIRS_BLOCK = BLOCKS.register("cursed_stone_stairs",
-            () -> new StairsBlock(CURSED_STONE_BLOCK.get().getDefaultState(), AbstractBlock.Properties.from(CURSED_STONE_BLOCK.get())));
+            () -> new StairsBlock(CURSED_STONE_BLOCK.get().defaultBlockState(), AbstractBlock.Properties.copy(CURSED_STONE_BLOCK.get())));
     public static final RegistryObject<Block> CURSED_BRICK_STAIRS_BLOCK = BLOCKS.register("cursed_bricks_stairs",
-            () -> new StairsBlock(CURSED_BRICK_BLOCK.get().getDefaultState(), AbstractBlock.Properties.from(CURSED_BRICK_BLOCK.get())));
+            () -> new StairsBlock(CURSED_BRICK_BLOCK.get().defaultBlockState(), AbstractBlock.Properties.copy(CURSED_BRICK_BLOCK.get())));
     public static final RegistryObject<Block> CURSED_TILES_STAIRS_BLOCK = BLOCKS.register("cursed_tiles_stairs",
-            () -> new StairsBlock(CURSED_TILES_BLOCK.get().getDefaultState(), AbstractBlock.Properties.from(CURSED_TILES_BLOCK.get())));
+            () -> new StairsBlock(CURSED_TILES_BLOCK.get().defaultBlockState(), AbstractBlock.Properties.copy(CURSED_TILES_BLOCK.get())));
     //Walls
     public static final RegistryObject<Block> CURSED_BRICK_WALL_BLOCK = BLOCKS.register("cursed_bricks_wall",
-            () -> new WallBlock(AbstractBlock.Properties.from(CURSED_BRICK_BLOCK.get())));
+            () -> new WallBlock(AbstractBlock.Properties.copy(CURSED_BRICK_BLOCK.get())));
     //Panes
     public static final RegistryObject<Block> CURSED_BARS_BLOCK = BLOCKS.register("cursed_bars",
-            () -> new PaneBlock(AbstractBlock.Properties.create(Material.IRON, MaterialColor.AIR)
-                    .setRequiresTool()
-                    .hardnessAndResistance(5.0F, 6.0F)
+            () -> new PaneBlock(AbstractBlock.Properties.of(Material.METAL, MaterialColor.NONE)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F, 6.0F)
                     .sound(SoundType.METAL)
-                    .notSolid()));
+                    .noOcclusion()));
     //Block Items
-    public static final RegistryObject<Item> BLAZE_CORE_BLOCK_ITEM = ITEMS.register("blazecoreblock",
+    public static final RegistryObject<Item> BLAZE_CORE_ITEM = ITEMS.register("blazecoreblock",
             () -> new BlockItemBase(BLAZE_CORE_BLOCK.get()));
     public static final RegistryObject<Item> PORCUS_SHRINE_ITEM = ITEMS.register("porcusshrine",
             () -> new BlockItemBase(PORCUS_SHRINE.get()));

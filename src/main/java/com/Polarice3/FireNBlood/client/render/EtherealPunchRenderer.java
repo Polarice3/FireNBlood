@@ -25,26 +25,26 @@ public class EtherealPunchRenderer extends EntityRenderer<EtherealPunchEntity> {
         super(renderManagerIn);
     }
 
-    protected int getBlockLight(EtherealPunchEntity entityIn, BlockPos partialTicks) {
+    protected int getBlockLightLevel(EtherealPunchEntity entityIn, BlockPos partialTicks) {
         return 15;
     }
 
     public void render(EtherealPunchEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.scale(-1.0F, -1.0F, 1.0F);
-        float f = MathHelper.rotLerp(entityIn.prevRotationYaw, entityIn.rotationYaw, partialTicks);
-        float f1 = MathHelper.lerp(partialTicks, entityIn.prevRotationPitch, entityIn.rotationPitch);
-        IVertexBuilder ivertexbuilder = bufferIn.getBuffer(this.skeletonHeadModel.getRenderType(this.getEntityTexture(entityIn)));
-        this.skeletonHeadModel.func_225603_a_(0.0F, f, f1);
-        this.skeletonHeadModel.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-        matrixStackIn.pop();
+        float f = MathHelper.rotLerp(entityIn.yRotO, entityIn.yRot, partialTicks);
+        float f1 = MathHelper.lerp(partialTicks, entityIn.xRotO, entityIn.xRot);
+        IVertexBuilder ivertexbuilder = bufferIn.getBuffer(this.skeletonHeadModel.renderType(this.getTextureLocation(entityIn)));
+        this.skeletonHeadModel.setupAnim(0.0F, f, f1);
+        this.skeletonHeadModel.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        matrixStackIn.popPose();
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
     /**
      * Returns the location of an entity's texture.
      */
-    public ResourceLocation getEntityTexture(EtherealPunchEntity entity) {
+    public ResourceLocation getTextureLocation(EtherealPunchEntity entity) {
         return TEXTURE;
     }
 }

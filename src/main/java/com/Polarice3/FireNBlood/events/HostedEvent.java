@@ -24,31 +24,31 @@ public class HostedEvent {
     @SubscribeEvent
     public static void HostedEffect(LivingEvent.LivingUpdateEvent event){
         LivingEntity host = event.getEntityLiving();
-        World world = event.getEntity().getEntityWorld();
-        if (host.isPotionActive(RegistryHandler.HOSTED.get())) {
+        World level = event.getEntity().getCommandSenderWorld();
+        if (host.hasEffect(RegistryHandler.HOSTED.get())) {
             if (host instanceof AbstractSkeletonEntity || host instanceof ParasiteEntity
                     || host instanceof VexEntity || host instanceof MinionEntity
                     || host instanceof BlazeEntity || host instanceof MagmaCubeEntity
                     || host instanceof GuardianEntity || host instanceof IronGolemEntity || host instanceof TankEntity
                     || host instanceof SilverfishEntity || host instanceof EndermiteEntity || host instanceof WitherEntity){
-                host.removePotionEffect(RegistryHandler.HOSTED.get());
+                host.removeEffect(RegistryHandler.HOSTED.get());
             } else if (host instanceof EndermanEntity){
-                int amp = Objects.requireNonNull(host.getActivePotionEffect(RegistryHandler.HOSTED.get())).getAmplifier() * 10;
-                int random = world.rand.nextInt(120 - amp);
+                int amp = Objects.requireNonNull(host.getEffect(RegistryHandler.HOSTED.get())).getAmplifier() * 10;
+                int random = level.random.nextInt(120 - amp);
                 if (random == 0) {
-                    EndermiteEntity parasiteEntity = new EndermiteEntity(EntityType.ENDERMITE, world);
-                    parasiteEntity.setPosition(host.getPosX(), host.getPosY(), host.getPosZ());
-                    parasiteEntity.setAttackTarget(host);
-                    world.addEntity(parasiteEntity);
+                    EndermiteEntity parasiteEntity = new EndermiteEntity(EntityType.ENDERMITE, level);
+                    parasiteEntity.setPos(host.getX(), host.getY(), host.getZ());
+                    parasiteEntity.setTarget(host);
+                    level.addFreshEntity(parasiteEntity);
                 }
             } else {
-                int amp = Objects.requireNonNull(host.getActivePotionEffect(RegistryHandler.HOSTED.get())).getAmplifier() * 10;
-                int random = world.rand.nextInt(120 - amp);
+                int amp = Objects.requireNonNull(host.getEffect(RegistryHandler.HOSTED.get())).getAmplifier() * 10;
+                int random = level.random.nextInt(120 - amp);
                 if (random == 0) {
-                    ParasiteEntity parasiteEntity = new ParasiteEntity(ModEntityType.PARASITE.get(), world);
-                    parasiteEntity.setPosition(host.getPosX(), host.getPosY(), host.getPosZ());
-                    parasiteEntity.setAttackTarget(host);
-                    world.addEntity(parasiteEntity);
+                    ParasiteEntity parasiteEntity = new ParasiteEntity(ModEntityType.PARASITE.get(), level);
+                    parasiteEntity.setPos(host.getX(), host.getY(), host.getZ());
+                    parasiteEntity.setTarget(host);
+                    level.addFreshEntity(parasiteEntity);
                 }
             }
         }

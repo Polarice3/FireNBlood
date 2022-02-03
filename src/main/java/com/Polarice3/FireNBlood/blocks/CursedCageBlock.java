@@ -9,22 +9,22 @@ import net.minecraft.world.IBlockReader;
 
 public class CursedCageBlock extends Block {
     public CursedCageBlock() {
-        super(AbstractBlock.Properties.create(Material.ROCK)
-                .hardnessAndResistance(3.5F)
+        super(AbstractBlock.Properties.of(Material.STONE)
+                .strength(3.5F)
                 .sound(SoundType.METAL)
-                .setRequiresTool()
-                .notSolid());
+                .requiresCorrectToolForDrops()
+                .noOcclusion());
     }
 
-    public boolean isTransparent(BlockState state) {
+    public boolean useShapeForLightOcclusion(BlockState state) {
         return true;
     }
 
-    public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
+    public boolean isPathfindable(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
         return false;
     }
 
-    public BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderShape(BlockState state) {
         return BlockRenderType.MODEL;
     }
 }

@@ -24,7 +24,7 @@ public class GoldTotemEvent {
 
     @SubscribeEvent
     public static void onLivingDeathEvent(LivingDeathEvent event) {
-        Entity killer = event.getSource().getTrueSource();
+        Entity killer = event.getSource().getEntity();
         Entity killed = event.getEntity();
 
         if (killer instanceof PlayerEntity && killed instanceof MobEntity){
@@ -36,14 +36,14 @@ public class GoldTotemEvent {
         }
 
         if (event.getEntityLiving() instanceof PlayerEntity && FNBConfig.TotemUndying.get()){
-            if (event.getEntityLiving().isPotionActive(RegistryHandler.DEATHPROTECT.get())){
+            if (event.getEntityLiving().hasEffect(RegistryHandler.DEATHPROTECT.get())){
                 event.getEntityLiving().setHealth(1.0F);
-                event.getEntityLiving().clearActivePotions();
-                event.getEntityLiving().addPotionEffect(new EffectInstance(Effects.REGENERATION, 900, 1));
-                event.getEntityLiving().addPotionEffect(new EffectInstance(Effects.ABSORPTION, 100, 1));
-                event.getEntityLiving().addPotionEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 800, 0));
-                event.getEntityLiving().addPotionEffect(new EffectInstance(RegistryHandler.SOULDRAIN.get(), 100));
-                event.getEntityLiving().world.setEntityState(event.getEntityLiving(), (byte)35);
+                event.getEntityLiving().removeAllEffects();
+                event.getEntityLiving().addEffect(new EffectInstance(Effects.REGENERATION, 900, 1));
+                event.getEntityLiving().addEffect(new EffectInstance(Effects.ABSORPTION, 100, 1));
+                event.getEntityLiving().addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 800, 0));
+                event.getEntityLiving().addEffect(new EffectInstance(RegistryHandler.SOULDRAIN.get(), 100));
+                event.getEntityLiving().level.broadcastEntityEvent(event.getEntityLiving(), (byte)35);
                 event.setCanceled(true);
             }
         }
@@ -52,7 +52,7 @@ public class GoldTotemEvent {
 
     private static ItemStack getTotemItem(PlayerEntity player) {
         for(Hand hand : Hand.values()) {
-            ItemStack itemstack = player.getHeldItem(hand);
+            ItemStack itemstack = player.getItemInHand(hand);
             if (itemstack.getItem() == RegistryHandler.GOLDTOTEM.get()) {
                 return itemstack;
             }

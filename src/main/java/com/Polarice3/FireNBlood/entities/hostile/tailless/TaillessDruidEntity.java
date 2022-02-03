@@ -1,13 +1,8 @@
 package com.Polarice3.FireNBlood.entities.hostile.tailless;
 
-import com.Polarice3.FireNBlood.entities.ally.FriendlyTankEntity;
-import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
-import com.Polarice3.FireNBlood.entities.ally.SummonedEntity;
 import com.Polarice3.FireNBlood.entities.hostile.NeophyteEntity;
 import com.Polarice3.FireNBlood.entities.hostile.cultists.AbstractCultistEntity;
-import com.Polarice3.FireNBlood.entities.neutral.MinionEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
-import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -20,7 +15,6 @@ import net.minecraft.entity.monster.VexEntity;
 import net.minecraft.entity.monster.WitchEntity;
 import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
@@ -32,7 +26,6 @@ import net.minecraft.potion.Effects;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IServerWorld;
@@ -54,7 +47,7 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
     private static final Predicate<Entity> field_213690_b = (p_213685_0_) -> {
         return p_213685_0_.isAlive() && !(p_213685_0_ instanceof TaillessDruidEntity);
     };
-    protected static final DataParameter<Byte> DRUID_FLAGS = EntityDataManager.createKey(TaillessDruidEntity.class, DataSerializers.BYTE);
+    protected static final DataParameter<Byte> DRUID_FLAGS = EntityDataManager.defineId(TaillessDruidEntity.class, DataSerializers.BYTE);
     private AbstractTaillessEntity AllyTarget;
     private VillagerEntity TemptTarget;
     private CallerEntity CallerTarget;
@@ -62,15 +55,15 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
 
     public TaillessDruidEntity(EntityType<? extends SpellcastingTaillessEntity> type, World worldIn) {
         super(type, worldIn);
-        this.setRandom(2);
+        this.setrandom(2);
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 48.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.35D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 14.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .add(Attributes.MAX_HEALTH, 48.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.35D)
+                .add(Attributes.ATTACK_DAMAGE, 14.0D);
     }
 
     @Override
@@ -93,31 +86,31 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractIllagerEntity.class, true));
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, AbstractTaillessEntity.class)).setCallsForHelp());
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, AbstractPiglinEntity.class)).setCallsForHelp());
+        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, AbstractTaillessEntity.class)).setAlertOthers());
+        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, AbstractPiglinEntity.class)).setAlertOthers());
 
 
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(DRUID_FLAGS, (byte)0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DRUID_FLAGS, (byte)0);
     }
 
     private boolean getDruidFlag(int mask){
-        int i = this.dataManager.get(DRUID_FLAGS);
+        int i = this.entityData.get(DRUID_FLAGS);
         return (i & mask) != 0;
     }
 
     private void setDruidFlag(int mask, boolean value) {
-        int i = this.dataManager.get(DRUID_FLAGS);
+        int i = this.entityData.get(DRUID_FLAGS);
         if (value) {
             i = i | mask;
         } else {
             i = i & ~mask;
         }
 
-        this.dataManager.set(DRUID_FLAGS, (byte)(i & 255));
+        this.entityData.set(DRUID_FLAGS, (byte)(i & 255));
     }
 
     public boolean isFiring(){
@@ -129,33 +122,33 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
     }
 
     @Override
-    protected int getExperiencePoints(PlayerEntity player){
-        return 10 + this.world.rand.nextInt(10);
+    protected int getExperienceReward(PlayerEntity player){
+        return 10 + this.level.random.nextInt(10);
     }
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_ZOMBIE_HORSE_AMBIENT;
+        return SoundEvents.ZOMBIE_HORSE_AMBIENT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_SKELETON_HORSE_DEATH;
+        return SoundEvents.SKELETON_HORSE_DEATH;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_POLAR_BEAR_HURT;
+        return SoundEvents.POLAR_BEAR_HURT;
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_COW_STEP, 0.25F, 1.0F);
+        this.playSound(SoundEvents.COW_STEP, 0.25F, 1.0F);
     }
 
     @Override
-    protected SoundEvent getSpellSound() {
-        return SoundEvents.ENTITY_EVOKER_CAST_SPELL;
+    protected SoundEvent getCastingSoundEvent () {
+        return SoundEvents.EVOKER_CAST_SPELL;
     }
 
     private void setAllyTarget(@Nullable AbstractTaillessEntity AllyTargetIn) {
@@ -185,63 +178,63 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         return this.CallerTarget;
     }
 
-    private final EntityPredicate ally = (new EntityPredicate().setDistance(64.0D));
+    private final EntityPredicate ally = (new EntityPredicate().range(64.0D));
 
-    public boolean isOnSameTeam(Entity entityIn) {
-        if (super.isOnSameTeam(entityIn)) {
+    public boolean isAlliedTo(Entity entityIn) {
+        if (super.isAlliedTo(entityIn)) {
             return true;
         } else if (entityIn instanceof WitchEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;
         } else if (entityIn instanceof AbstractCultistEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;
         } else if (entityIn instanceof AbstractPiglinEntity){
-            return this.isOnSameTeam(entityIn);
+            return this.isAlliedTo(entityIn);
         }  else {
             return false;
         }
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount){
-        List<ServantTaillessEntity> list = TaillessDruidEntity.this.world.getTargettableEntitiesWithinAABB(ServantTaillessEntity.class, this.ally, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().grow(32.0D, 8.0D, 32.0D));
+    public boolean hurt(DamageSource source, float amount){
+        List<ServantTaillessEntity> list = TaillessDruidEntity.this.level.getNearbyEntities(ServantTaillessEntity.class, this.ally, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().inflate(32.0D, 8.0D, 32.0D));
         if (list.isEmpty()) {
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         } else {
             return false;
         }
     }
 
-    public boolean isCharged(){
-        List<ServantTaillessEntity> list = TaillessDruidEntity.this.world.getTargettableEntitiesWithinAABB(ServantTaillessEntity.class, this.ally, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().grow(32.0D, 8.0D, 32.0D));
+    public boolean isPowered(){
+        List<ServantTaillessEntity> list = TaillessDruidEntity.this.level.getNearbyEntities(ServantTaillessEntity.class, this.ally, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().inflate(32.0D, 8.0D, 32.0D));
         return !list.isEmpty();
     }
 
-    public void livingTick() {
+    public void aiStep() {
         if (this.isFiring()) {
             ++this.Fire;
             if (this.Fire % 2 == 0 && this.Fire < 10) {
-                Vector3d vector3d = this.getLook(1.0F);
-                double d0 = this.getPosX();
-                double d1 = this.getPosYHeight(0.5D);
-                double d2 = this.getPosZ();
+                Vector3d vector3d = this.getViewVector( 1.0F);
+                double d0 = this.getX();
+                double d1 = this.getY(0.5D);
+                double d2 = this.getZ();
                 for (int i = 0; i < 8; ++i) {
-                    double d3 = d0 + this.getRNG().nextGaussian() / 2.0D;
-                    double d4 = d1 + this.getRNG().nextGaussian() / 2.0D;
-                    double d5 = d2 + this.getRNG().nextGaussian() / 2.0D;
+                    double d3 = d0 + this.getRandom().nextGaussian() / 2.0D;
+                    double d4 = d1 + this.getRandom().nextGaussian() / 2.0D;
+                    double d5 = d2 + this.getRandom().nextGaussian() / 2.0D;
 
                     for (int j = 0; j < 6; ++j) {
-                        this.world.addParticle(ParticleTypes.FLAME, d3, d4, d5, vector3d.x * (double) 0.08F * (double) j, -vector3d.y * (double)0.6F, vector3d.z * (double) 0.08F * (double) j);
+                        this.level.addParticle(ParticleTypes.FLAME, d3, d4, d5, vector3d.x * (double) 0.08F * (double) j, -vector3d.y * (double)0.6F, vector3d.z * (double) 0.08F * (double) j);
                     }
                 }
-                for(Entity entity : this.world.getEntitiesWithinAABB(LivingEntity.class, this.getBoundingBox().grow(4.0D), field_213690_b)) {
+                for(Entity entity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0D), field_213690_b)) {
                     if (!(entity instanceof AbstractTaillessEntity)) {
                         if (entity instanceof VexEntity){
-                            entity.attackEntityFrom(DamageSource.causeMobDamage(this), 20.0F);
+                            entity.hurt(DamageSource.mobAttack(this), 20.0F);
                         }
-                        entity.setFire(10);
-                        double d6 = entity.getPosX() - this.getPosX();
-                        double d7 = entity.getPosZ() - this.getPosZ();
+                        entity.setSecondsOnFire(10);
+                        double d6 = entity.getX() - this.getX();
+                        double d7 = entity.getZ() - this.getZ();
                         double d8 = Math.max(d6 * d6 + d7 * d7, 0.001D);
-                        entity.addVelocity(d6 / d8 * 4.0D, 0.2D, d7 / d8 * 4.0D);
+                        entity.push(d6 / d8 * 4.0D, 0.2D, d7 / d8 * 4.0D);
                     }
                 }
             }
@@ -251,44 +244,44 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
             }
         }
 
-        if (this.getAttackTarget() != null) {
-            for (Entity entity : this.world.getEntitiesWithinAABB(LivingEntity.class, this.getBoundingBox().grow(32.0D, 8.0D, 32.0D), field_213690_b)) {
+        if (this.getTarget() != null) {
+            for (Entity entity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(32.0D, 8.0D, 32.0D), field_213690_b)) {
                 if (entity instanceof ServantTaillessEntity) {
-                    ((ServantTaillessEntity) entity).addPotionEffect(new EffectInstance(Effects.WEAKNESS, 60, 1));
-                    ((ServantTaillessEntity) entity).addPotionEffect(new EffectInstance(Effects.GLOWING, 60));
-                    if (this.world.getDifficulty() == Difficulty.EASY || entity instanceof BlackBullEntity) {
-                        entity.attackEntityFrom(DamageSource.STARVE, 1.0F);
+                    ((ServantTaillessEntity) entity).addEffect(new EffectInstance(Effects.WEAKNESS, 60, 1));
+                    ((ServantTaillessEntity) entity).addEffect(new EffectInstance(Effects.GLOWING, 60));
+                    if (this.level.getDifficulty() == Difficulty.EASY || entity instanceof BlackBullEntity) {
+                        entity.hurt(DamageSource.STARVE, 1.0F);
                     }
                 }
             }
         }
-        List<CallerEntity> list = this.world.getTargettableEntitiesWithinAABB(CallerEntity.class, this.ally, this, this.getBoundingBox().grow(64.0D, 8.0D, 64.0D));
+        List<CallerEntity> list = this.level.getNearbyEntities(CallerEntity.class, this.ally, this, this.getBoundingBox().inflate(64.0D, 8.0D, 64.0D));
         if (!list.isEmpty()){
-            this.setCallerTarget(list.get(this.rand.nextInt(list.size())));
+            this.setCallerTarget(list.get(this.random.nextInt(list.size())));
             if (this.getHealth() == this.getMaxHealth()) {
-                if (this.getDistance(this.getCallerTarget()) <= 8.0D) {
-                    this.setAttackTarget(null);
-                    this.getLookController().setLookPositionWithEntity(this.getCallerTarget(), (float) this.getHorizontalFaceSpeed(), (float) this.getVerticalFaceSpeed());
-                    this.navigator.clearPath();
+                if (this.distanceTo(this.getCallerTarget()) <= 8.0D) {
+                    this.setTarget(null);
+                    this.getLookControl().setLookAt(this.getCallerTarget(), (float) this.getMaxHeadYRot(), (float) this.getMaxHeadXRot());
+                    this.navigation.stop();
                     this.prayingTicks = 60;
                     this.spellTicks = 60;
-                    this.idleTime = 0;
+                    this.noActionTime = 0;
                     for (int i = 0; i < 2; ++i) {
-                        this.world.addParticle(ParticleTypes.ENCHANT, this.getPosXRandom(0.5D), this.getPosYRandom() - 0.25D, this.getPosZRandom(0.5D), (this.rand.nextDouble() - 0.5D) * 2.0D, -this.rand.nextDouble(), (this.rand.nextDouble() - 0.5D) * 2.0D);
+                        this.level.addParticle(ParticleTypes.ENCHANT, this.getRandomX(0.5D), this.getRandomY() - 0.25D, this.getRandomZ(0.5D), (this.random.nextDouble() - 0.5D) * 2.0D, -this.random.nextDouble(), (this.random.nextDouble() - 0.5D) * 2.0D);
                     }
                 } else {
-                    Vector3d vector3d = getCallerTarget().getPositionVec();
-                    this.getNavigator().tryMoveToXYZ(vector3d.x, vector3d.y, vector3d.z, 1.0D);
+                    Vector3d vector3d = getCallerTarget().position();
+                    this.getNavigation().moveTo(vector3d.x, vector3d.y, vector3d.z, 1.0D);
                 }
             }
         } else {
             this.prayingTicks = 0;
         }
 
-        super.livingTick();
+        super.aiStep();
     }
 
-    protected boolean canTriggerWalking() {
+    protected boolean isMovementNoisy() {
         return this.prayingTicks == 0;
     }
 
@@ -297,13 +290,13 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         }
 
         public void tick() {
-            if (TaillessDruidEntity.this.getAttackTarget() != null) {
-                TaillessDruidEntity.this.getLookController().setLookPositionWithEntity(TaillessDruidEntity.this.getAttackTarget(), (float)TaillessDruidEntity.this.getHorizontalFaceSpeed(), (float)TaillessDruidEntity.this.getVerticalFaceSpeed());
+            if (TaillessDruidEntity.this.getTarget() != null) {
+                TaillessDruidEntity.this.getLookControl().setLookAt(TaillessDruidEntity.this.getTarget(), (float)TaillessDruidEntity.this.getMaxHeadYRot(), (float)TaillessDruidEntity.this.getMaxHeadXRot());
             }
             else if (TaillessDruidEntity.this.getAllyTarget() != null) {
-                TaillessDruidEntity.this.getLookController().setLookPositionWithEntity(TaillessDruidEntity.this.getAllyTarget(), (float)TaillessDruidEntity.this.getHorizontalFaceSpeed(), (float)TaillessDruidEntity.this.getVerticalFaceSpeed());
+                TaillessDruidEntity.this.getLookControl().setLookAt(TaillessDruidEntity.this.getAllyTarget(), (float)TaillessDruidEntity.this.getMaxHeadYRot(), (float)TaillessDruidEntity.this.getMaxHeadXRot());
             } else if (TaillessDruidEntity.this.getCallerTarget() != null){
-                TaillessDruidEntity.this.getLookController().setLookPositionWithEntity(TaillessDruidEntity.this.getCallerTarget(), (float)TaillessDruidEntity.this.getHorizontalFaceSpeed(), (float)TaillessDruidEntity.this.getVerticalFaceSpeed());
+                TaillessDruidEntity.this.getLookControl().setLookAt(TaillessDruidEntity.this.getCallerTarget(), (float)TaillessDruidEntity.this.getMaxHeadYRot(), (float)TaillessDruidEntity.this.getMaxHeadXRot());
             }
         }
     }
@@ -315,25 +308,25 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         }
 
         @Override
-        public boolean shouldExecute() {
-            LivingEntity livingentity = this.druid.getAttackTarget();
-           if (!super.shouldExecute()) {
+        public boolean canUse() {
+            LivingEntity livingentity = this.druid.getTarget();
+           if (!super.canUse()) {
                 return false;
            } else if (livingentity == null){
                return false;
-           } else return this.druid.getDistance(livingentity) < 16.0D;
+           } else return this.druid.distanceTo(livingentity) < 16.0D;
         }
 
         @Override
         protected void castSpell() {
-            this.teleportRandomly();
+            this.teleportrandomly();
         }
 
-        protected boolean teleportRandomly() {
-            if (!this.druid.world.isRemote() && this.druid.isAlive()) {
-                double d0 = this.druid.getPosX() + (this.druid.rand.nextDouble() - 0.5D) * 32.0D;
-                double d1 = this.druid.getPosY() + (double)(this.druid.rand.nextInt(32) - 16);
-                double d2 = this.druid.getPosZ() + (this.druid.rand.nextDouble() - 0.5D) * 32.0D;
+        protected boolean teleportrandomly() {
+            if (!this.druid.level.isClientSide() && this.druid.isAlive()) {
+                double d0 = this.druid.getX() + (this.druid.random.nextDouble() - 0.5D) * 32.0D;
+                double d1 = this.druid.getY() + (double)(this.druid.random.nextInt(32) - 16);
+                double d2 = this.druid.getZ() + (this.druid.random.nextDouble() - 0.5D) * 32.0D;
                 return this.teleportTo(d0, d1, d2);
             } else {
                 return false;
@@ -343,20 +336,20 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         private boolean teleportTo(double x, double y, double z) {
             BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable(x, y, z);
 
-            while(blockpos$mutable.getY() > 0 && !this.druid.world.getBlockState(blockpos$mutable).getMaterial().blocksMovement()) {
+            while(blockpos$mutable.getY() > 0 && !this.druid.level.getBlockState(blockpos$mutable).getMaterial().blocksMotion()) {
                 blockpos$mutable.move(Direction.DOWN);
             }
 
-            BlockState blockstate = this.druid.world.getBlockState(blockpos$mutable);
-            boolean flag = blockstate.getMaterial().blocksMovement();
-            boolean flag1 = blockstate.getFluidState().isTagged(FluidTags.WATER);
+            BlockState blockstate = this.druid.level.getBlockState(blockpos$mutable);
+            boolean flag = blockstate.getMaterial().blocksMotion();
+            boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
             if (flag && !flag1) {
                 net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(this.druid, x, y, z, 0);
                 if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return false;
-                boolean flag2 = this.druid.attemptTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
+                boolean flag2 = this.druid.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
                 if (flag2 && !this.druid.isSilent()) {
-                    this.druid.world.playSound((PlayerEntity)null, this.druid.prevPosX, this.druid.prevPosY, this.druid.prevPosZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.druid.getSoundCategory(), 1.0F, 1.0F);
-                    this.druid.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
+                    this.druid.level.playSound((PlayerEntity)null, this.druid.xo, this.druid.yo, this.druid.zo, SoundEvents.ENDERMAN_TELEPORT, this.druid.getSoundSource(), 1.0F, 1.0F);
+                    this.druid.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
                 }
 
                 return flag2;
@@ -378,7 +371,7 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         @Nullable
         @Override
         protected SoundEvent getSpellPrepareSound() {
-            return SoundEvents.ENTITY_ILLUSIONER_PREPARE_MIRROR;
+            return SoundEvents.ILLUSIONER_PREPARE_MIRROR;
         }
 
         @Override
@@ -393,21 +386,21 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         }
 
         @Override
-        public boolean shouldExecute() {
-            if (!super.shouldExecute()) {
+        public boolean canUse() {
+            if (!super.canUse()) {
                 return false;
-            } else if (TaillessDruidEntity.this.getAttackTarget() == null) {
+            } else if (TaillessDruidEntity.this.getTarget() == null) {
                 return false;
-            } else if (TaillessDruidEntity.this.getAttackTarget().getEntityId() == this.lastTargetId) {
+            } else if (TaillessDruidEntity.this.getTarget().getId() == this.lastTargetId) {
                 return false;
             } else {
                 return true;
             }
         }
 
-        public void startExecuting() {
-            super.startExecuting();
-            this.lastTargetId = TaillessDruidEntity.this.getAttackTarget().getEntityId();
+        public void start() {
+            super.start();
+            this.lastTargetId = TaillessDruidEntity.this.getTarget().getId();
         }
 
         protected int getCastingTime() {
@@ -419,11 +412,11 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         }
 
         public void castSpell() {
-            TaillessDruidEntity.this.getAttackTarget().addPotionEffect(new EffectInstance(Effects.SLOWNESS, 2000));
+            TaillessDruidEntity.this.getTarget().addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 2000));
         }
 
         protected SoundEvent getSpellPrepareSound() {
-            return SoundEvents.ENTITY_ILLUSIONER_PREPARE_BLINDNESS;
+            return SoundEvents.ILLUSIONER_PREPARE_BLINDNESS;
         }
 
         @Override
@@ -433,19 +426,19 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
     }
 
     class RegenSpellGoal extends SpellcastingTaillessEntity.UseSpellGoal{
-        private final EntityPredicate ally = (new EntityPredicate().setDistance(32.0D).allowInvulnerable().setCustomPredicate((health) -> health.getHealth() <= 30.0F));
+        private final EntityPredicate ally = (new EntityPredicate().range(32.0D).allowInvulnerable().selector((health) -> health.getHealth() <= 30.0F));
 
-        public boolean shouldExecute() {
+        public boolean canUse() {
            if (TaillessDruidEntity.this.isSpellcasting()) {
                 return false;
-            } else if (TaillessDruidEntity.this.ticksExisted < this.spellCooldown) {
+            } else if (TaillessDruidEntity.this.tickCount < this.spellCooldown) {
                 return false;
             } else {
-                List<AbstractTaillessEntity> list = TaillessDruidEntity.this.world.getTargettableEntitiesWithinAABB(AbstractTaillessEntity.class, this.ally, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().grow(32.0D, 32.0D, 32.0D));
+                List<AbstractTaillessEntity> list = TaillessDruidEntity.this.level.getNearbyEntities(AbstractTaillessEntity.class, this.ally, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().inflate(32.0D, 32.0D, 32.0D));
                 if (list.isEmpty()) {
                     return false;
                 } else {
-                    TaillessDruidEntity.this.setAllyTarget(list.get(TaillessDruidEntity.this.rand.nextInt(list.size())));
+                    TaillessDruidEntity.this.setAllyTarget(list.get(TaillessDruidEntity.this.random.nextInt(list.size())));
                     return true;
                 }
             }
@@ -462,12 +455,12 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         public void castSpell() {
             AbstractTaillessEntity abstractTaillessEntity = TaillessDruidEntity.this.getAllyTarget();
             if (abstractTaillessEntity != null && abstractTaillessEntity.isAlive()) {
-                abstractTaillessEntity.addPotionEffect(new EffectInstance(Effects.REGENERATION, 1000, 1));
+                abstractTaillessEntity.addEffect(new EffectInstance(Effects.REGENERATION, 1000, 1));
             }
         }
 
         protected SoundEvent getSpellPrepareSound() {
-            return SoundEvents.ENTITY_ILLUSIONER_PREPARE_BLINDNESS;
+            return SoundEvents.ILLUSIONER_PREPARE_BLINDNESS;
         }
 
         @Override
@@ -477,25 +470,25 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
     }
 
     class TemptSpellGoal extends SpellcastingTaillessEntity.UseSpellGoal {
-        private final EntityPredicate villager = (new EntityPredicate().setDistance(32.0D).allowInvulnerable());
+        private final EntityPredicate villager = (new EntityPredicate().range(32.0D).allowInvulnerable());
 
-        public boolean shouldExecute() {
-            if (TaillessDruidEntity.this.getAttackTarget() != null) {
+        public boolean canUse() {
+            if (TaillessDruidEntity.this.getTarget() != null) {
                 return false;
             } else if (TaillessDruidEntity.this.isSpellcasting()) {
                 return false;
-            } else if (TaillessDruidEntity.this.ticksExisted < this.spellCooldown) {
+            } else if (TaillessDruidEntity.this.tickCount < this.spellCooldown) {
                 return false;
-            }else if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(TaillessDruidEntity.this.world, TaillessDruidEntity.this)) {
+            }else if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(TaillessDruidEntity.this.level, TaillessDruidEntity.this)) {
                 return false;
             } 
             else {
-                List<VillagerEntity> list = TaillessDruidEntity.this.world.getTargettableEntitiesWithinAABB(VillagerEntity.class, this.villager, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().grow(32.0D, 4.0D, 32.0D));
+                List<VillagerEntity> list = TaillessDruidEntity.this.level.getNearbyEntities(VillagerEntity.class, this.villager, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().inflate(32.0D, 4.0D, 32.0D));
                 if (list.isEmpty()) {
                     return false;
                 }
                 else {
-                    TaillessDruidEntity.this.setTemptTarget(list.get(TaillessDruidEntity.this.rand.nextInt(list.size())));
+                    TaillessDruidEntity.this.setTemptTarget(list.get(TaillessDruidEntity.this.random.nextInt(list.size())));
                     return true;
                 }
             }
@@ -509,64 +502,64 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
             return 280;
         }
 
-        public boolean shouldContinueExecuting() {
+        public boolean canContinueToUse() {
             return TaillessDruidEntity.this.getTemptTarget() != null && this.spellWarmup > 0;
         }
 
-        public void resetTask() {
-            super.resetTask();
+        public void stop() {
+            super.stop();
             TaillessDruidEntity.this.setTemptTarget(null);
         }
 
         public void castSpell() {
             VillagerEntity villagerEntity = TaillessDruidEntity.this.getTemptTarget();
             if (villagerEntity != null && villagerEntity.isAlive()) {
-                int random = TaillessDruidEntity.this.rand.nextInt(2);
-                if (random == 1) {
-                    NeophyteEntity witchEntity = new NeophyteEntity(ModEntityType.NEOPHYTE.get(), world);
-                    witchEntity.setLocationAndAngles(villagerEntity.getPosX(), villagerEntity.getPosY(), villagerEntity.getPosZ(), villagerEntity.rotationYaw, villagerEntity.rotationPitch);
-                    witchEntity.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(witchEntity.getPosition()), SpawnReason.CONVERSION, null, null);
-                    witchEntity.setNoAI(villagerEntity.isAIDisabled());
+                int random2 = TaillessDruidEntity.this.random.nextInt(2);
+                if (random2 == 1) {
+                    NeophyteEntity witchEntity = new NeophyteEntity(ModEntityType.NEOPHYTE.get(), level);
+                    witchEntity.moveTo(villagerEntity.getX(), villagerEntity.getY(), villagerEntity.getZ(), villagerEntity.yRot, villagerEntity.xRot);
+                    witchEntity.finalizeSpawn((IServerWorld) level, level.getCurrentDifficultyAt(witchEntity.blockPosition()), SpawnReason.CONVERSION, null, null);
+                    witchEntity.setNoAi(villagerEntity.isNoAi());
                     if (villagerEntity.hasCustomName()) {
                         witchEntity.setCustomName(villagerEntity.getCustomName());
                         witchEntity.setCustomNameVisible(villagerEntity.isCustomNameVisible());
                     }
-                    witchEntity.enablePersistence();
-                    world.addEntity(witchEntity);
+                    witchEntity.setPersistenceRequired();
+                    level.addFreshEntity(witchEntity);
                     for (int i = 0; i < 5; ++i) {
-                        double d0 = rand.nextGaussian() * 0.02D;
-                        double d1 = rand.nextGaussian() * 0.02D;
-                        double d2 = rand.nextGaussian() * 0.02D;
-                        world.addParticle(ParticleTypes.WITCH, witchEntity.getPosXRandom(1.0D), witchEntity.getPosYRandom() + 1.0D, witchEntity.getPosZRandom(1.0D), d0, d1, d2);
+                        double d0 = random.nextGaussian() * 0.02D;
+                        double d1 = random.nextGaussian() * 0.02D;
+                        double d2 = random.nextGaussian() * 0.02D;
+                        level.addParticle(ParticleTypes.WITCH, witchEntity.getRandomX(1.0D), witchEntity.getRandomY() + 1.0D, witchEntity.getRandomZ(1.0D), d0, d1, d2);
                     }
                 } else {
-                    WitchEntity witchEntity = new WitchEntity(EntityType.WITCH, world);
-                    witchEntity.setLocationAndAngles(villagerEntity.getPosX(), villagerEntity.getPosY(), villagerEntity.getPosZ(), villagerEntity.rotationYaw, villagerEntity.rotationPitch);
-                    witchEntity.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(witchEntity.getPosition()), SpawnReason.CONVERSION, null, null);
-                    witchEntity.setNoAI(villagerEntity.isAIDisabled());
+                    WitchEntity witchEntity = new WitchEntity(EntityType.WITCH, level);
+                    witchEntity.moveTo(villagerEntity.getX(), villagerEntity.getY(), villagerEntity.getZ(), villagerEntity.yRot, villagerEntity.xRot);
+                    witchEntity.finalizeSpawn((IServerWorld) level, level.getCurrentDifficultyAt(witchEntity.blockPosition()), SpawnReason.CONVERSION, null, null);
+                    witchEntity.setNoAi(villagerEntity.isNoAi());
                     if (villagerEntity.hasCustomName()) {
                         witchEntity.setCustomName(villagerEntity.getCustomName());
                         witchEntity.setCustomNameVisible(villagerEntity.isCustomNameVisible());
                     }
-                    witchEntity.enablePersistence();
-                    world.addEntity(witchEntity);
+                    witchEntity.setPersistenceRequired();
+                    level.addFreshEntity(witchEntity);
                     for (int i = 0; i < 5; ++i) {
-                        double d0 = rand.nextGaussian() * 0.02D;
-                        double d1 = rand.nextGaussian() * 0.02D;
-                        double d2 = rand.nextGaussian() * 0.02D;
-                        world.addParticle(ParticleTypes.WITCH, witchEntity.getPosXRandom(1.0D), witchEntity.getPosYRandom() + 1.0D, witchEntity.getPosZRandom(1.0D), d0, d1, d2);
+                        double d0 = random.nextGaussian() * 0.02D;
+                        double d1 = random.nextGaussian() * 0.02D;
+                        double d2 = random.nextGaussian() * 0.02D;
+                        level.addParticle(ParticleTypes.WITCH, witchEntity.getRandomX(1.0D), witchEntity.getRandomY() + 1.0D, witchEntity.getRandomZ(1.0D), d0, d1, d2);
                     }
                 }
-                villagerEntity.resetMemoryPoint(MemoryModuleType.HOME);
-                villagerEntity.resetMemoryPoint(MemoryModuleType.JOB_SITE);
-                villagerEntity.resetMemoryPoint(MemoryModuleType.POTENTIAL_JOB_SITE);
-                villagerEntity.resetMemoryPoint(MemoryModuleType.MEETING_POINT);
+                villagerEntity.releasePoi(MemoryModuleType.HOME);
+                villagerEntity.releasePoi(MemoryModuleType.JOB_SITE);
+                villagerEntity.releasePoi(MemoryModuleType.POTENTIAL_JOB_SITE);
+                villagerEntity.releasePoi(MemoryModuleType.MEETING_POINT);
                 villagerEntity.remove();
             }
         }
 
         protected SoundEvent getSpellPrepareSound() {
-            return SoundEvents.EVENT_RAID_HORN;
+            return SoundEvents.RAID_HORN;
         }
 
         @Override
@@ -577,13 +570,13 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
 
     class FlameBurstSpellGoal extends SpellcastingTaillessEntity.UseSpellGoal{
 
-        public boolean shouldExecute() {
-            LivingEntity livingentity = TaillessDruidEntity.this.getAttackTarget();
-            if (!super.shouldExecute()) {
+        public boolean canUse() {
+            LivingEntity livingentity = TaillessDruidEntity.this.getTarget();
+            if (!super.canUse()) {
                 return false;
             } else {
                 assert livingentity != null;
-                return TaillessDruidEntity.this.getDistance(livingentity) <= 4.0D;
+                return TaillessDruidEntity.this.distanceTo(livingentity) <= 4.0D;
             }
         }
 
@@ -597,11 +590,11 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
 
         protected void castSpell() {
             TaillessDruidEntity.this.setFiring(true);
-            TaillessDruidEntity.this.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, 1.0F, 1.0F);
+            TaillessDruidEntity.this.playSound(SoundEvents.ENDER_DRAGON_GROWL, 1.0F, 1.0F);
         }
 
         protected SoundEvent getSpellPrepareSound() {
-            return SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK;
+            return SoundEvents.EVOKER_PREPARE_ATTACK;
         }
 
         protected SpellcastingTaillessEntity.SpellType getSpellType() {
@@ -610,7 +603,7 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
     }
 
     class SummonSpellGoal extends SpellcastingTaillessEntity.UseSpellGoal {
-        private final EntityPredicate field_220843_e = (new EntityPredicate()).setDistance(32.0D).setIgnoresLineOfSight().setUseInvisibilityCheck().allowInvulnerable().allowFriendlyFire();
+        private final EntityPredicate field_220843_e = (new EntityPredicate()).range(32.0D).allowUnseeable().ignoreInvisibilityTesting().allowInvulnerable().allowSameTeam();
 
         private SummonSpellGoal() {
         }
@@ -619,12 +612,12 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
-            if (!super.shouldExecute()) {
+        public boolean canUse() {
+            if (!super.canUse()) {
                 return false;
             } else {
-                int i = TaillessDruidEntity.this.world.getTargettableEntitiesWithinAABB(BulletEntity.class, this.field_220843_e, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().grow(32.0D)).size();
-                return TaillessDruidEntity.this.rand.nextInt(8) + 1 > i;
+                int i = TaillessDruidEntity.this.level.getNearbyEntities(BulletEntity.class, this.field_220843_e, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().inflate(32.0D)).size();
+                return TaillessDruidEntity.this.random.nextInt(8) + 1 > i;
             }
         }
 
@@ -633,7 +626,7 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         }
 
         protected int getCastingInterval() {
-            if (isCharged()){
+            if (isPowered()){
                 return 700;
             }
             else {
@@ -642,24 +635,24 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         }
 
         protected void castSpell() {
-            ServerWorld serverworld = (ServerWorld)TaillessDruidEntity.this.world;
+            ServerWorld serverworld = (ServerWorld)TaillessDruidEntity.this.level;
 
             for(int i = 0; i < 5; ++i) {
-                BlockPos blockpos = TaillessDruidEntity.this.getPosition().add(-2 + TaillessDruidEntity.this.rand.nextInt(5), 1, -2 + TaillessDruidEntity.this.rand.nextInt(5));
-                BulletEntity bulletEntity = new BulletEntity(ModEntityType.BULLET.get(), world);
-                bulletEntity.moveToBlockPosAndAngles(blockpos, 0.0F, 0.0F);
-                bulletEntity.onInitialSpawn(serverworld, TaillessDruidEntity.this.world.getDifficultyForLocation(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData)null, (CompoundNBT)null);
+                BlockPos blockpos = TaillessDruidEntity.this.blockPosition().offset(-2 + TaillessDruidEntity.this.random.nextInt(5), 1, -2 + TaillessDruidEntity.this.random.nextInt(5));
+                BulletEntity bulletEntity = new BulletEntity(ModEntityType.BULLET.get(), level);
+                bulletEntity.moveTo(blockpos, 0.0F, 0.0F);
+                bulletEntity.finalizeSpawn(serverworld, TaillessDruidEntity.this.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData)null, (CompoundNBT)null);
                 bulletEntity.setOwner(TaillessDruidEntity.this);
                 bulletEntity.setBoundOrigin(blockpos);
-                bulletEntity.setLimitedLife(20 * (30 + TaillessDruidEntity.this.rand.nextInt(90)));
-                serverworld.func_242417_l(bulletEntity);
+                bulletEntity.setLimitedLife(20 * (30 + TaillessDruidEntity.this.random.nextInt(90)));
+                serverworld.addFreshEntityWithPassengers(bulletEntity);
             }
 
         }
 
 
         protected SoundEvent getSpellPrepareSound() {
-            return SoundEvents.ENTITY_EVOKER_PREPARE_SUMMON;
+            return SoundEvents.EVOKER_PREPARE_SUMMON;
         }
 
         protected SpellcastingTaillessEntity.SpellType getSpellType() {
@@ -672,17 +665,17 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         private PoisonSpellGoal(){
         }
 
-        public boolean shouldExecute() {
-            if (TaillessDruidEntity.this.getAttackTarget() == null) {
+        public boolean canUse() {
+            if (TaillessDruidEntity.this.getTarget() == null) {
                 return false;
             }
             else if (TaillessDruidEntity.this.isSpellcasting()) {
                 return false;
             }
-            else if (TaillessDruidEntity.this.ticksExisted < this.spellCooldown) {
+            else if (TaillessDruidEntity.this.tickCount < this.spellCooldown) {
                 return false;
             }
-            else if (TaillessDruidEntity.this.getAttackTarget() != null && TaillessDruidEntity.this.getAttackTarget().isAlive()){
+            else if (TaillessDruidEntity.this.getTarget() != null && TaillessDruidEntity.this.getTarget().isAlive()){
                 return true;
             }
             else {
@@ -703,7 +696,7 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
 
         @Override
         protected SoundEvent getSpellPrepareSound() {
-            return SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK;
+            return SoundEvents.EVOKER_PREPARE_ATTACK;
         }
 
         @Override
@@ -712,14 +705,14 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         }
 
         public void castSpell(){
-            LivingEntity livingentity = TaillessDruidEntity.this.getAttackTarget();
-            if (!TaillessDruidEntity.this.world.isRemote) {
-                AreaEffectCloudEntity areaeffectcloudentity = new AreaEffectCloudEntity(TaillessDruidEntity.this.world, livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ());
-                areaeffectcloudentity.setParticleData(ParticleTypes.ENTITY_EFFECT);
+            LivingEntity livingentity = TaillessDruidEntity.this.getTarget();
+            if (!TaillessDruidEntity.this.level.isClientSide) {
+                AreaEffectCloudEntity areaeffectcloudentity = new AreaEffectCloudEntity(TaillessDruidEntity.this.level, livingentity.getX(), livingentity.getY(), livingentity.getZ());
+                areaeffectcloudentity.setParticle(ParticleTypes.ENTITY_EFFECT);
                 areaeffectcloudentity.setRadius(1.5F);
                 areaeffectcloudentity.setDuration(300);
                 areaeffectcloudentity.addEffect(new EffectInstance(Effects.POISON, 90));
-                TaillessDruidEntity.this.world.addEntity(areaeffectcloudentity);
+                TaillessDruidEntity.this.level.addFreshEntity(areaeffectcloudentity);
             }
         }
     }

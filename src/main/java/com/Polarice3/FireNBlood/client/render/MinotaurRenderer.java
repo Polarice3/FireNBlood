@@ -15,7 +15,7 @@ public class MinotaurRenderer extends MobRenderer<MinotaurEntity, MinotaurModel<
     }
 
     @Override
-    public ResourceLocation getEntityTexture(MinotaurEntity entity) {
+    public ResourceLocation getTextureLocation(MinotaurEntity entity) {
         return TEXTURE;
     }
 }

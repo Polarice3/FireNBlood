@@ -17,7 +17,7 @@ public class CallerRenderer extends MobRenderer<CallerEntity, CallerModel<Caller
     }
 
     @Override
-    public ResourceLocation getEntityTexture(CallerEntity entity) {
+    public ResourceLocation getTextureLocation(CallerEntity entity) {
         return TEXTURE;
     }
 }

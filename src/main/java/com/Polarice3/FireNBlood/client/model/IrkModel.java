@@ -15,11 +15,11 @@ public class IrkModel extends BipedModel<IrkEntity> {
 
     public IrkModel() {
         super(0.0F, 0.0F, 64, 64);
-        this.bipedLeftLeg.showModel = false;
-        this.bipedHeadwear.showModel = false;
-        this.bipedRightLeg = new ModelRenderer(this, 32, 0);
-        this.bipedRightLeg.addBox(-1.0F, -1.0F, -2.0F, 6.0F, 10.0F, 4.0F, 0.0F);
-        this.bipedRightLeg.setRotationPoint(-1.9F, 12.0F, 0.0F);
+        this.leftLeg.visible = false;
+        this.hat.visible = false;
+        this.rightLeg = new ModelRenderer(this, 32, 0);
+        this.rightLeg.addBox(-1.0F, -1.0F, -2.0F, 6.0F, 10.0F, 4.0F, 0.0F);
+        this.rightLeg.setPos(-1.9F, 12.0F, 0.0F);
         this.rightWing = new ModelRenderer(this, 0, 32);
         this.rightWing.addBox(-20.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F);
         this.leftWing = new ModelRenderer(this, 0, 32);
@@ -27,32 +27,32 @@ public class IrkModel extends BipedModel<IrkEntity> {
         this.leftWing.addBox(0.0F, 0.0F, 0.0F, 20.0F, 12.0F, 1.0F);
     }
 
-    protected Iterable<ModelRenderer> getBodyParts() {
-        return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.rightWing, this.leftWing));
+    protected Iterable<ModelRenderer> bodyParts() {
+        return Iterables.concat(super.bodyParts(), ImmutableList.of(this.rightWing, this.leftWing));
     }
 
     /**
      * Sets this entity's model rotation angles
      */
-    public void setRotationAngles(IrkEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        super.setRotationAngles(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+    public void setupAnim(IrkEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        super.setupAnim(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         AbstractIllagerEntity.ArmPose abstractillagerentity$armpose = entityIn.getArmPose();
         if (abstractillagerentity$armpose == AbstractIllagerEntity.ArmPose.CROSSBOW_HOLD) {
-            ModelHelper.func_239104_a_(this.bipedRightArm, this.bipedLeftArm, this.bipedHead, true);
+            ModelHelper.animateCrossbowHold(this.rightArm, this.leftArm, this.head, true);
         } else if (abstractillagerentity$armpose == AbstractIllagerEntity.ArmPose.CROSSBOW_CHARGE) {
-            ModelHelper.func_239102_a_(this.bipedRightArm, this.bipedLeftArm, entityIn, true);
+            ModelHelper.animateCrossbowCharge(this.rightArm, this.leftArm, entityIn, true);
         }
 
-        this.bipedRightLeg.rotateAngleX += ((float)Math.PI / 5F);
-        this.rightWing.rotationPointZ = 2.0F;
-        this.leftWing.rotationPointZ = 2.0F;
-        this.rightWing.rotationPointY = 1.0F;
-        this.leftWing.rotationPointY = 1.0F;
-        this.rightWing.rotateAngleY = 0.47123894F + MathHelper.cos(ageInTicks * 0.8F) * (float)Math.PI * 0.05F;
-        this.leftWing.rotateAngleY = -this.rightWing.rotateAngleY;
-        this.leftWing.rotateAngleZ = -0.47123894F;
-        this.leftWing.rotateAngleX = 0.47123894F;
-        this.rightWing.rotateAngleX = 0.47123894F;
-        this.rightWing.rotateAngleZ = 0.47123894F;
+        this.rightLeg.xRot += ((float)Math.PI / 5F);
+        this.rightWing.z = 2.0F;
+        this.leftWing.z = 2.0F;
+        this.rightWing.y = 1.0F;
+        this.leftWing.y = 1.0F;
+        this.rightWing.yRot = 0.47123894F + MathHelper.cos(ageInTicks * 0.8F) * (float)Math.PI * 0.05F;
+        this.leftWing.yRot = -this.rightWing.yRot;
+        this.leftWing.zRot = -0.47123894F;
+        this.leftWing.xRot = 0.47123894F;
+        this.rightWing.xRot = 0.47123894F;
+        this.rightWing.zRot = 0.47123894F;
     }
 }

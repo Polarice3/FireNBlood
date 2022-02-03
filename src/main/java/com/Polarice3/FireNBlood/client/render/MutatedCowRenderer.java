@@ -16,7 +16,7 @@ public class MutatedCowRenderer extends MobRenderer<MutatedCowEntity, MutatedCow
         super(renderManagerIn, new MutatedCowModel<>(), 1.0F);
     }
 
-    protected void preRenderCallback(MutatedCowEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(MutatedCowEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         float f = entitylivingbaseIn.getMutatedFlashIntensity(partialTickTime);
         float f1 = 1.0F + MathHelper.sin(f * 100.0F) * f * 0.01F;
         f = MathHelper.clamp(f, 0.0F, 1.0F);
@@ -27,13 +27,13 @@ public class MutatedCowRenderer extends MobRenderer<MutatedCowEntity, MutatedCow
         matrixStackIn.scale(f2, f3, f2);
     }
 
-    protected float getOverlayProgress(MutatedCowEntity livingEntityIn, float partialTicks) {
+    protected float getWhiteOverlayProgress(MutatedCowEntity livingEntityIn, float partialTicks) {
         float f = livingEntityIn.getMutatedFlashIntensity(partialTicks);
         return (int)(f * 10.0F) % 2 == 0 ? 0.0F : MathHelper.clamp(f, 0.5F, 1.0F);
     }
 
     @Override
-    public ResourceLocation getEntityTexture(MutatedCowEntity entity) {
+    public ResourceLocation getTextureLocation(MutatedCowEntity entity) {
         return TEXTURE;
     }
 }

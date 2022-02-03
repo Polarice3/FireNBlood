@@ -25,39 +25,39 @@ import net.minecraft.world.spawner.AbstractSpawner;
 
 public class BlazeCoreItem extends Item {
     public BlazeCoreItem(){
-        super(new Properties().group(FireNBlood.TAB).isImmuneToFire());
+        super(new Properties().tab(FireNBlood.TAB).fireResistant());
     }
 
-    public ActionResultType onItemUse(ItemUseContext context) {
+    public ActionResultType useOn(ItemUseContext context) {
         PlayerEntity playerentity = context.getPlayer();
-        World world = context.getWorld();
-        ItemStack itemstack = context.getItem();
-        BlockPos blockpos = context.getPos();
-        Direction direction = context.getFace();
+        World world = context.getLevel();
+        ItemStack itemstack = context.getItemInHand();
+        BlockPos blockpos = context.getClickedPos();
+        Direction direction = context.getHorizontalDirection();
         BlockState blockstate = world.getBlockState(blockpos);
-        if (blockstate.matchesBlock(Blocks.SPAWNER)) {
-            TileEntity tileentity = world.getTileEntity(blockpos);
+        if (blockstate.is(Blocks.SPAWNER)) {
+            TileEntity tileentity = world.getBlockEntity(blockpos);
             if (tileentity instanceof MobSpawnerTileEntity) {
-                AbstractSpawner abstractspawner = ((MobSpawnerTileEntity)tileentity).getSpawnerBaseLogic();
+                AbstractSpawner abstractspawner = ((MobSpawnerTileEntity)tileentity).getSpawner();
                 EntityType<?> entitytype1 = EntityType.BLAZE;
-                abstractspawner.setEntityType(entitytype1);
-                tileentity.markDirty();
-                world.notifyBlockUpdate(blockpos, blockstate, blockstate, 3);
+                abstractspawner.setEntityId(entitytype1);
+                tileentity.setChanged();
+                world.sendBlockUpdated(blockpos, blockstate, blockstate, 3);
                 itemstack.shrink(1);
                 return ActionResultType.CONSUME;
             }
         }
-        if (CampfireBlock.canBeLit(blockstate)) {
-            world.playSound(playerentity, blockpos, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, random.nextFloat() * 0.4F + 0.8F);
-            world.setBlockState(blockpos, blockstate.with(BlockStateProperties.LIT, Boolean.valueOf(true)), 11);
-            return ActionResultType.func_233537_a_(world.isRemote());
+        if (CampfireBlock.canLight(blockstate)) {
+            world.playSound(playerentity, blockpos, SoundEvents.FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, random.nextFloat() * 0.4F + 0.8F);
+            world.setBlock(blockpos, blockstate.setValue(BlockStateProperties.LIT, Boolean.valueOf(true)), 11);
+            return ActionResultType.sidedSuccess(world.isClientSide());
         }else {
-            BlockPos blockpos1 = blockpos.offset(context.getFace());
-            if (AbstractFireBlock.canLightBlock(world, blockpos1, context.getPlacementHorizontalFacing())) {
-                world.playSound(playerentity, blockpos1, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, random.nextFloat() * 0.4F + 0.8F);
-                BlockState blockstate1 = AbstractFireBlock.getFireForPlacement(world, blockpos1);
-                world.setBlockState(blockpos1, blockstate1, 11);
-                return ActionResultType.func_233537_a_(world.isRemote());
+            BlockPos blockpos1 = blockpos.relative(context.getClickedFace());
+            if (AbstractFireBlock.canBePlacedAt(world, blockpos1, context.getHorizontalDirection())) {
+                world.playSound(playerentity, blockpos1, SoundEvents.FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, random.nextFloat() * 0.4F + 0.8F);
+                BlockState blockstate1 = AbstractFireBlock.getState(world, blockpos1);
+                world.setBlock(blockpos1, blockstate1, 11);
+                return ActionResultType.sidedSuccess(world.isClientSide());
             } else {
                 return ActionResultType.FAIL;
             }

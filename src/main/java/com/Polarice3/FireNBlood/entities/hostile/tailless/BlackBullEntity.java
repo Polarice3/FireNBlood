@@ -22,19 +22,19 @@ public class BlackBullEntity extends ServantTaillessEntity {
 
     public BlackBullEntity(EntityType<? extends ServantTaillessEntity> type, World worldIn) {
         super(type, worldIn);
-        this.stepHeight = 1.0F;
-        this.experienceValue = 5;
-        this.setRandom(24);
+        this.maxUpStep = 1.0F;
+        this.xpReward = 5;
+        this.setrandom(24);
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 30.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.45D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 4.0D)
-                .createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 0.6D)
-                .createMutableAttribute(Attributes.ATTACK_KNOCKBACK, 1.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .add(Attributes.MAX_HEALTH, 30.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.45D)
+                .add(Attributes.ATTACK_DAMAGE, 4.0D)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 0.6D)
+                .add(Attributes.ATTACK_KNOCKBACK, 1.0D);
     }
 
     @Override
@@ -48,39 +48,39 @@ public class BlackBullEntity extends ServantTaillessEntity {
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, AbstractIllagerEntity.class, true));
-        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, BlackBullEntity.class)).setCallsForHelp());
-        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractPiglinEntity.class)).setCallsForHelp());
+        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, BlackBullEntity.class)).setAlertOthers());
+        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractPiglinEntity.class)).setAlertOthers());
     }
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_POLAR_BEAR_AMBIENT;
+        return SoundEvents.POLAR_BEAR_AMBIENT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_SKELETON_HORSE_DEATH;
+        return SoundEvents.SKELETON_HORSE_DEATH;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_POLAR_BEAR_HURT;
+        return SoundEvents.POLAR_BEAR_HURT;
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_COW_STEP, 0.25F, 1.0F);
+        this.playSound(SoundEvents.COW_STEP, 0.25F, 1.0F);
     }
 
-    public boolean isOnSameTeam(Entity entityIn) {
-        if (super.isOnSameTeam(entityIn)) {
+    public boolean isAlliedTo(Entity entityIn) {
+        if (super.isAlliedTo(entityIn)) {
             return true;
         } else if (entityIn instanceof AbstractTaillessEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;
         } else if (entityIn instanceof AbstractCultistEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;
         } else if (entityIn instanceof AbstractPiglinEntity){
-            return this.isOnSameTeam(entityIn);
+            return this.isAlliedTo(entityIn);
         }  else {
             return false;
         }

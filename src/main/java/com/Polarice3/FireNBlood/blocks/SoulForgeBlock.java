@@ -9,7 +9,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
+import net.minecraft.state.stateDefinition;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
@@ -24,30 +24,30 @@ import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
-import java.util.Random;
+import java.util.random;
 
 public class SoulForgeBlock extends ContainerBlock {
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
     public SoulForgeBlock() {
-        super(AbstractBlock.Properties.create(Material.ROCK)
-                .hardnessAndResistance(3.0F, 9.0F)
+        super(AbstractBlock.Properties.of(Material.STONE)
+                .strength(3.0F, 9.0F)
                 .sound(SoundType.STONE)
                 .harvestLevel(0)
                 .harvestTool(ToolType.PICKAXE)
         );
-        this.setDefaultState(this.stateContainer.getBaseState().with(LIT, Boolean.FALSE));
+        this.registerDefaultState(this.stateDefinition.any().with(LIT, Boolean.FALSE));
     }
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(IBlockReader worldIn) {
+    public TileEntity newBlockEntity(IBlockReader worldIn) {
         return new SoulForgeTileEntity();
     }
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit){
-        if (!worldIn.isRemote()){
+        if (!worldIn.isClientSide()){
             TileEntity tileEntity = worldIn.getTileEntity(pos);
             if (tileEntity instanceof SoulForgeTileEntity){
                 NetworkHooks.openGui((ServerPlayerEntity) player, (SoulForgeTileEntity) tileEntity, pos);
@@ -65,27 +65,27 @@ public class SoulForgeBlock extends ContainerBlock {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand) {
+    public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random random) {
         if (stateIn.get(LIT)) {
             double d0 = (double)pos.getX() + 0.5D;
             double d1 = (double)pos.getY();
             double d2 = (double)pos.getZ() + 0.5D;
-            if (rand.nextDouble() < 0.1D) {
-                worldIn.playSound(d0, d1, d2, SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
+            if (random.nextDouble() < 0.1D) {
+                worldIn.playSound(d0, d1, d2, SoundEvents.FURNACE_FIRE_CRACKLE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
             }
 
-            double d4 = rand.nextDouble() * 0.6D - 0.3D;
-            double d6 = rand.nextDouble() * 6.0D / 16.0D;
+            double d4 = random.nextDouble() * 0.6D - 0.3D;
+            double d6 = random.nextDouble() * 6.0D / 16.0D;
             worldIn.addParticle(ParticleTypes.SMOKE, d0 + d4, d1 + d6, d2 + d4, 0.0D, 0.0D, 0.0D);
             worldIn.addParticle(ParticleTypes.SOUL_FIRE_FLAME, d0 + d4, d1 + d6, d2 + d4, 0.0D, 0.0D, 0.0D);
         }
     }
 
-    public BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderShape(BlockState state) {
         return BlockRenderType.MODEL;
     }
 
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(stateDefinition.Builder<Block, BlockState> builder) {
         builder.add(LIT);
     }
 

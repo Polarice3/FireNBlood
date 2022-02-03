@@ -39,11 +39,11 @@ public class ParasiteEntity extends MonsterEntity {
             && !(enemy instanceof SilverfishEntity) && !(enemy instanceof EndermiteEntity)
             && !(enemy instanceof WitherEntity) && !(enemy instanceof EnderDragonEntity);
     private static final Predicate<LivingEntity> HOSTED = (p_213797_0_) ->
-            p_213797_0_.isPotionActive(RegistryHandler.HOSTED.get()) && !(p_213797_0_ instanceof ParasiteEntity) && p_213797_0_.attackable();
+            p_213797_0_.hasEffect(RegistryHandler.HOSTED.get()) && !(p_213797_0_ instanceof ParasiteEntity) && p_213797_0_.attackable();
 
     public ParasiteEntity(EntityType<? extends ParasiteEntity> type, World worldIn) {
         super(type, worldIn);
-        this.experienceValue = 3;
+        this.xpReward = 3;
     }
 
     protected void registerGoals() {
@@ -52,25 +52,25 @@ public class ParasiteEntity extends MonsterEntity {
         this.goalSelector.addGoal(3, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
         this.goalSelector.addGoal(7, new LookAtGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.addGoal(8, new LookRandomlyGoal(this));
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setCallsForHelp());
+        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setAlertOthers());
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, true, true, HOSTED));
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 8.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 2.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 8.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.25D)
+                .add(Attributes.ATTACK_DAMAGE, 2.0D);
     }
 
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         this.lifetime = compound.getInt("Lifetime");
         this.attackAll = compound.getBoolean("AttackAll");
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         compound.putInt("Lifetime", this.lifetime);
         compound.putBoolean("AttackAll", this.attackAll);
     }
@@ -79,24 +79,24 @@ public class ParasiteEntity extends MonsterEntity {
         return 0.13F;
     }
 
-    protected boolean canTriggerWalking() {
+    protected boolean isMovementNoisy() {
         return false;
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_ENDERMITE_AMBIENT;
+        return SoundEvents.ENDERMITE_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_ENDERMITE_HURT;
+        return SoundEvents.ENDERMITE_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_ENDERMITE_DEATH;
+        return SoundEvents.ENDERMITE_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_ENDERMITE_STEP, 0.15F, 1.0F);
+        this.playSound(SoundEvents.ENDERMITE_STEP, 0.15F, 1.0F);
     }
 
     public boolean isAttackAll() {
@@ -107,13 +107,13 @@ public class ParasiteEntity extends MonsterEntity {
         this.attackAll = attackAll;
     }
 
-    public boolean attackEntityAsMob(Entity entityIn) {
-        boolean flag = super.attackEntityAsMob(entityIn);
+    public boolean doHurtTarget(Entity entityIn) {
+        boolean flag = super.doHurtTarget(entityIn);
         if (flag && entityIn instanceof LivingEntity) {
-            int random = this.world.rand.nextInt(16);
+            int random = this.level.random.nextInt(16);
             if (random == 0) {
-                float f = this.world.getDifficultyForLocation(this.getPosition()).getAdditionalDifficulty();
-                ((LivingEntity) entityIn).addPotionEffect(new EffectInstance(RegistryHandler.HOSTED.get(), 140 * (int) f));
+                float f = this.level.getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
+                ((LivingEntity) entityIn).addEffect(new EffectInstance(RegistryHandler.HOSTED.get(), 140 * (int) f));
                 this.lifetime = 0;
             }
         }
@@ -121,56 +121,56 @@ public class ParasiteEntity extends MonsterEntity {
         return flag;
     }
 
-    public void updateAITasks(){
+    public void customServerAiStep(){
         if (this.isAttackAll()){
             this.goalSelector.addGoal(2, aiAttackAllGoal);
         }
         if (this.func_234364_eK_()) {
             ++this.field_234358_by_;
             if (this.field_234358_by_ > 300 && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.ENDERMITE, (timer) -> this.field_234358_by_ = timer)) {
-                this.playSound(SoundEvents.ENTITY_ENDERMITE_DEATH, 1.0F, 1.0F);
-                this.func_234360_a_((ServerWorld)this.world);
+                this.playSound(SoundEvents.ENDERMITE_DEATH, 1.0F, 1.0F);
+                this.func_234360_a_((ServerWorld)this.level);
             }
         } else {
             this.field_234358_by_ = 0;
         }
-        super.updateAITasks();
+        super.customServerAiStep();
     }
 
     private void func_234360_a_(ServerWorld p_234360_1_) {
-        EndermiteEntity endermiteEntity = this.func_233656_b_(EntityType.ENDERMITE, true);
+        EndermiteEntity endermiteEntity = this.convertTo(EntityType.ENDERMITE, true);
         if (endermiteEntity != null) {
             net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, endermiteEntity);
         }
 
     }
 
-    public void setRenderYawOffset(float offset) {
-        this.rotationYaw = offset;
-        super.setRenderYawOffset(offset);
+    public void setYBodyRot(float offset) {
+        this.yRot = offset;
+        super.setYBodyRot(offset);
     }
 
-    public double getYOffset() {
+    public double getMyRidingOffset() {
         return 0.1D;
     }
 
-    public void livingTick() {
-        super.livingTick();
-        if (!this.isNoDespawnRequired()) {
+    public void aiStep() {
+        super.aiStep();
+        if (!this.isPersistenceRequired()) {
             ++this.lifetime;
         }
 
-        if (this.lifetime >= 1200 && !this.world.getDimensionType().doesHasDragonFight()) {
-            this.damageEntity(DamageSource.STARVE, this.getMaxHealth());
+        if (this.lifetime >= 1200 && !this.level.dimensionType().createDragonFight()) {
+            this.actuallyHurt(DamageSource.STARVE, this.getMaxHealth());
         }
-        this.renderYawOffset = this.rotationYaw;
+        this.yBodyRot = this.yRot;
     }
 
     public boolean func_234364_eK_() {
-        return this.world.getDimensionType().doesHasDragonFight() && !this.isAIDisabled();
+        return this.level.dimensionType().createDragonFight() && !this.isNoAi();
     }
 
-    public CreatureAttribute getCreatureAttribute() {
+    public CreatureAttribute getMobType() {
         return CreatureAttribute.ARTHROPOD;
     }
 

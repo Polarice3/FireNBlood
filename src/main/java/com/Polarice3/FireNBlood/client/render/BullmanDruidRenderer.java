@@ -19,7 +19,7 @@ public class BullmanDruidRenderer extends MobRenderer<TaillessDruidEntity, Bullm
     }
 
     @Override
-    public ResourceLocation getEntityTexture(TaillessDruidEntity entity) {
+    public ResourceLocation getTextureLocation(TaillessDruidEntity entity) {
         return TEXTURE;
     }
 }

@@ -20,13 +20,13 @@ public class HexerWorldData extends WorldSavedData {
 
     public static HexerWorldData get(World world) {
         if (world instanceof ServerWorld) {
-            ServerWorld overworld = world.getServer().getWorld(world.getDimensionKey());
+            ServerWorld overworld = world.getServer().getLevel(world.dimension());
 
-            DimensionSavedDataManager storage = overworld.getSavedData();
-            HexerWorldData data = storage.getOrCreate(HexerWorldData::new, IDENTIFIER);
+            DimensionSavedDataManager storage = overworld.getDataStorage();
+            HexerWorldData data = storage.computeIfAbsent(HexerWorldData::new, IDENTIFIER);
             if(data != null){
                 data.world = world;
-                data.markDirty();
+                data.setDirty();
             }
             return data;
         }
@@ -54,7 +54,7 @@ public class HexerWorldData extends WorldSavedData {
     }
 
     @Override
-    public void read(CompoundNBT nbt) {
+    public void load(CompoundNBT nbt) {
         if (nbt.contains("HexerSpawnDelay", 99)) {
             this.hexerSpawnDelay = nbt.getInt("HexerSpawnDelay");
         }
@@ -66,7 +66,7 @@ public class HexerWorldData extends WorldSavedData {
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
+    public CompoundNBT save(CompoundNBT compound) {
         compound.putInt("HexerSpawnDelay", this.hexerSpawnDelay);
         compound.putInt("HexerSpawnChance", this.hexerSpawnChance);
         return compound;

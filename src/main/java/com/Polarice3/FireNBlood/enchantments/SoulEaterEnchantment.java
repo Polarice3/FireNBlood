@@ -10,12 +10,12 @@ public class SoulEaterEnchantment extends Enchantment {
         super(rarityIn, EnchantmentType.WEAPON, slots);
     }
 
-    public int getMinEnchantability(int enchantmentLevel) {
+    public int getMinCost(int enchantmentLevel) {
         return 5 + (enchantmentLevel - 1) * 9;
     }
 
-    public int getMaxEnchantability(int enchantmentLevel) {
-        return this.getMinEnchantability(enchantmentLevel) + 15;
+    public int getMaxCost(int enchantmentLevel) {
+        return this.getMinCost(enchantmentLevel) + 15;
     }
 
     public int getMaxLevel() {

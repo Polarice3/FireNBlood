@@ -19,18 +19,18 @@ public class NeophyteRenderer extends MobRenderer<NeophyteEntity, NeophyteModel>
     }
 
     public void render(NeophyteEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        this.entityModel.func_205074_a(!entityIn.getHeldItemMainhand().isEmpty());
+        this.model.setHoldingItem(!entityIn.getMainHandItem().isEmpty());
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
     /**
      * Returns the location of an entity's texture.
      */
-    public ResourceLocation getEntityTexture(NeophyteEntity entity) {
+    public ResourceLocation getTextureLocation(NeophyteEntity entity) {
         return TEXTURE;
     }
 
-    protected void preRenderCallback(NeophyteEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(NeophyteEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         float f = 0.9375F;
         matrixStackIn.scale(0.9375F, 0.9375F, 0.9375F);
     }

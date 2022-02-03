@@ -6,6 +6,6 @@ import net.minecraft.item.ItemGroup;
 
 public class ItemBase extends Item {
     public ItemBase(){
-        super(new Item.Properties().group(FireNBlood.TAB));
+        super(new Item.Properties().tab(FireNBlood.TAB));
     }
 }

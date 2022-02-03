@@ -115,167 +115,167 @@ public class FireNBlood
     private void setup(final FMLCommonSetupEvent event)
     {
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.TAILLESS_WRETCH.get(), TaillessWretchEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.TAILLESS_WRETCH.get(), TaillessWretchEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.TAILLESS_DRUID.get(), TaillessDruidEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.TAILLESS_DRUID.get(), TaillessDruidEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.TAILLESS_HORROR.get(), TaillessHorrorEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.TAILLESS_HORROR.get(), TaillessHorrorEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.BLACK_BULL.get(), BlackBullEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.BLACK_BULL.get(), BlackBullEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.BULLET.get(), BulletEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.BULLET.get(), BulletEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.ROYALBULLET.get(), RoyalBulletEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.ROYALBULLET.get(), RoyalBulletEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.MINOTAUR.get(), MinotaurEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.MINOTAUR.get(), MinotaurEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.TAILLESS_PROPHET.get(), TaillessProphetEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.TAILLESS_PROPHET.get(), TaillessProphetEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.ANATHEMA.get(), TaillessAnathemaEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.ANATHEMA.get(), TaillessAnathemaEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.TANK.get(), TankEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.TANK.get(), TankEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.FRIENDTANK.get(), FriendlyTankEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.FRIENDTANK.get(), FriendlyTankEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.CALLER.get(), CallerEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.CALLER.get(), CallerEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.REDEMPTOR.get(), RedemptorEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.REDEMPTOR.get(), RedemptorEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.PROTECTOR.get(), ProtectorEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.PROTECTOR.get(), ProtectorEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.BREWER.get(), BrewerEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.BREWER.get(), BrewerEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.HEXER.get(), HexerEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.HEXER.get(), HexerEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.MIRAGE.get(), MirageEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.MIRAGE.get(), MirageEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.SAVAGER.get(), SavagerEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.SAVAGER.get(), SavagerEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.NEOPHYTE.get(), NeophyteEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.NEOPHYTE.get(), NeophyteEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.ACOLYTE.get(), AcolyteEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.ACOLYTE.get(), AcolyteEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.CHANNELLER.get(), ChannellerEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.CHANNELLER.get(), ChannellerEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.FANATIC.get(), FanaticEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.FANATIC.get(), FanaticEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.ZEALOT.get(), ZealotEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.ZEALOT.get(), ZealotEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.APOSTLE.get(), ApostleEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.APOSTLE.get(), ApostleEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.ZOMBIE_VILLAGER_MINION.get(), ZombieVillagerMinionEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.ZOMBIE_VILLAGER_MINION.get(), ZombieVillagerMinionEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_COW.get(), MutatedCowEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_COW.get(), MutatedCowEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_CHICKEN.get(), MutatedChickenEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_CHICKEN.get(), MutatedChickenEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_SHEEP.get(), MutatedSheepEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_SHEEP.get(), MutatedSheepEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_PIG.get(), MutatedPigEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_PIG.get(), MutatedPigEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.PARASITE.get(), ParasiteEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.PARASITE.get(), ParasiteEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.FRIENDLY_VEX.get(), FriendlyVexEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.FRIENDLY_VEX.get(), FriendlyVexEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.FRIENDLY_SCORCH.get(), FriendlyScorchEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.FRIENDLY_SCORCH.get(), FriendlyScorchEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.ZOMBIE_MINION.get(), ZombieMinionEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.ZOMBIE_MINION.get(), ZombieMinionEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.SKELETON_MINION.get(), SkeletonMinionEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.SKELETON_MINION.get(), SkeletonMinionEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.SPIDERLING_MINION.get(), SpiderlingMinionEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.SPIDERLING_MINION.get(), SpiderlingMinionEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.VIZIER.get(), VizierEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.VIZIER.get(), VizierEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.IRK.get(), IrkEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.IRK.get(), IrkEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.SCORCH.get(), ScorchEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.SCORCH.get(), ScorchEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.NETHERNAL.get(), NethernalEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.NETHERNAL.get(), NethernalEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.PENANCE.get(), PenanceEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.PENANCE.get(), PenanceEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.FAKESEAT.get(), FakeSeatEntity.setCustomAttributes().create());
+            GlobalEntityTypeAttributes.put(ModEntityType.FAKESEAT.get(), FakeSeatEntity.setCustomAttributes().build());
         });
 
         event.enqueueWork(() -> {
@@ -316,31 +316,30 @@ public class FireNBlood
 
             try {
                 if(GETCODEC_METHOD == null) GETCODEC_METHOD = ObfuscationReflectionHelper.findMethod(ChunkGenerator.class, "func_230347_a_");
-                ResourceLocation cgRL = Registry.CHUNK_GENERATOR_CODEC.getKey((Codec<? extends ChunkGenerator>) GETCODEC_METHOD.invoke(serverWorld.getChunkProvider().generator));
+                ResourceLocation cgRL = Registry.CHUNK_GENERATOR.getKey((Codec<? extends ChunkGenerator>) GETCODEC_METHOD.invoke(serverWorld.getChunkSource().generator));
                 if(cgRL != null && cgRL.getNamespace().equals("terraforged")) return;
             }
             catch(Exception e){
-                FireNBlood.LOGGER.error("Was unable to check if " + serverWorld.getDimensionKey().getLocation() + " is using Terraforged's ChunkGenerator.");
+                FireNBlood.LOGGER.error("Was unable to check if " + serverWorld.dimension().getRegistryName() + " is using Terraforged's ChunkGenerator.");
             }
 
-            if(serverWorld.getChunkProvider().getChunkGenerator() instanceof FlatChunkGenerator &&
-                    serverWorld.getDimensionKey().equals(World.OVERWORLD)){
+            if(serverWorld.getChunkSource().getGenerator() instanceof FlatChunkGenerator &&
+                    serverWorld.dimension().equals(World.OVERWORLD)){
                 return;
             }
 
-            Map<Structure<?>, StructureSeparationSettings> tempMap = new HashMap<>(serverWorld.getChunkProvider().generator.func_235957_b_().func_236195_a_());
-            tempMap.putIfAbsent(RegistryStructures.TAVERN.get(), DimensionStructuresSettings.field_236191_b_.get(RegistryStructures.TAVERN.get()));
-            tempMap.putIfAbsent(RegistryStructures.PROFANEDTOWER.get(), DimensionStructuresSettings.field_236191_b_.get(RegistryStructures.PROFANEDTOWER.get()));
-            tempMap.putIfAbsent(RegistryStructures.PROFANEDSHRINE.get(), DimensionStructuresSettings.field_236191_b_.get(RegistryStructures.PROFANEDSHRINE.get()));
-            serverWorld.getChunkProvider().generator.func_235957_b_().field_236193_d_ = tempMap;
+            Map<Structure<?>, StructureSeparationSettings> tempMap = new HashMap<>(serverWorld.getChunkSource().generator.getSettings().structureConfig());
+            tempMap.putIfAbsent(RegistryStructures.TAVERN.get(), DimensionStructuresSettings.DEFAULTS.get(RegistryStructures.TAVERN.get()));
+            tempMap.putIfAbsent(RegistryStructures.PROFANEDTOWER.get(), DimensionStructuresSettings.DEFAULTS.get(RegistryStructures.PROFANEDTOWER.get()));
+            tempMap.putIfAbsent(RegistryStructures.PROFANEDSHRINE.get(), DimensionStructuresSettings.DEFAULTS.get(RegistryStructures.PROFANEDSHRINE.get()));
+            serverWorld.getChunkSource().generator.getSettings().structureConfig = tempMap;
         }
     }
 
     public static final ItemGroup TAB = new ItemGroup("firenbloodTab") {
         @Override
-        public ItemStack createIcon(){
+        public ItemStack makeIcon() {
             return new ItemStack(RegistryHandler.GOLDTOTEM.get());
         }
-
     };
 }

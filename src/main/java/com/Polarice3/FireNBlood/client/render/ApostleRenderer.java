@@ -20,7 +20,7 @@ public class ApostleRenderer extends AbstractCultistRenderer<ApostleEntity>{
     }
 
     @Override
-    public ResourceLocation getEntityTexture(ApostleEntity entity) {
+    public ResourceLocation getTextureLocation(ApostleEntity entity) {
         return TEXTURE;
     }
 }

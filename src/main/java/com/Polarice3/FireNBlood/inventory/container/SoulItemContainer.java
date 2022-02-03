@@ -37,40 +37,40 @@ public class SoulItemContainer extends Container {
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
-        return (player.getHeldItemMainhand() == stack || player.getHeldItemOffhand() == stack) && !stack.isEmpty();
+    public boolean stillValid(PlayerEntity player) {
+        return (player.getMainHandItem() == stack || player.getOffhandItem() == stack) && !stack.isEmpty();
     }
 
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.inventorySlots.get(index);
-        if (slot != null && slot.getHasStack()) {
-            ItemStack itemstack1 = slot.getStack();
+        Slot slot = this.slots.get(index);
+        if (slot != null && slot.hasItem()) {
+            ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
             if (index == 0) {
-                if (!this.mergeItemStack(itemstack1, 1, 37, true)) {
+                if (!this.moveItemStackTo(itemstack1, 1, 37, true)) {
                     return ItemStack.EMPTY;
                 }
 
-                slot.onSlotChange(itemstack1, itemstack);
-            } else if (this.mergeItemStack(itemstack1, 0, 1, false)) {
+                slot.onQuickCraft(itemstack1, itemstack);
+            } else if (this.moveItemStackTo(itemstack1, 0, 1, false)) {
                 return ItemStack.EMPTY;
             } else if (index >= 1 && index < 28) {
-                if (!this.mergeItemStack(itemstack1, 28, 37, false)) {
+                if (!this.moveItemStackTo(itemstack1, 28, 37, false)) {
                     return ItemStack.EMPTY;
                 }
             } else if (index >= 28 && index < 37) {
-                if (!this.mergeItemStack(itemstack1, 1, 28, false)) {
+                if (!this.moveItemStackTo(itemstack1, 1, 28, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(itemstack1, 1, 37, false)) {
+            } else if (!this.moveItemStackTo(itemstack1, 1, 37, false)) {
                 return ItemStack.EMPTY;
             }
 
             if (itemstack1.isEmpty()) {
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             } else {
-                slot.onSlotChanged();
+                slot.setChanged();
             }
 
             if (itemstack1.getCount() == itemstack.getCount()) {

@@ -26,7 +26,7 @@ public class TankCracksLayer <T extends MobEntity> extends LayerRenderer<T, Tank
             FriendlyTankEntity.Cracks tankentity$cracks = friendlyTank.func_226512_l_();
             if (tankentity$cracks != FriendlyTankEntity.Cracks.NONE) {
                 ResourceLocation resourcelocation = field_229134_a_.get(tankentity$cracks);
-                renderCutoutModel(this.getEntityModel(), resourcelocation, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, 1.0F, 1.0F, 1.0F);
+                renderColoredCutoutModel(this.getParentModel(), resourcelocation, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, 1.0F, 1.0F, 1.0F);
             }
         }
     }

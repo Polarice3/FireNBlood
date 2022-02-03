@@ -17,15 +17,15 @@ public class FriendlyScorchRenderer extends BipedRenderer<FriendlyScorchEntity, 
         super(renderManagerIn, new MinionModel<>(), 0.3F);
     }
 
-    protected int getBlockLight(FriendlyScorchEntity entityIn, BlockPos partialTicks) {
+    protected int getBlockLightLevel(FriendlyScorchEntity entityIn, BlockPos partialTicks) {
         return 15;
     }
 
-    public ResourceLocation getEntityTexture(FriendlyScorchEntity entity) {
+    public ResourceLocation getTextureLocation(FriendlyScorchEntity entity) {
         return entity.isCharging() ? CHARGING_TEXTURE : TEXTURE;
     }
 
-    protected void preRenderCallback(FriendlyScorchEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(FriendlyScorchEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         matrixStackIn.scale(0.4F, 0.4F, 0.4F);
     }
 }

@@ -45,8 +45,8 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbowUser {
-    private static final DataParameter<Boolean> DATA_CHARGING_STATE = EntityDataManager.createKey(ProtectorEntity.class, DataSerializers.BOOLEAN);
-    protected static final DataParameter<Byte> PROTECTOR_UPGRADES = EntityDataManager.createKey(ProtectorEntity.class, DataSerializers.BYTE);
+    private static final DataParameter<Boolean> DATA_CHARGING_STATE = EntityDataManager.defineId(ProtectorEntity.class, DataSerializers.BOOLEAN);
+    protected static final DataParameter<Byte> PROTECTOR_UPGRADES = EntityDataManager.defineId(ProtectorEntity.class, DataSerializers.BYTE);
     private final Inventory inventory = new Inventory(5);
     private boolean shielded;
     private boolean weakness;
@@ -72,8 +72,8 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
         this.goalSelector.addGoal(10, new LookAtGoal(this, MobEntity.class, 15.0F));
         this.targetSelector.addGoal(1, new AbstractProtectorEntity.OwnerHurtTargetGoal(this));
         this.targetSelector.addGoal(2, new AbstractProtectorEntity.OwnerHurtByTargetGoal(this));
-        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, AbstractProtectorEntity.class)).setCallsForHelp());
-        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, AbstractVillagerEntity.class)).setCallsForHelp());
+        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, AbstractProtectorEntity.class)).setAlertOthers());
+        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, AbstractVillagerEntity.class)).setAlertOthers());
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractTaillessEntity.class, true));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractRaiderEntity.class, true));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, false, false, (p_234199_0_) -> {
@@ -82,36 +82,36 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 24.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.35D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 5.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .add(Attributes.MAX_HEALTH, 24.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.35D)
+                .add(Attributes.ATTACK_DAMAGE, 5.0D);
     }
 
-    public boolean isOnSameTeam(Entity entityIn) {
+    public boolean isAlliedTo(Entity entityIn) {
         if (entityIn instanceof AbstractProtectorEntity){
             return this.getTeam() == null && entityIn.getTeam() == null;
         }
-        return super.isOnSameTeam(entityIn);
+        return super.isAlliedTo(entityIn);
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        Entity entity = source.getImmediateSource();
-        Entity entity2 = source.getTrueSource();
+    public boolean hurt(DamageSource source, float amount) {
+        Entity entity = source.getDirectEntity();
+        Entity entity2 = source.getEntity();
         if (this.isInvulnerableTo(source)) {
             return false;
         } else if (this.isShielded()) {
             if (entity instanceof ProjectileEntity || entity2 instanceof SmallFireballEntity){
-                this.playSound(SoundEvents.ITEM_SHIELD_BLOCK, 1.0F, 1.0F);
+                this.playSound(SoundEvents.SHIELD_BLOCK, 1.0F, 1.0F);
                 --this.shield;
                 if (this.shield == 0){
-                    this.playSound(SoundEvents.ITEM_SHIELD_BREAK, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.SHIELD_BREAK, 1.0F, 1.0F);
                     this.setShield(false);
                 }
                 return false;
             } else {
-                return super.attackEntityFrom(source, amount);
+                return super.hurt(source, amount);
             }
         } else if (entity instanceof AbstractProtectorEntity && !(entity instanceof BrewerEntity)) {
             return false;
@@ -119,32 +119,32 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
             return false;
         } else if (this.isHired() && entity == this.getOwner()){
             --this.loyaltyPoints;
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         } else {
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         }
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(DATA_CHARGING_STATE, false);
-        this.dataManager.register(PROTECTOR_UPGRADES, (byte)0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_CHARGING_STATE, false);
+        this.entityData.define(PROTECTOR_UPGRADES, (byte)0);
     }
 
     private boolean getProtectorUpgradesFlag(int mask) {
-        int i = this.dataManager.get(PROTECTOR_UPGRADES);
+        int i = this.entityData.get(PROTECTOR_UPGRADES);
         return (i & mask) != 0;
     }
 
     private void setProtectorUpgradesFlag(int mask, boolean value) {
-        int i = this.dataManager.get(PROTECTOR_UPGRADES);
+        int i = this.entityData.get(PROTECTOR_UPGRADES);
         if (value) {
             i = i | mask;
         } else {
             i = i & ~mask;
         }
 
-        this.dataManager.set(PROTECTOR_UPGRADES, (byte)(i & 255));
+        this.entityData.set(PROTECTOR_UPGRADES, (byte)(i & 255));
     }
 
     public boolean isShielded(){
@@ -163,31 +163,31 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
         this.setProtectorUpgradesFlag(5,weakness);
     }
 
-    public boolean func_230280_a_(ShootableItem p_230280_1_) {
+    public boolean canFireProjectileWeapon(ShootableItem p_230280_1_) {
         return p_230280_1_ == Items.CROSSBOW;
     }
 
     @OnlyIn(Dist.CLIENT)
     public boolean isCharging() {
-        return this.dataManager.get(DATA_CHARGING_STATE);
+        return this.entityData.get(DATA_CHARGING_STATE);
     }
 
-    public void setCharging(boolean isCharging) {
-        this.dataManager.set(DATA_CHARGING_STATE, isCharging);
+    public void setChargingCrossbow(boolean isCharging) {
+        this.entityData.set(DATA_CHARGING_STATE, isCharging);
     }
 
-    public void func_230283_U__() {
-        this.idleTime = 0;
+    public void onCrossbowAttackPerformed() {
+        this.noActionTime = 0;
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         ListNBT listnbt = new ListNBT();
 
-        for(int i = 0; i < this.inventory.getSizeInventory(); ++i) {
-            ItemStack itemstack = this.inventory.getStackInSlot(i);
+        for(int i = 0; i < this.inventory.getContainerSize(); ++i) {
+            ItemStack itemstack = this.inventory.getItem(i);
             if (!itemstack.isEmpty()) {
-                listnbt.add(itemstack.write(new CompoundNBT()));
+                listnbt.add(itemstack.save(new CompoundNBT()));
             }
         }
         compound.putInt("hiredTimer", this.hiredTimer);
@@ -201,7 +201,7 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
         compound.put("Inventory", listnbt);
     }
 
-    protected boolean isMovementBlocked() {
+    protected boolean isImmobile() {
         return this.isDying();
     }
 
@@ -209,19 +209,19 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
     public AbstractProtectorEntity.ArmPose getArmPose() {
         if (this.isCharging()) {
             return AbstractProtectorEntity.ArmPose.CROSSBOW_CHARGE;
-        } else if (this.canEquip(Items.CROSSBOW)) {
+        } else if (this.isHolding(Items.CROSSBOW)) {
             return AbstractProtectorEntity.ArmPose.CROSSBOW_HOLD;
         } else {
             return this.isAggressive() ? AbstractProtectorEntity.ArmPose.ATTACKING : AbstractProtectorEntity.ArmPose.NEUTRAL;
         }
     }
 
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         ListNBT listnbt = compound.getList("Inventory", 10);
 
         for(int i = 0; i < listnbt.size(); ++i) {
-            ItemStack itemstack = ItemStack.read(listnbt.getCompound(i));
+            ItemStack itemstack = ItemStack.of(listnbt.getCompound(i));
             if (!itemstack.isEmpty()) {
                 this.inventory.addItem(itemstack);
             }
@@ -240,66 +240,66 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
         this.setCanPickUpLoot(true);
     }
 
-    public float getBlockPathWeight(BlockPos pos, IWorldReader worldIn) {
-        BlockState blockstate = worldIn.getBlockState(pos.down());
-        return !blockstate.matchesBlock(Blocks.GRASS_BLOCK) && !blockstate.matchesBlock(Blocks.SAND) ? 0.5F - worldIn.getBrightness(pos) : 10.0F;
+    public float getWalkTargetValue(BlockPos pos, IWorldReader levelIn) {
+        BlockState blockstate = levelIn.getBlockState(pos.below());
+        return !blockstate.is(Blocks.GRASS_BLOCK) && !blockstate.is(Blocks.SAND) ? 0.5F - levelIn.getBrightness(pos) : 10.0F;
     }
 
-    public int getMaxSpawnedInChunk() {
+    public int getMaxSpawnClusterSize() {
         return 1;
     }
 
     @Nullable
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        this.setEquipmentBasedOnDifficulty(difficultyIn);
-        this.setEnchantmentBasedOnDifficulty(difficultyIn);
-        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        this.populateDefaultEquipmentSlots(difficultyIn);
+        this.populateDefaultEquipmentEnchantments(difficultyIn);
+        return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
-    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-        this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.CROSSBOW));
+    protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+        this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.CROSSBOW));
     }
 
-    protected void func_241844_w(float p_241844_1_) {
-        super.func_241844_w(p_241844_1_);
-        if (this.rand.nextInt(300) == 0) {
-            ItemStack itemstack = this.getHeldItemMainhand();
+    protected void enchantSpawnedWeapon(float p_241844_1_) {
+        super.enchantSpawnedWeapon(p_241844_1_);
+        if (this.random.nextInt(300) == 0) {
+            ItemStack itemstack = this.getMainHandItem();
             if (itemstack.getItem() == Items.CROSSBOW) {
                 Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemstack);
                 map.putIfAbsent(Enchantments.PIERCING, 1);
                 EnchantmentHelper.setEnchantments(map, itemstack);
-                this.setItemStackToSlot(EquipmentSlotType.MAINHAND, itemstack);
+                this.setItemSlot(EquipmentSlotType.MAINHAND, itemstack);
             }
         }
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_PILLAGER_AMBIENT;
+        return SoundEvents.PILLAGER_AMBIENT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_PILLAGER_DEATH;
+        return SoundEvents.PILLAGER_DEATH;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_PILLAGER_HURT;
+        return SoundEvents.PILLAGER_HURT;
     }
 
-    public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
-        this.func_234281_b_(this, 1.6F);
+    public void performRangedAttack(LivingEntity target, float distanceFactor) {
+        this.performCrossbowAttack(this, 1.6F);
     }
 
-    public void fireProjectile(LivingEntity p_230284_1_, ItemStack p_230284_2_, ProjectileEntity p_230284_3_, float p_230284_4_) {
-        this.func_234279_a_(this, p_230284_1_, p_230284_3_, p_230284_4_, 1.6F);
+    public void shootCrossbowProjectile(LivingEntity p_230284_1_, ItemStack p_230284_2_, ProjectileEntity p_230284_3_, float p_230284_4_) {
+        this.shootCrossbowProjectile(this, p_230284_1_, p_230284_3_, p_230284_4_, 1.6F);
     }
 
-    public boolean replaceItemInInventory(int inventorySlot, ItemStack itemStackIn) {
-        if (super.replaceItemInInventory(inventorySlot, itemStackIn)) {
+    public boolean setSlot(int inventorySlot, ItemStack itemStackIn) {
+        if (super.setSlot(inventorySlot, itemStackIn)) {
             return true;
         } else {
             int i = inventorySlot - 300;
-            if (i >= 0 && i < this.inventory.getSizeInventory()) {
-                this.inventory.setInventorySlotContents(i, itemStackIn);
+            if (i >= 0 && i < this.inventory.getContainerSize()) {
+                this.inventory.setItem(i, itemStackIn);
                 return true;
             } else {
                 return false;
@@ -307,13 +307,13 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
         }
     }
 
-    public ItemStack findAmmo(ItemStack shootable) {
+    public ItemStack getProjectile(ItemStack shootable) {
         if (shootable.getItem() instanceof ShootableItem) {
-            Predicate<ItemStack> predicate = ((ShootableItem)shootable.getItem()).getAmmoPredicate();
-            ItemStack itemstack = ShootableItem.getHeldAmmo(this, predicate);
+            Predicate<ItemStack> predicate = ((ShootableItem)shootable.getItem()).getSupportedHeldProjectiles();
+            ItemStack itemstack = ShootableItem.getHeldProjectile(this, predicate);
             if (this.isWeakness()){
                 ItemStack itemstack1 = new ItemStack(Items.TIPPED_ARROW, 1);
-                PotionUtils.addPotionToItemStack(itemstack1, Potions.WEAKNESS);
+                PotionUtils.setPotion(itemstack1, Potions.WEAKNESS);
                 return itemstack.isEmpty() ? itemstack1 : itemstack;
             } else {
                 return itemstack.isEmpty() ? new ItemStack(Items.ARROW) : itemstack;
@@ -323,24 +323,24 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
         }
     }
 
-    public ActionResultType getEntityInteractionResult(PlayerEntity p_230254_1_, Hand p_230254_2_) {
-        ItemStack itemstack = p_230254_1_.getHeldItem(p_230254_2_);
+    public ActionResultType mobInteract(PlayerEntity p_230254_1_, Hand p_230254_2_) {
+        ItemStack itemstack = p_230254_1_.getItemInHand(p_230254_2_);
         Item item = itemstack.getItem();
         if (this.isDying()){
             if (item == Revive()){
-                if (!p_230254_1_.abilities.isCreativeMode) {
+                if (!p_230254_1_.abilities.instabuild) {
                     itemstack.shrink(1);
                 }
                 if (!this.isLoyal()){
                     ++this.loyaltyPoints;
                 }
-                this.playSound(SoundEvents.ENTITY_GENERIC_EAT, 1.0F, 1.0F);
+                this.playSound(SoundEvents.GENERIC_EAT, 1.0F, 1.0F);
                 this.func_233687_w_(false);
                 this.setDying(false);
                 this.getAttribute(Attributes.MAX_HEALTH).removeModifier(MODIFIER);
                 this.heal(HealAmount());
-                this.addPotionEffect(new EffectInstance(Effects.REGENERATION, 120));
-                this.addPotionEffect(new EffectInstance(Effects.RESISTANCE, 120));
+                this.addEffect(new EffectInstance(Effects.REGENERATION, 120));
+                this.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 120));
                 this.dyingTimer = DyingTimer();
                 this.setInvulnerable(false);
                 return ActionResultType.SUCCESS;
@@ -349,11 +349,11 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
             }
         } else if (item == Payment() && !this.isLoyal()) {
             if (!this.isHired()) {
-                if (!p_230254_1_.abilities.isCreativeMode) {
+                if (!p_230254_1_.abilities.instabuild) {
                     itemstack.shrink(1);
                 }
-                if (p_230254_1_.getItemStackFromSlot(EquipmentSlotType.HEAD).isEmpty()){
-                    p_230254_1_.setItemStackToSlot(EquipmentSlotType.HEAD, AbstractProtectorEntity.createProtectorBanner());
+                if (p_230254_1_.getItemBySlot(EquipmentSlotType.HEAD).isEmpty()){
+                    p_230254_1_.setItemSlot(EquipmentSlotType.HEAD, AbstractProtectorEntity.createProtectorBanner());
                 }
                 if (this.isSummoned()){
                     this.setSummoned(false);
@@ -361,142 +361,142 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
                 this.setHiredBy(p_230254_1_);
                 this.hiredTimer = AbstractProtectorEntity.HiredTimer();
                 this.dyingTimer = DyingTimer();
-                this.navigator.clearPath();
-                this.setAttackTarget((LivingEntity) null);
+                this.navigation.stop();
+                this.setTarget((LivingEntity) null);
                 this.func_233687_w_(true);
-                this.world.setEntityState(this, (byte) 7);
+                this.level.broadcastEntityEvent(this, (byte) 7);
                 for (int i = 0; i < 7; ++i) {
-                    double d0 = this.rand.nextGaussian() * 0.02D;
-                    double d1 = this.rand.nextGaussian() * 0.02D;
-                    double d2 = this.rand.nextGaussian() * 0.02D;
-                    this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
+                    double d0 = this.random.nextGaussian() * 0.02D;
+                    double d1 = this.random.nextGaussian() * 0.02D;
+                    double d2 = this.random.nextGaussian() * 0.02D;
+                    this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                 }
                 return ActionResultType.SUCCESS;
             } else {
-                if (!p_230254_1_.abilities.isCreativeMode) {
+                if (!p_230254_1_.abilities.instabuild) {
                     itemstack.shrink(1);
                 }
                 ++this.loyaltyPoints;
                 if (this.loyaltyPoints >= 10){
                     this.setLoyal(true);
-                    this.playSound(SoundEvents.ENTITY_PILLAGER_CELEBRATE, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.PILLAGER_CELEBRATE, 1.0F, 1.0F);
                 }
                 this.hiredTimer = this.hiredTimer + 24000;
                 for (int i = 0; i < 7; ++i) {
-                    double d0 = this.rand.nextGaussian() * 0.02D;
-                    double d1 = this.rand.nextGaussian() * 0.02D;
-                    double d2 = this.rand.nextGaussian() * 0.02D;
-                    this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
+                    double d0 = this.random.nextGaussian() * 0.02D;
+                    double d1 = this.random.nextGaussian() * 0.02D;
+                    double d2 = this.random.nextGaussian() * 0.02D;
+                    this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                 }
                 return ActionResultType.SUCCESS;
             }
         } else {
             if (this.isHired() && !this.isDying()){
                 if (item == Items.SHIELD && !this.isShielded()){
-                    if (!p_230254_1_.abilities.isCreativeMode) {
+                    if (!p_230254_1_.abilities.instabuild) {
                         itemstack.shrink(1);
                     }
                     this.shield = ShieldDurability();
-                    this.playSound(SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
                     this.setShield(true);
                     for (int i = 0; i < 7; ++i) {
-                        double d0 = this.rand.nextGaussian() * 0.02D;
-                        double d1 = this.rand.nextGaussian() * 0.02D;
-                        double d2 = this.rand.nextGaussian() * 0.02D;
-                        this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
+                        double d0 = this.random.nextGaussian() * 0.02D;
+                        double d1 = this.random.nextGaussian() * 0.02D;
+                        double d2 = this.random.nextGaussian() * 0.02D;
+                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     return ActionResultType.SUCCESS;
                 }
                 if (item instanceof ArmorItem){
-                    ItemStack helmet = this.getItemStackFromSlot(EquipmentSlotType.HEAD);
-                    ItemStack chestplate = this.getItemStackFromSlot(EquipmentSlotType.CHEST);
-                    ItemStack legging = this.getItemStackFromSlot(EquipmentSlotType.LEGS);
-                    ItemStack boots = this.getItemStackFromSlot(EquipmentSlotType.FEET);
-                    if (!p_230254_1_.abilities.isCreativeMode) {
+                    ItemStack helmet = this.getItemBySlot(EquipmentSlotType.HEAD);
+                    ItemStack chestplate = this.getItemBySlot(EquipmentSlotType.CHEST);
+                    ItemStack legging = this.getItemBySlot(EquipmentSlotType.LEGS);
+                    ItemStack boots = this.getItemBySlot(EquipmentSlotType.FEET);
+                    if (!p_230254_1_.abilities.instabuild) {
                         itemstack.shrink(1);
                     }
-                    this.playSound(SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
-                    if (((ArmorItem) item).getEquipmentSlot() == EquipmentSlotType.HEAD){
-                        this.setItemStackToSlot(EquipmentSlotType.HEAD, new ItemStack(item));
-                        this.entityDropItem(helmet);
+                    this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
+                    if (((ArmorItem) item).getSlot() == EquipmentSlotType.HEAD){
+                        this.setItemSlot(EquipmentSlotType.HEAD, new ItemStack(item));
+                        this.spawnAtLocation(helmet);
                     }
-                    if (((ArmorItem) item).getEquipmentSlot() == EquipmentSlotType.CHEST){
-                        this.setItemStackToSlot(EquipmentSlotType.CHEST, new ItemStack(item));
-                        this.entityDropItem(chestplate);
+                    if (((ArmorItem) item).getSlot() == EquipmentSlotType.CHEST){
+                        this.setItemSlot(EquipmentSlotType.CHEST, new ItemStack(item));
+                        this.spawnAtLocation(chestplate);
                     }
-                    if (((ArmorItem) item).getEquipmentSlot() == EquipmentSlotType.LEGS){
-                        this.setItemStackToSlot(EquipmentSlotType.LEGS, new ItemStack(item));
-                        this.entityDropItem(legging);
+                    if (((ArmorItem) item).getSlot() == EquipmentSlotType.LEGS){
+                        this.setItemSlot(EquipmentSlotType.LEGS, new ItemStack(item));
+                        this.spawnAtLocation(legging);
                     }
-                    if (((ArmorItem) item).getEquipmentSlot() == EquipmentSlotType.FEET){
-                        this.setItemStackToSlot(EquipmentSlotType.FEET, new ItemStack(item));
-                        this.entityDropItem(boots);
+                    if (((ArmorItem) item).getSlot() == EquipmentSlotType.FEET){
+                        this.setItemSlot(EquipmentSlotType.FEET, new ItemStack(item));
+                        this.spawnAtLocation(boots);
                     }
                     for (int i = 0; i < 7; ++i) {
-                        double d0 = this.rand.nextGaussian() * 0.02D;
-                        double d1 = this.rand.nextGaussian() * 0.02D;
-                        double d2 = this.rand.nextGaussian() * 0.02D;
-                        this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
+                        double d0 = this.random.nextGaussian() * 0.02D;
+                        double d1 = this.random.nextGaussian() * 0.02D;
+                        double d2 = this.random.nextGaussian() * 0.02D;
+                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     return ActionResultType.SUCCESS;
                 }
                 if (item == Items.FERMENTED_SPIDER_EYE && !this.isWeakness()){
-                    if (!p_230254_1_.abilities.isCreativeMode) {
+                    if (!p_230254_1_.abilities.instabuild) {
                         itemstack.shrink(1);
                     }
-                    this.playSound(SoundEvents.BLOCK_BREWING_STAND_BREW, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.BREWING_STAND_BREW, 1.0F, 1.0F);
                     this.setWeakness(true);
                     for (int i = 0; i < 7; ++i) {
-                        double d0 = this.rand.nextGaussian() * 0.02D;
-                        double d1 = this.rand.nextGaussian() * 0.02D;
-                        double d2 = this.rand.nextGaussian() * 0.02D;
-                        this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
+                        double d0 = this.random.nextGaussian() * 0.02D;
+                        double d1 = this.random.nextGaussian() * 0.02D;
+                        double d2 = this.random.nextGaussian() * 0.02D;
+                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     return ActionResultType.SUCCESS;
                 }
                 if (item == Items.MILK_BUCKET){
-                    if (!p_230254_1_.abilities.isCreativeMode) {
+                    if (!p_230254_1_.abilities.instabuild) {
                         itemstack.shrink(1);
-                        p_230254_1_.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BUCKET));
+                        p_230254_1_.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BUCKET));
                     }
-                    this.playSound(SoundEvents.ENTITY_GENERIC_DRINK, 1.0F, 1.0F);
-                    this.clearActivePotions();
+                    this.playSound(SoundEvents.GENERIC_DRINK, 1.0F, 1.0F);
+                    this.removeAllEffects();
                     for (int i = 0; i < 7; ++i) {
-                        double d0 = this.rand.nextGaussian() * 0.02D;
-                        double d1 = this.rand.nextGaussian() * 0.02D;
-                        double d2 = this.rand.nextGaussian() * 0.02D;
-                        this.world.addParticle(ParticleTypes.POOF, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
+                        double d0 = this.random.nextGaussian() * 0.02D;
+                        double d1 = this.random.nextGaussian() * 0.02D;
+                        double d2 = this.random.nextGaussian() * 0.02D;
+                        this.level.addParticle(ParticleTypes.POOF, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     return ActionResultType.SUCCESS;
                 }
                 if (item == Food() && this.getHealth() < this.getMaxHealth()){
-                    if (!p_230254_1_.abilities.isCreativeMode) {
+                    if (!p_230254_1_.abilities.instabuild) {
                         itemstack.shrink(1);
                     }
-                    this.playSound(SoundEvents.ENTITY_GENERIC_EAT, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.GENERIC_EAT, 1.0F, 1.0F);
                     this.heal(HealAmount());
                     for (int i = 0; i < 7; ++i) {
-                        double d0 = this.rand.nextGaussian() * 0.02D;
-                        double d1 = this.rand.nextGaussian() * 0.02D;
-                        double d2 = this.rand.nextGaussian() * 0.02D;
-                        this.world.addParticle(ParticleTypes.HEART, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
+                        double d0 = this.random.nextGaussian() * 0.02D;
+                        double d1 = this.random.nextGaussian() * 0.02D;
+                        double d2 = this.random.nextGaussian() * 0.02D;
+                        this.level.addParticle(ParticleTypes.HEART, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     return ActionResultType.SUCCESS;
                 }
                 if (item == Termination() && p_230254_1_ == this.getOwner()){
                     this.remove();
                     this.setHired(false);
-                    if (!p_230254_1_.abilities.isCreativeMode) {
+                    if (!p_230254_1_.abilities.instabuild) {
                         itemstack.shrink(1);
                     }
-                    if (!this.world.isRemote && this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES) && this.getOwner() instanceof ServerPlayerEntity) {
-                        this.getOwner().sendMessage(new StringTextComponent(this.getDisplayName().getString() + " has been release from duty!"), Util.DUMMY_UUID);
+                    if (!this.level.isClientSide && this.level.getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES) && this.getOwner() instanceof ServerPlayerEntity) {
+                        this.getOwner().sendMessage(new StringTextComponent(this.getDisplayName().getString() + " has been release from duty!"), Util.NIL_UUID);
                     }
                 }
-                this.func_233687_w_(!this.isSitting());
-                this.isJumping = false;
-                this.navigator.clearPath();
-                this.setAttackTarget((LivingEntity)null);
+                this.func_233687_w_(!this.riding());
+                this.jumping = false;
+                this.navigation.stop();
+                this.setTarget((LivingEntity)null);
                 return ActionResultType.SUCCESS;
             } else {
                 return ActionResultType.PASS;

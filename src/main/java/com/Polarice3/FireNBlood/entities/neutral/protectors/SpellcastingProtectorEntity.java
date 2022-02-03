@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 public abstract class SpellcastingProtectorEntity extends AbstractProtectorEntity{
-    private static final DataParameter<Byte> SPELL = EntityDataManager.createKey(SpellcastingProtectorEntity.class, DataSerializers.BYTE);
+    private static final DataParameter<Byte> SPELL = EntityDataManager.defineId(SpellcastingProtectorEntity.class, DataSerializers.BYTE);
     protected int spellTicks;
     private SpellcastingProtectorEntity.SpellType activeSpell = SpellcastingProtectorEntity.SpellType.NONE;
 
@@ -26,21 +26,21 @@ public abstract class SpellcastingProtectorEntity extends AbstractProtectorEntit
         super(type, worldIn);
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(SPELL, (byte)0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(SPELL, (byte)0);
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         this.spellTicks = compound.getInt("SpellTicks");
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         compound.putInt("SpellTicks", this.spellTicks);
     }
 
@@ -54,8 +54,8 @@ public abstract class SpellcastingProtectorEntity extends AbstractProtectorEntit
     }
 
     public boolean isSpellcasting() {
-        if (this.world.isRemote) {
-            return this.dataManager.get(SPELL) > 0;
+        if (this.level.isClientSide) {
+            return this.entityData.get(SPELL) > 0;
         } else {
             return this.spellTicks > 0;
         }
@@ -63,15 +63,15 @@ public abstract class SpellcastingProtectorEntity extends AbstractProtectorEntit
 
     public void setSpellType(SpellcastingProtectorEntity.SpellType spellType) {
         this.activeSpell = spellType;
-        this.dataManager.set(SPELL, (byte)spellType.id);
+        this.entityData.set(SPELL, (byte)spellType.id);
     }
 
     protected SpellcastingProtectorEntity.SpellType getSpellType() {
-        return !this.world.isRemote ? this.activeSpell : SpellcastingProtectorEntity.SpellType.getFromId(this.dataManager.get(SPELL));
+        return !this.level.isClientSide ? this.activeSpell : SpellcastingProtectorEntity.SpellType.getFromId(this.entityData.get(SPELL));
     }
 
-    protected void updateAITasks() {
-        super.updateAITasks();
+    protected void customServerAiStep() {
+        super.customServerAiStep();
         if (this.spellTicks > 0) {
             --this.spellTicks;
         }
@@ -83,16 +83,16 @@ public abstract class SpellcastingProtectorEntity extends AbstractProtectorEntit
      */
     public void tick() {
         super.tick();
-        if (this.world.isRemote && this.isSpellcasting()) {
+        if (this.level.isClientSide && this.isSpellcasting()) {
             SpellcastingProtectorEntity.SpellType spellcastingprotectorentity$spelltype = this.getSpellType();
             double d0 = spellcastingprotectorentity$spelltype.particleSpeed[0];
             double d1 = spellcastingprotectorentity$spelltype.particleSpeed[1];
             double d2 = spellcastingprotectorentity$spelltype.particleSpeed[2];
-            float f = this.renderYawOffset * ((float)Math.PI / 180F) + MathHelper.cos((float)this.ticksExisted * 0.6662F) * 0.25F;
+            float f = this.yBodyRot * ((float)Math.PI / 180F) + MathHelper.cos((float)this.tickCount * 0.6662F) * 0.25F;
             float f1 = MathHelper.cos(f);
             float f2 = MathHelper.sin(f);
-            this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.getPosX() + (double)f1 * 0.6D, this.getPosY() + 1.8D, this.getPosZ() + (double)f2 * 0.6D, d0, d1, d2);
-            this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.getPosX() - (double)f1 * 0.6D, this.getPosY() + 1.8D, this.getPosZ() - (double)f2 * 0.6D, d0, d1, d2);
+            this.level.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + (double)f1 * 0.6D, this.getY() + 1.8D, this.getZ() + (double)f2 * 0.6D, d0, d1, d2);
+            this.level.addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() - (double)f1 * 0.6D, this.getY() + 1.8D, this.getZ() - (double)f2 * 0.6D, d0, d1, d2);
         }
 
     }
@@ -101,34 +101,34 @@ public abstract class SpellcastingProtectorEntity extends AbstractProtectorEntit
         return this.spellTicks;
     }
 
-    protected abstract SoundEvent getSpellSound();
+    protected abstract SoundEvent getCastingSoundEvent ();
 
     public class CastingASpellGoal extends Goal {
         public CastingASpellGoal() {
-            this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
         }
 
         /**
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
+        public boolean canUse() {
             return SpellcastingProtectorEntity.this.getSpellTicks() > 0;
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
-            super.startExecuting();
-            SpellcastingProtectorEntity.this.navigator.clearPath();
+        public void start() {
+            super.start();
+            SpellcastingProtectorEntity.this.navigation.stop();
         }
 
         /**
          * Reset the task's internal state. Called when this task is interrupted by another one
          */
-        public void resetTask() {
-            super.resetTask();
+        public void stop() {
+            super.stop();
             SpellcastingProtectorEntity.this.setSpellType(SpellcastingProtectorEntity.SpellType.NONE);
         }
 
@@ -136,8 +136,8 @@ public abstract class SpellcastingProtectorEntity extends AbstractProtectorEntit
          * Keep ticking a continuous task that has already been started
          */
         public void tick() {
-            if (SpellcastingProtectorEntity.this.getAttackTarget() != null) {
-                SpellcastingProtectorEntity.this.getLookController().setLookPositionWithEntity(SpellcastingProtectorEntity.this.getAttackTarget(), (float)SpellcastingProtectorEntity.this.getHorizontalFaceSpeed(), (float)SpellcastingProtectorEntity.this.getVerticalFaceSpeed());
+            if (SpellcastingProtectorEntity.this.getTarget() != null) {
+                SpellcastingProtectorEntity.this.getLookControl().setLookAt(SpellcastingProtectorEntity.this.getTarget(), (float)SpellcastingProtectorEntity.this.getMaxHeadYRot(), (float)SpellcastingProtectorEntity.this.getMaxHeadXRot());
             }
 
         }
@@ -180,13 +180,13 @@ public abstract class SpellcastingProtectorEntity extends AbstractProtectorEntit
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
-            LivingEntity livingentity = SpellcastingProtectorEntity.this.getAttackTarget();
+        public boolean canUse() {
+            LivingEntity livingentity = SpellcastingProtectorEntity.this.getTarget();
             if (livingentity != null && livingentity.isAlive() && !SpellcastingProtectorEntity.this.isDying()) {
                 if (SpellcastingProtectorEntity.this.isSpellcasting()) {
                     return false;
                 } else {
-                    return SpellcastingProtectorEntity.this.ticksExisted >= this.spellCooldown;
+                    return SpellcastingProtectorEntity.this.tickCount >= this.spellCooldown;
                 }
             } else {
                 return false;
@@ -196,18 +196,18 @@ public abstract class SpellcastingProtectorEntity extends AbstractProtectorEntit
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
-        public boolean shouldContinueExecuting() {
-            LivingEntity livingentity = SpellcastingProtectorEntity.this.getAttackTarget();
+        public boolean canContinueToUse() {
+            LivingEntity livingentity = SpellcastingProtectorEntity.this.getTarget();
             return livingentity != null && !SpellcastingProtectorEntity.this.isDying() && livingentity.isAlive() && this.spellWarmup > 0;
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
+        public void start() {
             this.spellWarmup = this.getCastWarmupTime();
             SpellcastingProtectorEntity.this.spellTicks = this.getCastingTime();
-            this.spellCooldown = SpellcastingProtectorEntity.this.ticksExisted + this.getCastingInterval();
+            this.spellCooldown = SpellcastingProtectorEntity.this.tickCount + this.getCastingInterval();
             SoundEvent soundevent = this.getSpellPrepareSound();
             if (soundevent != null) {
                 SpellcastingProtectorEntity.this.playSound(soundevent, 1.0F, 1.0F);
@@ -223,7 +223,7 @@ public abstract class SpellcastingProtectorEntity extends AbstractProtectorEntit
             --this.spellWarmup;
             if (this.spellWarmup == 0) {
                 this.castSpell();
-                SpellcastingProtectorEntity.this.playSound(SpellcastingProtectorEntity.this.getSpellSound(), 1.0F, 1.0F);
+                SpellcastingProtectorEntity.this.playSound(SpellcastingProtectorEntity.this.getCastingSoundEvent (), 1.0F, 1.0F);
             }
 
         }

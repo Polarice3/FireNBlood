@@ -45,8 +45,8 @@ public class MirageEntity extends AbstractProtectorEntity {
         this.goalSelector.addGoal(9, new LookAtGoal(this, PlayerEntity.class, 3.0F, 1.0F));
         this.goalSelector.addGoal(10, new LookAtGoal(this, MobEntity.class, 8.0F));
         this.targetSelector.addGoal(1, new MirageEntity.CopyOwnerTargetGoal(this));
-        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractProtectorEntity.class)).setCallsForHelp());
-        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractVillagerEntity.class)).setCallsForHelp());
+        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractProtectorEntity.class)).setAlertOthers());
+        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractVillagerEntity.class)).setAlertOthers());
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractTaillessEntity.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractRaiderEntity.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, false, false, (p_234199_0_) -> {
@@ -55,31 +55,31 @@ public class MirageEntity extends AbstractProtectorEntity {
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, (double)0.3F)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 8.0D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 4.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MOVEMENT_SPEED, (double)0.3F)
+                .add(Attributes.MAX_HEALTH, 8.0D)
+                .add(Attributes.ATTACK_DAMAGE, 4.0D);
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         if (source != DamageSource.STARVE){
             return false;
         } else {
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         }
     }
 
 
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if (compound.contains("LifeTicks")) {
             this.setLimitedLife(compound.getInt("LifeTicks"));
         }
 
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         if (this.limitedLifespan) {
             compound.putInt("LifeTicks", this.limitedLifeTicks);
         }
@@ -90,7 +90,7 @@ public class MirageEntity extends AbstractProtectorEntity {
         super.tick();
         --this.limitedLifeTicks;
         if (this.limitedLifespan && this.limitedLifeTicks <= 0) {
-            this.attackEntityFrom(DamageSource.STARVE, 200.0F);
+            this.hurt(DamageSource.STARVE, 200.0F);
         }
     }
 
@@ -100,15 +100,15 @@ public class MirageEntity extends AbstractProtectorEntity {
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_WOLF_GROWL;
+        return SoundEvents.WOLF_GROWL;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_VEX_DEATH;
+        return SoundEvents.VEX_DEATH;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_WOLF_GROWL;
+        return SoundEvents.WOLF_GROWL;
     }
 
     public MobEntity getOwner() {
@@ -126,9 +126,9 @@ public class MirageEntity extends AbstractProtectorEntity {
     public static class FollowOwnerGoal extends Goal {
         private final MirageEntity mirage;
         private MobEntity owner;
-        private final IWorldReader world;
+        private final IWorldReader level;
         private final double followSpeed;
-        private final PathNavigator navigator;
+        private final PathNavigator navigation;
         private int timeToRecalcPath;
         private final float maxDist;
         private final float minDist;
@@ -137,14 +137,14 @@ public class MirageEntity extends AbstractProtectorEntity {
 
         public FollowOwnerGoal(MirageEntity mirage, double speed, float minDist, float maxDist, boolean teleportToLeaves) {
             this.mirage = mirage;
-            this.world = mirage.world;
+            this.level = mirage.level;
             this.followSpeed = speed;
-            this.navigator = mirage.getNavigator();
+            this.navigation = mirage.getNavigation();
             this.minDist = minDist;
             this.maxDist = maxDist;
             this.teleportToLeaves = teleportToLeaves;
-            this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
-            if (!(mirage.getNavigator() instanceof GroundPathNavigator) && !(mirage.getNavigator() instanceof FlyingPathNavigator)) {
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+            if (!(mirage.getNavigation() instanceof GroundPathNavigator) && !(mirage.getNavigation() instanceof FlyingPathNavigator)) {
                 throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
             }
         }
@@ -153,13 +153,13 @@ public class MirageEntity extends AbstractProtectorEntity {
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
+        public boolean canUse() {
             MobEntity summoner = this.mirage.getOwner();
             if (summoner == null) {
                 return false;
             } else if (summoner.isSpectator()) {
                 return false;
-            } else if (this.mirage.getDistanceSq(summoner) < (double)(this.minDist * this.minDist)) {
+            } else if (this.mirage.distanceToSqr(summoner) < (double)(this.minDist * this.minDist)) {
                 return false;
             } else if (!summoner.isAlive()){
                 return false;
@@ -172,44 +172,44 @@ public class MirageEntity extends AbstractProtectorEntity {
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
-        public boolean shouldContinueExecuting() {
-            if (this.navigator.noPath()) {
+        public boolean canContinueToUse() {
+            if (this.navigation.isDone()) {
                 return false;
             } else {
-                return !(this.mirage.getDistanceSq(this.owner) <= (double)(this.maxDist * this.maxDist));
+                return !(this.mirage.distanceToSqr(this.owner) <= (double)(this.maxDist * this.maxDist));
             }
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
+        public void start() {
             this.timeToRecalcPath = 0;
-            this.oldWaterCost = this.mirage.getPathPriority(PathNodeType.WATER);
-            this.mirage.setPathPriority(PathNodeType.WATER, 0.0F);
+            this.oldWaterCost = this.mirage.getPathfindingMalus(PathNodeType.WATER);
+            this.mirage.setPathfindingMalus(PathNodeType.WATER, 0.0F);
         }
 
         /**
          * Reset the task's internal state. Called when this task is interrupted by another one
          */
-        public void resetTask() {
+        public void stop() {
             this.owner = null;
-            this.navigator.clearPath();
-            this.mirage.setPathPriority(PathNodeType.WATER, this.oldWaterCost);
+            this.navigation.stop();
+            this.mirage.setPathfindingMalus(PathNodeType.WATER, this.oldWaterCost);
         }
 
         /**
          * Keep ticking a continuous task that has already been started
          */
         public void tick() {
-            this.mirage.getLookController().setLookPositionWithEntity(this.owner, 10.0F, (float)this.mirage.getVerticalFaceSpeed());
+            this.mirage.getLookControl().setLookAt(this.owner, 10.0F, (float)this.mirage.getMaxHeadXRot());
             if (--this.timeToRecalcPath <= 0) {
                 this.timeToRecalcPath = 10;
-                if (!this.mirage.getLeashed() && !this.mirage.isPassenger()) {
-                    if (this.mirage.getDistanceSq(this.owner) >= 144.0D) {
+                if (!this.mirage.isLeashed() && !this.mirage.isPassenger()) {
+                    if (this.mirage.distanceToSqr(this.owner) >= 144.0D) {
                         this.tryToTeleportNearEntity();
                     } else {
-                        this.navigator.tryMoveToEntityLiving(this.owner, this.followSpeed);
+                        this.navigation.moveTo(this.owner, this.followSpeed);
                     }
 
                 }
@@ -217,7 +217,7 @@ public class MirageEntity extends AbstractProtectorEntity {
         }
 
         private void tryToTeleportNearEntity() {
-            BlockPos blockpos = this.owner.getPosition();
+            BlockPos blockpos = this.owner.blockPosition();
 
             for(int i = 0; i < 10; ++i) {
                 int j = this.getRandomNumber(-3, 3);
@@ -232,39 +232,39 @@ public class MirageEntity extends AbstractProtectorEntity {
         }
 
         private boolean tryToTeleportToLocation(int x, int y, int z) {
-            if (Math.abs((double)x - this.owner.getPosX()) < 2.0D && Math.abs((double)z - this.owner.getPosZ()) < 2.0D) {
+            if (Math.abs((double)x - this.owner.getX()) < 2.0D && Math.abs((double)z - this.owner.getZ()) < 2.0D) {
                 return false;
             } else if (!this.isTeleportFriendlyBlock(new BlockPos(x, y, z))) {
                 return false;
             } else {
-                this.mirage.setLocationAndAngles((double)x + 0.5D, (double)y, (double)z + 0.5D, this.mirage.rotationYaw, this.mirage.rotationPitch);
-                this.navigator.clearPath();
+                this.mirage.moveTo((double)x + 0.5D, (double)y, (double)z + 0.5D, this.mirage.yRot, this.mirage.xRot);
+                this.navigation.stop();
                 return true;
             }
         }
 
         private boolean isTeleportFriendlyBlock(BlockPos pos) {
-            PathNodeType pathnodetype = WalkNodeProcessor.getFloorNodeType(this.world, pos.toMutable());
+            PathNodeType pathnodetype = WalkNodeProcessor.getBlockPathTypeStatic(this.level, pos.mutable());
             if (pathnodetype != PathNodeType.WALKABLE) {
                 return false;
             } else {
-                BlockState blockstate = this.world.getBlockState(pos.down());
+                BlockState blockstate = this.level.getBlockState(pos.below());
                 if (!this.teleportToLeaves && blockstate.getBlock() instanceof LeavesBlock) {
                     return false;
                 } else {
-                    BlockPos blockpos = pos.subtract(this.mirage.getPosition());
-                    return this.world.hasNoCollisions(this.mirage, this.mirage.getBoundingBox().offset(blockpos));
+                    BlockPos blockpos = pos.subtract(this.mirage.blockPosition());
+                    return this.level.noCollision(this.mirage, this.mirage.getBoundingBox().move(blockpos));
                 }
             }
         }
 
         private int getRandomNumber(int min, int max) {
-            return this.mirage.getRNG().nextInt(max - min + 1) + min;
+            return this.mirage.getRandom().nextInt(max - min + 1) + min;
         }
     }
 
     class CopyOwnerTargetGoal extends TargetGoal {
-        private final EntityPredicate field_220803_b = (new EntityPredicate()).setIgnoresLineOfSight().setUseInvisibilityCheck();
+        private final EntityPredicate field_220803_b = (new EntityPredicate()).allowUnseeable().ignoreInvisibilityTesting();
 
         public CopyOwnerTargetGoal(CreatureEntity creature) {
             super(creature, false);
@@ -274,16 +274,16 @@ public class MirageEntity extends AbstractProtectorEntity {
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
-            return MirageEntity.this.owner != null && MirageEntity.this.owner.getAttackTarget() != null && this.isSuitableTarget(MirageEntity.this.owner.getAttackTarget(), this.field_220803_b);
+        public boolean canUse() {
+            return MirageEntity.this.owner != null && MirageEntity.this.owner.getTarget() != null && this.canAttack(MirageEntity.this.owner.getTarget(), this.field_220803_b);
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
-            MirageEntity.this.setAttackTarget(MirageEntity.this.owner.getAttackTarget());
-            super.startExecuting();
+        public void start() {
+            MirageEntity.this.setTarget(MirageEntity.this.owner.getTarget());
+            super.start();
         }
     }
 }

@@ -27,7 +27,7 @@ public class SoulForgeContainer extends Container {
     public SoulForgeContainer(int id, PlayerInventory playerInventory, SoulForgeTileEntity tileEntity) {
         super(ModContainerType.SOULFORGE.get(), id);
         this.tileEntity = tileEntity;
-        this.worldPosCallable = IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos());
+        this.levelPosCallable = IWorldPosCallable.of(tileEntity.getLevel(), tileEntity.getPos());
         this.addSlot(new InputSlot(playerInventory, 0, 51, 21));
         this.addSlot(new FuelSlot(this, playerInventory, 1, 80, 54));
         this.addSlot(new ResultSlot(playerInventory.player, playerInventory, 2, 113, 22));
@@ -59,45 +59,45 @@ public class SoulForgeContainer extends Container {
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn) {
+    public boolean stillValid(PlayerEntity playerIn) {
         return isWithinUsableDistance(worldPosCallable, playerIn, RegistryHandler.SOULFORGE.get());
     }
 
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.inventorySlots.get(index);
-        if (slot != null && slot.getHasStack()) {
-            ItemStack itemstack1 = slot.getStack();
+        Slot slot = this.slots.get(index);
+        if (slot != null && slot.hasItem()) {
+            ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
             if (index == 2) {
-                if (!this.mergeItemStack(itemstack1, 3, 39, true)) {
+                if (!this.moveItemStackTo(itemstack1, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
 
-                slot.onSlotChange(itemstack1, itemstack);
+                slot.onQuickCraft(itemstack1, itemstack);
             } else if (index != 1 && index != 0) {
                 */
 /*if (this.hasRecipe(itemstack1)) {
-                    if (!this.mergeItemStack(itemstack1, 0, 1, false)) {
+                    if (!this.moveItemStackTo(itemstack1, 0, 1, false)) {
                         return ItemStack.EMPTY;
                     }
                 } else*//*
 
                 if (index >= 3 && index < 30) {
-                    if (!this.mergeItemStack(itemstack1, 30, 39, false)) {
+                    if (!this.moveItemStackTo(itemstack1, 30, 39, false)) {
                         return ItemStack.EMPTY;
                     }
-                } else if (index >= 30 && index < 39 && !this.mergeItemStack(itemstack1, 3, 30, false)) {
+                } else if (index >= 30 && index < 39 && !this.moveItemStackTo(itemstack1, 3, 30, false)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!this.mergeItemStack(itemstack1, 3, 39, false)) {
+            } else if (!this.moveItemStackTo(itemstack1, 3, 39, false)) {
                 return ItemStack.EMPTY;
             }
 
             if (itemstack1.isEmpty()) {
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             } else {
-                slot.onSlotChanged();
+                slot.setChanged();
             }
 
             if (itemstack1.getCount() == itemstack.getCount()) {
@@ -123,7 +123,7 @@ public class SoulForgeContainer extends Container {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public boolean isBurning() {
+    public boolean isOnFire() {
         return this.field_216983_d.get(0) > 0;
     }
 
@@ -169,8 +169,8 @@ public class SoulForgeContainer extends Container {
         }
 
         public ItemStack decrStackSize(int amount) {
-            if (this.getHasStack()) {
-                this.removeCount += Math.min(amount, this.getStack().getCount());
+            if (this.hasItem()) {
+                this.removeCount += Math.min(amount, this.getItem().getCount());
             }
 
             return super.decrStackSize(amount);

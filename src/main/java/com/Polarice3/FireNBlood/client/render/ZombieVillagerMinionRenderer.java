@@ -17,7 +17,7 @@ public class ZombieVillagerMinionRenderer extends BipedRenderer<ZombieVillagerMi
         this.addLayer(new BipedArmorLayer<>(this, new ACArmorModel<>(0.5F), new ACArmorModel<>(1.0F)));
     }
 
-    public ResourceLocation getEntityTexture(ZombieVillagerMinionEntity entity) {
+    public ResourceLocation getTextureLocation(ZombieVillagerMinionEntity entity) {
         return TEXTURE;
     }
 }

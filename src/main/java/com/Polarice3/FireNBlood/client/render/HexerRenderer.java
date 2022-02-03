@@ -20,7 +20,7 @@ public class HexerRenderer extends AbstractProtectorRenderer<HexerEntity>{
         super(renderManagerIn, new AbstractProtectorModel<>(0.0F, 0.0F), 0.5F);
         this.addLayer(new HeldItemLayer<HexerEntity, AbstractProtectorModel<HexerEntity>>(this) {
             public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, HexerEntity entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-                if (entitylivingbaseIn.isSpellcasting() || entitylivingbaseIn.isAggressive() || entitylivingbaseIn.getHeldItemMainhand().getItem() == Items.CROSSBOW) {
+                if (entitylivingbaseIn.isSpellcasting() || entitylivingbaseIn.isAggressive() || entitylivingbaseIn.getMainHandItem().getItem() == Items.CROSSBOW) {
                     super.render(matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks, ageInTicks, netHeadYaw, headPitch);
                 }
 
@@ -31,7 +31,7 @@ public class HexerRenderer extends AbstractProtectorRenderer<HexerEntity>{
     }
 
     @Override
-    public ResourceLocation getEntityTexture(HexerEntity entity) {
+    public ResourceLocation getTextureLocation(HexerEntity entity) {
         return TEXTURE;
     }
 }

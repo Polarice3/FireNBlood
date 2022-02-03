@@ -26,28 +26,28 @@ public class LightningTrapEntity extends Entity {
 
     public LightningTrapEntity(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
-        this.noClip = true;
+        this.noPhysics = true;
     }
 
     public LightningTrapEntity(World worldIn, double x, double y, double z) {
         this(ModEntityType.LIGHTNINGTRAP.get(), worldIn);
-        this.setPosition(x, y, z);
+        this.setPos(x, y, z);
     }
 
     @Override
-    protected void registerData() {
+    protected void defineSynchedData() {
 
     }
 
     @Override
-    protected void readAdditional(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundNBT compound) {
         this.duration = compound.getInt("Duration");
         this.durationOnUse = compound.getInt("DurationOnUse");
 
     }
 
     @Override
-    protected void writeAdditional(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundNBT compound) {
         compound.putInt("Duration", this.duration);
         compound.putInt("DurationOnUse", this.durationOnUse);
 
@@ -63,34 +63,34 @@ public class LightningTrapEntity extends Entity {
 
     public void tick() {
         super.tick();
-        if (this.world.isRemote){
+        if (this.level.isClientSide){
             float f = 3.0F;
             float f5 = (float)Math.PI * f * f;
             for(int k1 = 0; (float)k1 < f5; ++k1) {
-                float f6 = this.rand.nextFloat() * ((float)Math.PI * 2F);
-                float f7 = MathHelper.sqrt(this.rand.nextFloat()) * f;
+                float f6 = this.random.nextFloat() * ((float)Math.PI * 2F);
+                float f7 = MathHelper.sqrt(this.random.nextFloat()) * f;
                 float f8 = MathHelper.cos(f6) * f7;
                 float f9 = MathHelper.sin(f6) * f7;
-                this.world.addOptionalParticle(ParticleTypes.CLOUD, this.getPosX() + (double)f8, this.getPosY(), this.getPosZ() + (double)f9, (0.5D - this.rand.nextDouble()) * 0.15D, (double)0.01F, (0.5D - this.rand.nextDouble()) * 0.15D);
+                this.level.addParticle(ParticleTypes.CLOUD, this.getX() + (double)f8, this.getY(), this.getZ() + (double)f9, (0.5D - this.random.nextDouble()) * 0.15D, (double)0.01F, (0.5D - this.random.nextDouble()) * 0.15D);
             }
         }
-        if (this.ticksExisted >= this.duration) {
-            LightningBoltEntity lightning = new LightningBoltEntity(EntityType.LIGHTNING_BOLT, world);
-            lightning.setPosition(this.getPosX(),this.getPosY(),this.getPosZ());
-            world.addEntity(lightning);
+        if (this.tickCount >= this.duration) {
+            LightningBoltEntity lightning = new LightningBoltEntity(EntityType.LIGHTNING_BOLT, level);
+            lightning.setPos(this.getX(),this.getY(),this.getZ());
+            level.addFreshEntity(lightning);
             this.remove();
         }
     }
 
     public void setOwner(@Nullable LivingEntity ownerIn) {
         this.owner = ownerIn;
-        this.ownerUniqueId = ownerIn == null ? null : ownerIn.getUniqueID();
+        this.ownerUniqueId = ownerIn == null ? null : ownerIn.getUUID();
     }
 
     @Nullable
     public LivingEntity getOwner() {
-        if (this.owner == null && this.ownerUniqueId != null && this.world instanceof ServerWorld) {
-            Entity entity = ((ServerWorld)this.world).getEntityByUuid(this.ownerUniqueId);
+        if (this.owner == null && this.ownerUniqueId != null && this.level instanceof ServerWorld) {
+            Entity entity = ((ServerWorld)this.level).getEntity(this.ownerUniqueId);
             if (entity instanceof LivingEntity) {
                 this.owner = (LivingEntity)entity;
             }
@@ -99,12 +99,12 @@ public class LightningTrapEntity extends Entity {
         return this.owner;
     }
 
-    public PushReaction getPushReaction() {
+    public PushReaction getPistonPushReaction() {
         return PushReaction.IGNORE;
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return new SSpawnObjectPacket(this);
     }
 }

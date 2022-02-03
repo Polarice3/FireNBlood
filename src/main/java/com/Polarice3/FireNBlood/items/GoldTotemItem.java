@@ -43,10 +43,10 @@ public class GoldTotemItem extends Item {
     public static final int MAXSOULS = FNBConfig.MaxSouls.get();
 
     public GoldTotemItem() {
-        super(new Item.Properties().group(FireNBlood.TAB).maxStackSize(1).rarity(Rarity.RARE));
-        ItemModelsProperties.registerProperty(this, new ResourceLocation("souls"),
+        super(new Item.Properties().tab(FireNBlood.TAB).stacksTo(1).rarity(Rarity.RARE));
+        ItemModelsProperties.register(this, new ResourceLocation("souls"),
                 (stack, world, living) -> ((float) currentSouls(stack)) / MAXSOULS);
-        ItemModelsProperties.registerProperty(this, new ResourceLocation("activated"),
+        ItemModelsProperties.register(this, new ResourceLocation("activated"),
                 (stack, world, living) -> isActivated(stack) ? 1.0F : 0.0F);
     }
 
@@ -82,9 +82,9 @@ public class GoldTotemItem extends Item {
         }
         if (entityIn instanceof LivingEntity){
             if (stack.getTag().getInt(SOULSAMOUNT) == MAXSOULS){
-                ((LivingEntity) entityIn).addPotionEffect(new EffectInstance(RegistryHandler.DEATHPROTECT.get(), 100));
+                ((LivingEntity) entityIn).addEffect(new EffectInstance(RegistryHandler.DEATHPROTECT.get(), 100));
             }
-            if (((LivingEntity) entityIn).isPotionActive(RegistryHandler.SOULDRAIN.get())){
+            if (((LivingEntity) entityIn).hasEffect(RegistryHandler.SOULDRAIN.get())){
                 stack.getTag().putInt(SOULSAMOUNT, 0);
             }
         }
@@ -120,7 +120,7 @@ public class GoldTotemItem extends Item {
         ItemStack foundStack = ItemStack.EMPTY;
 
         for (int i = 0; i <= 9; i++) {
-            ItemStack itemStack = playerEntity.inventory.getStackInSlot(i);
+            ItemStack itemStack = playerEntity.inventory.getItem(i);
             if (!itemStack.isEmpty() && isMatchingItem(itemStack)) {
                 foundStack = itemStack;
                 break;
@@ -128,16 +128,16 @@ public class GoldTotemItem extends Item {
         }
 
         if (!foundStack.isEmpty()) {
-            if (victim.getCreatureAttribute() == CreatureAttribute.UNDEAD){
+            if (victim.getMobType() == CreatureAttribute.UNDEAD){
                 increaseSouls(foundStack, FNBConfig.UndeadSouls.get() * SoulMultiply(playerEntity));
             } else
-            if (victim.getCreatureAttribute() == CreatureAttribute.ARTHROPOD){
+            if (victim.getMobType() == CreatureAttribute.ARTHROPOD){
                 increaseSouls(foundStack, FNBConfig.AnthropodSouls.get() * SoulMultiply(playerEntity));
             } else
             if (victim instanceof AbstractRaiderEntity || victim instanceof AbstractProtectorEntity){
                 increaseSouls(foundStack, FNBConfig.IllagerSouls.get() * SoulMultiply(playerEntity));
             } else
-            if (victim instanceof VillagerEntity && !victim.isChild()){
+            if (victim instanceof VillagerEntity && !victim.isBaby()){
                 increaseSouls(foundStack, FNBConfig.VillagerSouls.get() * SoulMultiply(playerEntity));
             } else
             if (victim instanceof NeophyteEntity || victim instanceof AcolyteEntity || victim instanceof AbstractTaillessEntity){
@@ -158,8 +158,8 @@ public class GoldTotemItem extends Item {
     }
 
     public static int SoulMultiply(PlayerEntity playerEntity){
-        ItemStack weapon= playerEntity.getHeldItemMainhand();
-        int i = EnchantmentHelper.getEnchantmentLevel(ModEnchantmentsType.SOULEATER.get(), weapon);
+        ItemStack weapon= playerEntity.getMainHandItem();
+        int i = EnchantmentHelper.getItemEnchantmentLevel(ModEnchantmentsType.SOULEATER.get(), weapon);
         if (i > 0){
             return i + 1;
         } else {
@@ -206,20 +206,20 @@ public class GoldTotemItem extends Item {
         }
     }
 
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
         if (playerIn.isCreative()){
             assert itemstack.getTag() != null;
             itemstack.getTag().putInt(SOULSAMOUNT, MAXSOULS);
-            return ActionResult.resultConsume(itemstack);
+            return ActionResult.consume(itemstack);
         } else {
-            return ActionResult.resultFail(itemstack);
+            return ActionResult.fail(itemstack);
         }
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
         if (stack.getTag() != null) {
             int Soulcounts = stack.getTag().getInt(SOULSAMOUNT);
             tooltip.add(new TranslationTextComponent("info.firenblood.goldtotem.souls", Soulcounts, MAXSOULS));

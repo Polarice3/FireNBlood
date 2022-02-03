@@ -34,7 +34,7 @@ public class DarkRobeArmor extends ArmorItem {
             }
             ItemStack foundStack = ItemStack.EMPTY;
             for (int i = 0; i <= 9; i++) {
-                ItemStack itemStack = player.inventory.getStackInSlot(i);
+                ItemStack itemStack = player.inventory.getItem(i);
                 if (!itemStack.isEmpty() && itemStack.getItem() == RegistryHandler.GOLDTOTEM.get()) {
                     foundStack = itemStack;
                     break;
@@ -45,7 +45,7 @@ public class DarkRobeArmor extends ArmorItem {
                 if (stack.getTag().getInt(COOL) > 60) {
                     stack.getTag().putInt(COOL, 0);
                     GoldTotemItem.decreaseSouls(foundStack, 1);
-                    stack.setDamage(stack.getDamage() - 1);
+                    stack.setDamageValue(stack.getDamageValue() - 1);
                 }
             }
         }
@@ -55,14 +55,14 @@ public class DarkRobeArmor extends ArmorItem {
     @Override
     public <A extends BipedModel<?>> A getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlotType armorSlot, A _default) {
         RobeModel model = new RobeModel(1.0F);
-        model.Headwear.showModel = armorSlot == EquipmentSlotType.HEAD;
-        model.Body.showModel = armorSlot == EquipmentSlotType.CHEST;
-        model.RightArm.showModel = armorSlot == EquipmentSlotType.CHEST;
-        model.LeftArm.showModel = armorSlot == EquipmentSlotType.CHEST;
+        model.hat.visible = armorSlot == EquipmentSlotType.HEAD;
+        model.Body.visible = armorSlot == EquipmentSlotType.CHEST;
+        model.RightArm.visible = armorSlot == EquipmentSlotType.CHEST;
+        model.LeftArm.visible = armorSlot == EquipmentSlotType.CHEST;
 
-        model.isChild = _default.isChild;
-        model.isSneak = _default.isSneak;
-        model.isSitting = _default.isSitting;
+        model.young = _default.young;
+        model.crouching = _default.crouching;
+        model.riding = _default.riding;
         model.rightArmPose = _default.rightArmPose;
         model.leftArmPose = _default.leftArmPose;
 

@@ -13,28 +13,28 @@ public class SeatModel extends EntityModel<FakeSeatEntity> {
 	private final ModelRenderer Seat;
 
 	public SeatModel() {
-		textureWidth = 16;
-		textureHeight = 16;
+		texWidth = 16;
+		texHeight = 16;
 
 		Seat = new ModelRenderer(this);
-		Seat.setRotationPoint(0.0F, 24.0F, 0.0F);
-		Seat.setTextureOffset(0, 0).addBox(-2.0F, -1.0F, -2.0F, 4.0F, 1.0F, 4.0F, 0.0F, false);
+		Seat.setPos(0.0F, 24.0F, 0.0F);
+		Seat.texOffs(0, 0).addBox(-2.0F, -1.0F, -2.0F, 4.0F, 1.0F, 4.0F, 0.0F, false);
 	}
 
 	@Override
-	public void setRotationAngles(FakeSeatEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void setupAnim(FakeSeatEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 
 	}
 
 
 	@Override
-	public void render(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
+	public void renderToBuffer(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
 		Seat.render(matrixStack, buffer, packedLight, packedOverlay);
 	}
 
 	public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-		modelRenderer.rotateAngleX = x;
-		modelRenderer.rotateAngleY = y;
-		modelRenderer.rotateAngleZ = z;
+		modelRenderer.xRot = x;
+		modelRenderer.yRot = y;
+		modelRenderer.zRot = z;
 	}
 }

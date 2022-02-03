@@ -17,7 +17,7 @@ public class TankRenderer extends MobRenderer<TankEntity, TankModel<TankEntity>>
     }
 
     @Override
-    public ResourceLocation getEntityTexture(TankEntity entity) {
+    public ResourceLocation getTextureLocation(TankEntity entity) {
         return TEXTURE;
     }
 }

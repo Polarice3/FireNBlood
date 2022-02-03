@@ -51,7 +51,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         return p_213685_0_.isAlive() && !(p_213685_0_ instanceof TaillessProphetEntity);
     };
     private AbstractTaillessEntity AllyTarget;
-    protected static final DataParameter<Byte> PROPHET_FLAGS = EntityDataManager.createKey(TaillessProphetEntity.class, DataSerializers.BYTE);
+    protected static final DataParameter<Byte> PROPHET_FLAGS = EntityDataManager.defineId(TaillessProphetEntity.class, DataSerializers.BYTE);
     public int Launch;
 
     public TaillessProphetEntity(EntityType<? extends SpellcastingTaillessEntity> type, World worldIn) {
@@ -59,11 +59,11 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 150.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.35D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 6.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .add(Attributes.MAX_HEALTH, 150.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.35D)
+                .add(Attributes.ATTACK_DAMAGE, 6.0D);
     }
 
     @Override
@@ -84,48 +84,48 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractIllagerEntity.class, true));
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, AbstractTaillessEntity.class)).setCallsForHelp());
+        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, AbstractTaillessEntity.class)).setAlertOthers());
 
     }
 
     @Override
-    protected int getExperiencePoints(PlayerEntity player){
-        return 50 + this.world.rand.nextInt(50);
+    protected int getExperienceReward(PlayerEntity player){
+        return 50 + this.level.random.nextInt(50);
     }
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_ZOMBIE_HORSE_AMBIENT;
+        return SoundEvents.ZOMBIE_HORSE_AMBIENT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_SKELETON_HORSE_DEATH;
+        return SoundEvents.SKELETON_HORSE_DEATH;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_POLAR_BEAR_HURT;
+        return SoundEvents.POLAR_BEAR_HURT;
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_COW_STEP, 0.25F, 1.0F);
+        this.playSound(SoundEvents.COW_STEP, 0.25F, 1.0F);
     }
 
     @Override
-    protected SoundEvent getSpellSound() {
-        return SoundEvents.ENTITY_EVOKER_CAST_SPELL;
+    protected SoundEvent getCastingSoundEvent () {
+        return SoundEvents.EVOKER_CAST_SPELL;
     }
 
-    private final EntityPredicate ally = (new EntityPredicate().setDistance(32.0D));
+    private final EntityPredicate ally = (new EntityPredicate().range(32.0D));
 
     @Nullable
     private AbstractTaillessEntity getAllyTarget() {
         return this.AllyTarget;
     }
 
-    public boolean canDespawn(double distanceToClosestPlayer) {
+    public boolean removeWhenFarAway(double distanceToClosestPlayer) {
         return false;
     }
 
@@ -133,25 +133,25 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         return TaillessProphetEntity.this.getHealth() <= TaillessProphetEntity.this.getMaxHealth() / 2.0F;
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(PROPHET_FLAGS, (byte)0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(PROPHET_FLAGS, (byte)0);
     }
 
     private boolean getProphetFlag(int mask) {
-        int i = this.dataManager.get(PROPHET_FLAGS);
+        int i = this.entityData.get(PROPHET_FLAGS);
         return (i & mask) != 0;
     }
 
     private void setProphetFlag(int mask, boolean value) {
-        int i = this.dataManager.get(PROPHET_FLAGS);
+        int i = this.entityData.get(PROPHET_FLAGS);
         if (value) {
             i = i | mask;
         } else {
             i = i & ~mask;
         }
 
-        this.dataManager.set(PROPHET_FLAGS, (byte)(i & 255));
+        this.entityData.set(PROPHET_FLAGS, (byte)(i & 255));
     }
 
     public boolean isLaunching(){
@@ -162,14 +162,14 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         this.setProphetFlag(1,launching);
     }
 
-    public boolean isPotionApplicable(EffectInstance potioneffectIn) {
-        return potioneffectIn.getPotion() != Effects.WITHER && super.isPotionApplicable(potioneffectIn);
+    public boolean canBeAffected(EffectInstance potioneffectIn) {
+        return potioneffectIn.getEffect() != Effects.WITHER && super.canBeAffected(potioneffectIn);
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount){
-        List<ServantTaillessEntity> list = TaillessProphetEntity.this.world.getTargettableEntitiesWithinAABB(ServantTaillessEntity.class, this.ally, TaillessProphetEntity.this, TaillessProphetEntity.this.getBoundingBox().grow(32.0D, 8.0D, 32.0D));
+    public boolean hurt(DamageSource source, float amount){
+        List<ServantTaillessEntity> list = TaillessProphetEntity.this.level.getNearbyEntities(ServantTaillessEntity.class, this.ally, TaillessProphetEntity.this, TaillessProphetEntity.this.getBoundingBox().inflate(32.0D, 8.0D, 32.0D));
         if (list.isEmpty()) {
-            boolean flag = super.attackEntityFrom(source, amount);
+            boolean flag = super.hurt(source, amount);
             if (TaillessProphetEntity.this.SecondPhase()) {
                 this.teleportRandomly();
             }
@@ -179,8 +179,8 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         }
     }
 
-    public boolean isCharged(){
-        List<ServantTaillessEntity> list = TaillessProphetEntity.this.world.getTargettableEntitiesWithinAABB(ServantTaillessEntity.class, this.ally, TaillessProphetEntity.this, TaillessProphetEntity.this.getBoundingBox().grow(32.0D, 8.0D, 32.0D));
+    public boolean isPowered(){
+        List<ServantTaillessEntity> list = TaillessProphetEntity.this.level.getNearbyEntities(ServantTaillessEntity.class, this.ally, TaillessProphetEntity.this, TaillessProphetEntity.this.getBoundingBox().inflate(32.0D, 8.0D, 32.0D));
         if (list.isEmpty()) {
             return false;
         } else {
@@ -188,53 +188,53 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         }
     }
 
-    public boolean isOnSameTeam(Entity entityIn) {
-        if (super.isOnSameTeam(entityIn)) {
+    public boolean isAlliedTo(Entity entityIn) {
+        if (super.isAlliedTo(entityIn)) {
             return true;
         }  else if (entityIn instanceof AbstractPiglinEntity){
-            return this.isOnSameTeam(entityIn);
+            return this.isAlliedTo(entityIn);
         }  else {
             return false;
         }
     }
 
-    protected void updateAITasks(){
+    protected void customServerAiStep(){
         if (SecondPhase()) {
-            if (this.ticksExisted % 20 == 0) {
+            if (this.tickCount % 20 == 0) {
                 this.heal(1.0F);
             }
         }
-        super.updateAITasks();
+        super.customServerAiStep();
     }
 
     protected boolean teleportRandomly() {
-        if (!this.world.isRemote() && this.isAlive()) {
-            double d0 = this.getPosX() + (this.rand.nextDouble() - 0.5D) * 32.0D;
-            double d1 = this.getPosY() + (double)(this.rand.nextInt(32) - 16);
-            double d2 = this.getPosZ() + (this.rand.nextDouble() - 0.5D) * 32.0D;
-            return this.teleportTo(d0, d1, d2);
+        if (!this.level.isClientSide() && this.isAlive()) {
+            double d0 = this.getX() + (this.random.nextDouble() - 0.5D) * 32.0D;
+            double d1 = this.getY() + (double)(this.random.nextInt(32) - 16);
+            double d2 = this.getZ() + (this.random.nextDouble() - 0.5D) * 32.0D;
+            return this.teleportto(d0, d1, d2);
         } else {
             return false;
         }
     }
 
-    private boolean teleportTo(double x, double y, double z) {
+    private boolean teleportto(double x, double y, double z) {
         BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable(x, y, z);
 
-        while(blockpos$mutable.getY() > 0 && !this.world.getBlockState(blockpos$mutable).getMaterial().blocksMovement()) {
+        while(blockpos$mutable.getY() > 0 && !this.level.getBlockState(blockpos$mutable).getMaterial().blocksMotion()) {
             blockpos$mutable.move(Direction.DOWN);
         }
 
-        BlockState blockstate = this.world.getBlockState(blockpos$mutable);
-        boolean flag = blockstate.getMaterial().blocksMovement();
-        boolean flag1 = blockstate.getFluidState().isTagged(FluidTags.WATER);
+        BlockState blockstate = this.level.getBlockState(blockpos$mutable);
+        boolean flag = blockstate.getMaterial().blocksMotion();
+        boolean flag1 = blockstate.getFluidState().is(FluidTags.WATER);
         if (flag && !flag1) {
             net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(this, x, y, z, 0);
             if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return false;
-            boolean flag2 = this.attemptTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
+            boolean flag2 = this.randomTeleport(event.getTargetX(), event.getTargetY(), event.getTargetZ(), true);
             if (flag2 && !this.isSilent()) {
-                this.world.playSound((PlayerEntity)null, this.prevPosX, this.prevPosY, this.prevPosZ, SoundEvents.ENTITY_ENDERMAN_TELEPORT, this.getSoundCategory(), 1.0F, 1.0F);
-                this.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
+                this.level.playSound((PlayerEntity)null, this.xo, this.yo, this.zo, SoundEvents.ENDERMAN_TELEPORT, this.getSoundSource(), 1.0F, 1.0F);
+                this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
             }
 
             return flag2;
@@ -243,11 +243,11 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         }
     }
 
-    protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
-        super.dropSpecialItems(source, looting, recentlyHitIn);
-        ItemEntity itementity = this.entityDropItem(RegistryHandler.PADRE_EFFIGY.get());
+    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
+        super.dropCustomDeathLoot(source, looting, recentlyHitIn);
+        ItemEntity itementity = this.spawnAtLocation(RegistryHandler.PADRE_EFFIGY.get());
         if (itementity != null) {
-            itementity.setNoDespawn();
+            itementity.setExtendedLifetime();
         }
 
     }
@@ -256,10 +256,10 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         super.tick();
         if (this.isLaunching()) {
             ++this.Launch;
-            for (Entity entity : TaillessProphetEntity.this.world.getEntitiesWithinAABB(LivingEntity.class, TaillessProphetEntity.this.getBoundingBox().grow(8.0D, 0.0D, 8.0D), field_213690_b)) {
+            for (Entity entity : TaillessProphetEntity.this.level.getEntitiesOfClass(LivingEntity.class, TaillessProphetEntity.this.getBoundingBox().inflate(8.0D, 0.0D, 8.0D), field_213690_b)) {
                 if (!(entity instanceof AbstractTaillessEntity)) {
-                    entity.addVelocity(0.0D, 4.0D, 0.0D);
-                    entity.playSound(SoundEvents.ENTITY_FIREWORK_ROCKET_SHOOT, 1.0F, 2.0F);
+                    entity.push(0.0D, 4.0D, 0.0D);
+                    entity.playSound(SoundEvents.FIREWORK_ROCKET_SHOOT, 1.0F, 2.0F);
                 }
             }
         }
@@ -269,12 +269,12 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
             this.setLaunching(false);
         }
 
-        for(Entity entity : this.world.getEntitiesWithinAABB(LivingEntity.class, this.getBoundingBox().grow(32.0D, 8.0D, 32.0D), field_213690_b)) {
+        for(Entity entity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(32.0D, 8.0D, 32.0D), field_213690_b)) {
             if (entity instanceof ServantTaillessEntity) {
-                ((ServantTaillessEntity) entity).addPotionEffect(new EffectInstance(Effects.WEAKNESS, 60));
-                ((ServantTaillessEntity) entity).addPotionEffect(new EffectInstance(Effects.GLOWING, 60));
-                if (this.world.getDifficulty() == Difficulty.EASY){
-                    entity.attackEntityFrom(DamageSource.STARVE, 1.0F);
+                ((ServantTaillessEntity) entity).addEffect(new EffectInstance(Effects.WEAKNESS, 60));
+                ((ServantTaillessEntity) entity).addEffect(new EffectInstance(Effects.GLOWING, 60));
+                if (this.level.getDifficulty() == Difficulty.EASY){
+                    entity.hurt(DamageSource.STARVE, 1.0F);
                 }
             }
         }
@@ -286,28 +286,28 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         }
 
         public void tick() {
-            if (TaillessProphetEntity.this.getAttackTarget() != null) {
-                TaillessProphetEntity.this.getLookController().setLookPositionWithEntity(TaillessProphetEntity.this.getAttackTarget(), (float)TaillessProphetEntity.this.getHorizontalFaceSpeed(), (float)TaillessProphetEntity.this.getVerticalFaceSpeed());
+            if (TaillessProphetEntity.this.getTarget() != null) {
+                TaillessProphetEntity.this.getLookControl().setLookAt(TaillessProphetEntity.this.getTarget(), (float)TaillessProphetEntity.this.getMaxHeadYRot(), (float)TaillessProphetEntity.this.getMaxHeadXRot());
             }
             else if (TaillessProphetEntity.this.getAllyTarget() != null) {
-                TaillessProphetEntity.this.getLookController().setLookPositionWithEntity(TaillessProphetEntity.this.getAllyTarget(), (float)TaillessProphetEntity.this.getHorizontalFaceSpeed(), (float)TaillessProphetEntity.this.getVerticalFaceSpeed());
+                TaillessProphetEntity.this.getLookControl().setLookAt(TaillessProphetEntity.this.getAllyTarget(), (float)TaillessProphetEntity.this.getMaxHeadYRot(), (float)TaillessProphetEntity.this.getMaxHeadXRot());
             }
         }
     }
 
     class JumpSpellGoal extends SpellcastingTaillessEntity.UseSpellGoal{
 
-        public boolean shouldExecute() {
-            if (TaillessProphetEntity.this.getAttackTarget() == null) {
+        public boolean canUse() {
+            if (TaillessProphetEntity.this.getTarget() == null) {
                 return false;
             }
             else if (TaillessProphetEntity.this.isSpellcasting()) {
                 return false;
             }
-            else if (TaillessProphetEntity.this.ticksExisted < this.spellCooldown) {
+            else if (TaillessProphetEntity.this.tickCount < this.spellCooldown) {
                 return false;
             }
-            else return TaillessProphetEntity.this.getAttackTarget().isAlive();
+            else return TaillessProphetEntity.this.getTarget().isAlive();
         }
 
         protected int getCastingTime() {
@@ -320,7 +320,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
 
         @Override
         protected SoundEvent getSpellPrepareSound() {
-            return SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK;
+            return SoundEvents.EVOKER_PREPARE_ATTACK;
         }
 
         @Override
@@ -329,7 +329,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         }
 
         public void castSpell(){
-            LivingEntity livingentity = TaillessProphetEntity.this.getAttackTarget();
+            LivingEntity livingentity = TaillessProphetEntity.this.getTarget();
             TaillessProphetEntity.this.setLaunching(true);
             if (TaillessProphetEntity.this.SecondPhase()){
                 TaillessProphetEntity.this.teleportRandomly();
@@ -343,17 +343,17 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         private LightningSpellGoal(){
         }
 
-        public boolean shouldExecute() {
-            if (TaillessProphetEntity.this.getAttackTarget() == null) {
+        public boolean canUse() {
+            if (TaillessProphetEntity.this.getTarget() == null) {
                 return false;
             }
             else if (TaillessProphetEntity.this.isSpellcasting()) {
                 return false;
             }
-            else if (TaillessProphetEntity.this.ticksExisted < this.spellCooldown) {
+            else if (TaillessProphetEntity.this.tickCount < this.spellCooldown) {
                 return false;
             }
-            else if (TaillessProphetEntity.this.getAttackTarget().isAlive()){
+            else if (TaillessProphetEntity.this.getTarget().isAlive()){
                 return true;
             }
             else {
@@ -371,7 +371,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
 
         @Override
         protected SoundEvent getSpellPrepareSound() {
-            return SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK;
+            return SoundEvents.EVOKER_PREPARE_ATTACK;
         }
 
         @Override
@@ -380,17 +380,17 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         }
 
         public void castSpell(){
-            LivingEntity livingentity = TaillessProphetEntity.this.getAttackTarget();
-            if (!TaillessProphetEntity.this.world.isRemote) {
+            LivingEntity livingentity = TaillessProphetEntity.this.getTarget();
+            if (!TaillessProphetEntity.this.level.isClientSide) {
                 assert livingentity != null;
-                LightningTrapEntity lightningrune = new LightningTrapEntity(TaillessProphetEntity.this.world, livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ());
+                LightningTrapEntity lightningrune = new LightningTrapEntity(TaillessProphetEntity.this.level, livingentity.getX(), livingentity.getY(), livingentity.getZ());
                 lightningrune.setDuration(60);
-                AreaEffectCloudEntity areaeffectcloudentity = new AreaEffectCloudEntity(TaillessProphetEntity.this.world, livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ());
-                areaeffectcloudentity.setParticleData(ParticleTypes.CLOUD);
+                AreaEffectCloudEntity areaeffectcloudentity = new AreaEffectCloudEntity(TaillessProphetEntity.this.level, livingentity.getX(), livingentity.getY(), livingentity.getZ());
+                areaeffectcloudentity.setParticle(ParticleTypes.CLOUD);
                 areaeffectcloudentity.setRadius(2.0F);
                 areaeffectcloudentity.setDuration(60);
-                TaillessProphetEntity.this.world.addEntity(areaeffectcloudentity);
-                TaillessProphetEntity.this.world.addEntity(lightningrune);
+                TaillessProphetEntity.this.level.addFreshEntity(areaeffectcloudentity);
+                TaillessProphetEntity.this.level.addFreshEntity(lightningrune);
                 if (TaillessProphetEntity.this.SecondPhase()){
                     TaillessProphetEntity.this.teleportRandomly();
                 }
@@ -399,15 +399,15 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
     }
 
     class RegenSpellGoal extends SpellcastingTaillessEntity.UseSpellGoal{
-        private final EntityPredicate ally = (new EntityPredicate().setDistance(32.0D).allowInvulnerable().setCustomPredicate((health) -> health.getHealth() <= 30.0F));
+        private final EntityPredicate ally = (new EntityPredicate().range(32.0D).allowInvulnerable().selector((health) -> health.getHealth() <= 30.0F));
 
-        public boolean shouldExecute() {
+        public boolean canUse() {
             if (TaillessProphetEntity.this.isSpellcasting()) {
                 return false;
-            } else if (TaillessProphetEntity.this.ticksExisted < this.spellCooldown) {
+            } else if (TaillessProphetEntity.this.tickCount < this.spellCooldown) {
                 return false;
             } else {
-                List<AbstractTaillessEntity> list = TaillessProphetEntity.this.world.getTargettableEntitiesWithinAABB(AbstractTaillessEntity.class, this.ally, TaillessProphetEntity.this, TaillessProphetEntity.this.getBoundingBox().grow(32.0D, 32.0D, 32.0D));
+                List<AbstractTaillessEntity> list = TaillessProphetEntity.this.level.getNearbyEntities(AbstractTaillessEntity.class, this.ally, TaillessProphetEntity.this, TaillessProphetEntity.this.getBoundingBox().inflate(32.0D, 32.0D, 32.0D));
                 if (list.isEmpty()) {
                     return false;
                 } else {
@@ -425,9 +425,9 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         }
 
         public void castSpell() {
-            for (AbstractTaillessEntity ally : TaillessProphetEntity.this.world.getEntitiesWithinAABB(AbstractTaillessEntity.class, TaillessProphetEntity.this.getBoundingBox().grow(16.0D), field_213690_b)) {
-                ally.addPotionEffect(new EffectInstance(Effects.REGENERATION, 1000, 1));
-                ally.addPotionEffect(new EffectInstance(Effects.RESISTANCE, 1000, 1));
+            for (AbstractTaillessEntity ally : TaillessProphetEntity.this.level.getEntitiesOfClass(AbstractTaillessEntity.class, TaillessProphetEntity.this.getBoundingBox().inflate(16.0D), field_213690_b)) {
+                ally.addEffect(new EffectInstance(Effects.REGENERATION, 1000, 1));
+                ally.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 1000, 1));
             }
             if (TaillessProphetEntity.this.SecondPhase()){
                 TaillessProphetEntity.this.teleportRandomly();
@@ -435,7 +435,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         }
 
         protected SoundEvent getSpellPrepareSound() {
-            return SoundEvents.ENTITY_ILLUSIONER_PREPARE_BLINDNESS;
+            return SoundEvents.ILLUSIONER_PREPARE_BLINDNESS;
         }
 
         @Override
@@ -445,17 +445,17 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
     }
 
     class SummonSpellGoal extends SpellcastingTaillessEntity.UseSpellGoal {
-        private final EntityPredicate field_220843_e = (new EntityPredicate()).setDistance(32.0D).setIgnoresLineOfSight().setUseInvisibilityCheck().allowInvulnerable().allowFriendlyFire();
+        private final EntityPredicate field_220843_e = (new EntityPredicate()).range(32.0D).allowUnseeable().ignoreInvisibilityTesting().allowInvulnerable().allowSameTeam();
 
         private SummonSpellGoal() {
         }
 
-        public boolean shouldExecute() {
-            if (!super.shouldExecute()) {
+        public boolean canUse() {
+            if (!super.canUse()) {
                 return false;
             } else {
-                int i = TaillessProphetEntity.this.world.getTargettableEntitiesWithinAABB(RoyalBulletEntity.class, this.field_220843_e, TaillessProphetEntity.this, TaillessProphetEntity.this.getBoundingBox().grow(32.0D)).size();
-                return TaillessProphetEntity.this.rand.nextInt(8) + 1 > i;
+                int i = TaillessProphetEntity.this.level.getNearbyEntities(RoyalBulletEntity.class, this.field_220843_e, TaillessProphetEntity.this, TaillessProphetEntity.this.getBoundingBox().inflate(32.0D)).size();
+                return TaillessProphetEntity.this.random.nextInt(8) + 1 > i;
             }
         }
 
@@ -464,7 +464,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         }
 
         protected int getCastingInterval() {
-            if (isCharged()){
+            if (isPowered()){
                 return 600;
             }
             else {
@@ -473,17 +473,17 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         }
 
         protected void castSpell() {
-            ServerWorld serverworld = (ServerWorld)TaillessProphetEntity.this.world;
+            ServerWorld serverworld = (ServerWorld)TaillessProphetEntity.this.level;
 
             for(int i = 0; i < 5; ++i) {
-                BlockPos blockpos = TaillessProphetEntity.this.getPosition().add(-2 + TaillessProphetEntity.this.rand.nextInt(5), 1, -2 + TaillessProphetEntity.this.rand.nextInt(5));
-                RoyalBulletEntity bulletEntity = new RoyalBulletEntity(ModEntityType.ROYALBULLET.get(), world);
-                bulletEntity.moveToBlockPosAndAngles(blockpos, 0.0F, 0.0F);
-                bulletEntity.onInitialSpawn(serverworld, TaillessProphetEntity.this.world.getDifficultyForLocation(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData)null, (CompoundNBT)null);
+                BlockPos blockpos = TaillessProphetEntity.this.blockPosition().offset(-2 + TaillessProphetEntity.this.random.nextInt(5), 1, -2 + TaillessProphetEntity.this.random.nextInt(5));
+                RoyalBulletEntity bulletEntity = new RoyalBulletEntity(ModEntityType.ROYALBULLET.get(), level);
+                bulletEntity.moveTo(blockpos, 0.0F, 0.0F);
+                bulletEntity.finalizeSpawn(serverworld, TaillessProphetEntity.this.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData)null, (CompoundNBT)null);
                 bulletEntity.setOwner(TaillessProphetEntity.this);
                 bulletEntity.setBoundOrigin(blockpos);
-                bulletEntity.setLimitedLife(20 * (30 + TaillessProphetEntity.this.rand.nextInt(90)));
-                serverworld.func_242417_l(bulletEntity);
+                bulletEntity.setLimitedLife(20 * (30 + TaillessProphetEntity.this.random.nextInt(90)));
+                serverworld.addFreshEntityWithPassengers(bulletEntity);
             }
             if (TaillessProphetEntity.this.SecondPhase()){
                 TaillessProphetEntity.this.teleportRandomly();
@@ -493,7 +493,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
 
 
         protected SoundEvent getSpellPrepareSound() {
-            return SoundEvents.ENTITY_EVOKER_PREPARE_SUMMON;
+            return SoundEvents.EVOKER_PREPARE_SUMMON;
         }
 
         protected SpellcastingTaillessEntity.SpellType getSpellType() {
@@ -506,22 +506,22 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         private int attackTime;
         private int firedRecentlyTimer;
 
-        private final EntityPredicate field_220843_e = (new EntityPredicate()).setDistance(32.0D).setIgnoresLineOfSight().setUseInvisibilityCheck().allowInvulnerable().allowFriendlyFire();
+        private final EntityPredicate field_220843_e = (new EntityPredicate()).range(32.0D).allowUnseeable().ignoreInvisibilityTesting().allowInvulnerable().allowSameTeam();
 
         private BarrageSpellGoal() {
         }
 
-        public boolean shouldExecute() {
-            if (TaillessProphetEntity.this.getAttackTarget() == null) {
+        public boolean canUse() {
+            if (TaillessProphetEntity.this.getTarget() == null) {
                 return false;
             }
             else if (TaillessProphetEntity.this.isSpellcasting()) {
                 return false;
             }
-            else if (TaillessProphetEntity.this.ticksExisted < this.spellCooldown) {
+            else if (TaillessProphetEntity.this.tickCount < this.spellCooldown) {
                 return false;
             }
-            else if (TaillessProphetEntity.this.getAttackTarget().isAlive() && TaillessProphetEntity.this.SecondPhase()){
+            else if (TaillessProphetEntity.this.getTarget().isAlive() && TaillessProphetEntity.this.SecondPhase()){
                 return true;
             }
             else {
@@ -538,16 +538,16 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         }
 
         protected void castSpell() {
-            LivingEntity livingentity = TaillessProphetEntity.this.getAttackTarget();
-            ServerWorld serverworld = (ServerWorld) TaillessProphetEntity.this.world;
+            LivingEntity livingentity = TaillessProphetEntity.this.getTarget();
+            ServerWorld serverworld = (ServerWorld) TaillessProphetEntity.this.level;
             assert livingentity != null;
             for(int i = 0; i < 3; ++i) {
-                SoulFireballEntity soulfireballEntity = new SoulFireballEntity(world, TaillessProphetEntity.this, 0, -900D, 0);
-                soulfireballEntity.setPosition(livingentity.getPosX() + TaillessProphetEntity.this.rand.nextInt(5), livingentity.getPosY() + 32.0D, livingentity.getPosZ() + TaillessProphetEntity.this.rand.nextInt(5));
-                world.addEntity(soulfireballEntity);
+                SoulFireballEntity soulfireballEntity = new SoulFireballEntity(level, TaillessProphetEntity.this, 0, -900D, 0);
+                soulfireballEntity.setPos(livingentity.getX() + TaillessProphetEntity.this.random.nextInt(5), livingentity.getY() + 32.0D, livingentity.getZ() + TaillessProphetEntity.this.random.nextInt(5));
+                level.addFreshEntity(soulfireballEntity);
             }
             if (!TaillessProphetEntity.this.isSilent()) {
-                TaillessProphetEntity.this.world.playEvent(null, 1016, TaillessProphetEntity.this.getPosition(), 0);
+                TaillessProphetEntity.this.level.levelEvent(null, 1016, TaillessProphetEntity.this.blockPosition(), 0);
             }
             TaillessProphetEntity.this.teleportRandomly();
             }
@@ -555,7 +555,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
 
 
         protected SoundEvent getSpellPrepareSound() {
-            return SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK;
+            return SoundEvents.EVOKER_PREPARE_ATTACK;
         }
 
         protected SpellcastingTaillessEntity.SpellType getSpellType() {
@@ -569,17 +569,17 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         private WitherSpellGoal(){
         }
 
-        public boolean shouldExecute() {
-            if (TaillessProphetEntity.this.getAttackTarget() == null) {
+        public boolean canUse() {
+            if (TaillessProphetEntity.this.getTarget() == null) {
                 return false;
             }
             else if (TaillessProphetEntity.this.isSpellcasting()) {
                 return false;
             }
-            else if (TaillessProphetEntity.this.ticksExisted < this.spellCooldown) {
+            else if (TaillessProphetEntity.this.tickCount < this.spellCooldown) {
                 return false;
             }
-            else if (TaillessProphetEntity.this.getAttackTarget().isAlive() && TaillessProphetEntity.this.SecondPhase()){
+            else if (TaillessProphetEntity.this.getTarget().isAlive() && TaillessProphetEntity.this.SecondPhase()){
                 return true;
             }
             else {
@@ -597,7 +597,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
 
         @Override
         protected SoundEvent getSpellPrepareSound() {
-            return SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK;
+            return SoundEvents.EVOKER_PREPARE_ATTACK;
         }
 
         @Override
@@ -606,17 +606,17 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
         }
 
         public void castSpell(){
-            LivingEntity livingentity = TaillessProphetEntity.this.getAttackTarget();
-            if (!TaillessProphetEntity.this.world.isRemote) {
+            LivingEntity livingentity = TaillessProphetEntity.this.getTarget();
+            if (!TaillessProphetEntity.this.level.isClientSide) {
                 assert livingentity != null;
-                AreaEffectCloudEntity areaeffectcloudentity = new AreaEffectCloudEntity(TaillessProphetEntity.this.world, livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ());
-                areaeffectcloudentity.setParticleData(ParticleTypes.SOUL);
+                AreaEffectCloudEntity areaeffectcloudentity = new AreaEffectCloudEntity(TaillessProphetEntity.this.level, livingentity.getX(), livingentity.getY(), livingentity.getZ());
+                areaeffectcloudentity.setParticle(ParticleTypes.SOUL);
                 areaeffectcloudentity.setRadius(6.0F);
                 areaeffectcloudentity.setDuration(600);
                 areaeffectcloudentity.setRadiusPerTick((7.0F - areaeffectcloudentity.getRadius()) / (float)areaeffectcloudentity.getDuration());
                 areaeffectcloudentity.addEffect(new EffectInstance(Effects.WITHER, 90));
-                areaeffectcloudentity.addEffect(new EffectInstance(Effects.SLOWNESS, 90, 2));
-                TaillessProphetEntity.this.world.addEntity(areaeffectcloudentity);
+                areaeffectcloudentity.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 90, 2));
+                TaillessProphetEntity.this.level.addFreshEntity(areaeffectcloudentity);
                 TaillessProphetEntity.this.teleportRandomly();
             }
         }

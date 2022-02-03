@@ -4,30 +4,30 @@
   [
     "ete",
     " c ",
-    "scs"
+    "ele"
   ],
   "key":
   {
     "t":
     {
-      "item": "firenblood:emptycore"
+      "item": "firenblood:soulruby"
     },
     "e":
     {
-      "item": "minecraft:emerald"
+      "item": "firenblood:cursed_ingot"
     },
     "c":
     {
-      "item": "firenblood:cursed_ingot"
+      "item": "firenblood:soulwand"
     },
-    "s":
+    "l":
     {
-      "item": "minecraft:soul_sand"
+      "item": "minecraft:lapis_block"
     }
   },
   "result":
   {
-    "item": "firenblood:soulwand",
+    "item": "firenblood:soulstaff",
     "count": 1
   }
 }

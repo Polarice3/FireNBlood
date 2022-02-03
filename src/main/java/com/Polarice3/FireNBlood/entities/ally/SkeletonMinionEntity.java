@@ -10,6 +10,7 @@ import net.minecraft.entity.ai.goal.LookAtGoal;
 import net.minecraft.entity.ai.goal.RangedBowAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
+import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
@@ -42,7 +43,7 @@ public class SkeletonMinionEntity extends SummonedEntity implements IRangedAttac
     public void tick() {
         if (this.limitedLifespan && --this.limitedLifeTicks <= 0) {
             this.limitedLifeTicks = 20;
-            this.attackEntityFrom(DamageSource.STARVE, 1.0F);
+            this.hurt(DamageSource.STARVE, 1.0F);
         }
         super.tick();
     }
@@ -58,19 +59,19 @@ public class SkeletonMinionEntity extends SummonedEntity implements IRangedAttac
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 35.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25F)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 3.0D)
-                .createMutableAttribute(Attributes.ARMOR, 2.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 35.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.25F)
+                .add(Attributes.ATTACK_DAMAGE, 3.0D)
+                .add(Attributes.ARMOR, 2.0D);
     }
 
-    public boolean attackEntityAsMob(Entity entityIn) {
-        boolean flag = super.attackEntityAsMob(entityIn);
+    public boolean doHurtTarget(Entity entityIn) {
+        boolean flag = super.doHurtTarget(entityIn);
         if (flag) {
-            float f = this.world.getDifficultyForLocation(this.getPosition()).getAdditionalDifficulty();
-            if (this.getHeldItemMainhand().isEmpty() && this.isBurning() && this.rand.nextFloat() < f * 0.3F) {
-                entityIn.setFire(2 * (int)f);
+            float f = this.level.getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
+            if (this.getMainHandItem().isEmpty() && this.isOnFire() && this.random.nextFloat() < f * 0.3F) {
+                entityIn.setSecondsOnFire(2 * (int)f);
             }
         }
 
@@ -78,68 +79,68 @@ public class SkeletonMinionEntity extends SummonedEntity implements IRangedAttac
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_SKELETON_AMBIENT;
+        return SoundEvents.SKELETON_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_SKELETON_HURT;
+        return SoundEvents.SKELETON_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_SKELETON_DEATH;
+        return SoundEvents.SKELETON_DEATH;
     }
 
     protected SoundEvent getStepSound() {
-        return SoundEvents.ENTITY_SKELETON_STEP;
+        return SoundEvents.SKELETON_STEP;
     }
 
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
         this.playSound(this.getStepSound(), 0.15F, 1.0F);
     }
 
-    public CreatureAttribute getCreatureAttribute() {
+    public CreatureAttribute getMobType() {
         return CreatureAttribute.UNDEAD;
     }
 
-    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-        super.setEquipmentBasedOnDifficulty(difficulty);
-        this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BOW));
+    protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+        super.populateDefaultEquipmentSlots(difficulty);
+        this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BOW));
     }
 
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        spawnDataIn = super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
-        float f = difficultyIn.getClampedAdditionalDifficulty();
-        this.setCanPickUpLoot(this.rand.nextFloat() < 0.55F * f);
-        this.setEquipmentBasedOnDifficulty(difficultyIn);
-        this.setEnchantmentBasedOnDifficulty(difficultyIn);
-        if (this.getItemStackFromSlot(EquipmentSlotType.HEAD).isEmpty()) {
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+        float f = difficultyIn.getSpecialMultiplier();
+        this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * f);
+        this.populateDefaultEquipmentSlots(difficultyIn);
+        this.populateDefaultEquipmentEnchantments(difficultyIn);
+        if (this.getItemBySlot(EquipmentSlotType.HEAD).isEmpty()) {
             LocalDate localdate = LocalDate.now();
             int i = localdate.get(ChronoField.DAY_OF_MONTH);
             int j = localdate.get(ChronoField.MONTH_OF_YEAR);
-            if (j == 10 && i == 31 && this.rand.nextFloat() < 0.25F) {
-                this.setItemStackToSlot(EquipmentSlotType.HEAD, new ItemStack(this.rand.nextFloat() < 0.1F ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
-                this.inventoryArmorDropChances[EquipmentSlotType.HEAD.getIndex()] = 0.0F;
+            if (j == 10 && i == 31 && this.random.nextFloat() < 0.25F) {
+                this.setItemSlot(EquipmentSlotType.HEAD, new ItemStack(this.random.nextFloat() < 0.1F ? Blocks.JACK_O_LANTERN : Blocks.CARVED_PUMPKIN));
+                this.armorDropChances[EquipmentSlotType.HEAD.getIndex()] = 0.0F;
             }
         }
         return spawnDataIn;
     }
 
-    public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
-        ItemStack itemstack = this.findAmmo(this.getHeldItem(ProjectileHelper.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.item.BowItem)));
-        AbstractArrowEntity abstractarrowentity = this.fireArrow(itemstack, distanceFactor);
-        abstractarrowentity = ((net.minecraft.item.BowItem)this.getHeldItemMainhand().getItem()).customArrow(abstractarrowentity);
-        double d0 = target.getPosX() - this.getPosX();
-        double d1 = target.getPosYHeight(0.3333333333333333D) - abstractarrowentity.getPosY();
-        double d2 = target.getPosZ() - this.getPosZ();
+    public void performRangedAttack(LivingEntity target, float distanceFactor) {
+        ItemStack itemstack = this.getProjectile(this.getItemInHand(ProjectileHelper.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.item.BowItem)));
+        AbstractArrowEntity abstractarrowentity = this.getMobArrow(itemstack, distanceFactor);
+        abstractarrowentity = ((net.minecraft.item.BowItem)this.getMainHandItem().getItem()).customArrow(abstractarrowentity);
+        double d0 = target.getX() - this.getX();
+        double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
+        double d2 = target.getZ() - this.getZ();
         double d3 = (double) MathHelper.sqrt(d0 * d0 + d2 * d2);
-        abstractarrowentity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
-        this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        this.world.addEntity(abstractarrowentity);
+        abstractarrowentity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.level.getDifficulty().getId() * 4));
+        this.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+        this.level.addFreshEntity(abstractarrowentity);
     }
 
-    protected AbstractArrowEntity fireArrow(ItemStack arrowStack, float distanceFactor) {
-        AbstractArrowEntity abstractarrowentity = ProjectileHelper.fireArrow(this, arrowStack, distanceFactor);
-        int random = this.world.rand.nextInt(8);
+    protected AbstractArrowEntity getMobArrow(ItemStack arrowStack, float distanceFactor) {
+        AbstractArrowEntity abstractarrowentity = ProjectileHelper.getMobArrow(this, arrowStack, distanceFactor);
+        int random = this.level.random.nextInt(8);
         if (this.isUpgraded() && abstractarrowentity instanceof ArrowEntity && random == 0) {
             ((ArrowEntity)abstractarrowentity).addEffect(new EffectInstance(RegistryHandler.HOSTED.get(), 600));
         }
@@ -147,7 +148,7 @@ public class SkeletonMinionEntity extends SummonedEntity implements IRangedAttac
         return abstractarrowentity;
     }
 
-    public boolean func_230280_a_(ShootableItem p_230280_1_) {
+    public boolean canFireProjectileWeapon(ShootableItem p_230280_1_) {
         return p_230280_1_ == Items.BOW;
     }
 
@@ -155,7 +156,7 @@ public class SkeletonMinionEntity extends SummonedEntity implements IRangedAttac
         return 1.74F;
     }
 
-    public double getYOffset() {
+    public double getMyRidingOffset() {
         return -0.6D;
     }
 

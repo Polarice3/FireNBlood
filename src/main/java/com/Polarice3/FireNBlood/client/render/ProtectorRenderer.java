@@ -20,7 +20,7 @@ public class ProtectorRenderer extends AbstractProtectorRenderer<ProtectorEntity
         this.addLayer(new ProtectorLoyalLayer<>(this));
     }
 
-    public ResourceLocation getEntityTexture(ProtectorEntity entity) {
+    public ResourceLocation getTextureLocation(ProtectorEntity entity) {
         return TEXTURE;
     }
 

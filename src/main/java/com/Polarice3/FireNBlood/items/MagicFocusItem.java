@@ -22,10 +22,10 @@ public class MagicFocusItem extends Item{
 
     public MagicFocusItem(int soulcost){
         super(new Item.Properties()
-                .group(FireNBlood.TAB)
+                .tab(FireNBlood.TAB)
                 .rarity(Rarity.UNCOMMON)
                 .setNoRepair()
-                .maxStackSize(1)
+                .stacksTo(1)
         );
         this.soulcost = soulcost;
     }
@@ -33,7 +33,7 @@ public class MagicFocusItem extends Item{
     @Override
     public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         CompoundNBT compound = stack.getOrCreateTag();
-        compound.putString(FOCUS, stack.getItem().getTranslationKey());
+        compound.putString(FOCUS, stack.getItem().getDescriptionId());
         compound.putInt(SOULCOST, soulcost);
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
     }
@@ -50,8 +50,8 @@ public class MagicFocusItem extends Item{
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
         if (soulcost != 0) {
             tooltip.add(new TranslationTextComponent("info.firenblood.soulitems.cost", soulcost));
         } else {

@@ -39,22 +39,22 @@ public class ScorchEntity extends MinionEntity {
 
     public ScorchEntity(EntityType<? extends ScorchEntity> type, World worldIn) {
         super(type, worldIn);
-        this.experienceValue = 6;
+        this.xpReward = 6;
     }
 
     public void tick() {
         if (this.limitedLifespan && --this.limitedLifeTicks <= 0) {
             this.limitedLifeTicks = 20;
-            this.attackEntityFrom(DamageSource.STARVE, 1.0F);
+            this.hurt(DamageSource.STARVE, 1.0F);
         }
-        Vector3d vector3d = this.getMotion();
-        double d0 = this.getPosX() + vector3d.x;
-        double d1 = this.getPosY() + vector3d.y;
-        double d2 = this.getPosZ() + vector3d.z;
+        Vector3d vector3d = this.getDeltaMovement();
+        double d0 = this.getX() + vector3d.x;
+        double d1 = this.getY() + vector3d.y;
+        double d2 = this.getZ() + vector3d.z;
         if (this.isCharging()){
-            this.world.addParticle(ParticleTypes.FLAME, d0 + world.rand.nextDouble()/2, d1 + 0.5D, d2 + world.rand.nextDouble()/2, 0.0D, 0.0D, 0.0D);
+            this.level.addParticle(ParticleTypes.FLAME, d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
         } else{
-            this.world.addParticle(ParticleTypes.SMOKE, d0 + world.rand.nextDouble()/2, d1 + 0.5D, d2 + world.rand.nextDouble()/2, 0.0D, 0.0D, 0.0D);
+            this.level.addParticle(ParticleTypes.SMOKE, d0 + level.random.nextDouble()/2, d1 + 0.5D, d2 + level.random.nextDouble()/2, 0.0D, 0.0D, 0.0D);
         }
         super.tick();
     }
@@ -71,37 +71,37 @@ public class ScorchEntity extends MinionEntity {
                         && !(entity instanceof AbstractTaillessEntity)
                         && !(entity instanceof AbstractPiglinEntity)
                         && !(entity instanceof HoglinEntity)
-                        && !(entity.isImmuneToFire())));
+                        && !(entity.fireImmune())));
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 14.0D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 4.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 14.0D)
+                .add(Attributes.ATTACK_DAMAGE, 4.0D);
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         if (source.isExplosion()){
             return false;
         } else {
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         }
     }
 
-    public boolean attackEntityAsMob(Entity entityIn) {
-        boolean flag = super.attackEntityAsMob(entityIn);
+    public boolean doHurtTarget(Entity entityIn) {
+        boolean flag = super.doHurtTarget(entityIn);
         if (flag && entityIn instanceof LivingEntity) {
-            entityIn.setFire(30);
+            entityIn.setSecondsOnFire(30);
         }
         return flag;
     }
 
-    protected void registerData() {
-        super.registerData();
+    protected void defineSynchedData() {
+        super.defineSynchedData();
     }
 
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if (compound.contains("BoundX")) {
             this.boundOrigin = new BlockPos(compound.getInt("BoundX"), compound.getInt("BoundY"), compound.getInt("BoundZ"));
         }
@@ -112,8 +112,8 @@ public class ScorchEntity extends MinionEntity {
 
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         if (this.boundOrigin != null) {
             compound.putInt("BoundX", this.boundOrigin.getX());
             compound.putInt("BoundY", this.boundOrigin.getY());
@@ -126,11 +126,11 @@ public class ScorchEntity extends MinionEntity {
 
     }
 
-    public boolean isWaterSensitive() {
+    public boolean isSensitiveToWater() {
         return true;
     }
 
-    protected boolean isDespawnPeaceful() {
+    protected boolean shouldDespawnInPeaceful() {
         return true;
     }
 
@@ -149,15 +149,15 @@ public class ScorchEntity extends MinionEntity {
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_VEX_AMBIENT;
+        return SoundEvents.VEX_AMBIENT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_VEX_DEATH;
+        return SoundEvents.VEX_DEATH;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_VEX_HURT;
+        return SoundEvents.VEX_HURT;
     }
 
     public float getBrightness() {
@@ -165,25 +165,25 @@ public class ScorchEntity extends MinionEntity {
     }
 
     @Nullable
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        this.setEquipmentBasedOnDifficulty(difficultyIn);
-        this.setEnchantmentBasedOnDifficulty(difficultyIn);
-        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        this.populateDefaultEquipmentSlots(difficultyIn);
+        this.populateDefaultEquipmentEnchantments(difficultyIn);
+        return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
-    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-        this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
+    protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+        this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
         this.setDropChance(EquipmentSlotType.MAINHAND, 0.0F);
     }
 
     class ChargeAttackGoal extends Goal {
         public ChargeAttackGoal() {
-            this.setMutexFlags(EnumSet.of(Flag.MOVE));
+            this.setFlags(EnumSet.of(Flag.MOVE));
         }
 
-        public boolean shouldExecute() {
-            if (ScorchEntity.this.getAttackTarget() != null && ScorchEntity.this.getAttackTarget() != ScorchEntity.this.owner && !ScorchEntity.this.getMoveHelper().isUpdating() && ScorchEntity.this.rand.nextInt(7) == 0) {
-                return ScorchEntity.this.getDistanceSq(ScorchEntity.this.getAttackTarget()) > 4.0D;
+        public boolean canUse() {
+            if (ScorchEntity.this.getTarget() != null && ScorchEntity.this.getTarget() != ScorchEntity.this.owner && !ScorchEntity.this.getMoveControl().hasWanted() && ScorchEntity.this.random.nextInt(7) == 0) {
+                return ScorchEntity.this.distanceToSqr(ScorchEntity.this.getTarget()) > 4.0D;
             } else {
                 return false;
             }
@@ -192,41 +192,41 @@ public class ScorchEntity extends MinionEntity {
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
-        public boolean shouldContinueExecuting() {
-            return ScorchEntity.this.getMoveHelper().isUpdating() && ScorchEntity.this.isCharging() && ScorchEntity.this.getAttackTarget() != null && ScorchEntity.this.getAttackTarget().isAlive();
+        public boolean canContinueToUse() {
+            return ScorchEntity.this.getMoveControl().hasWanted() && ScorchEntity.this.isCharging() && ScorchEntity.this.getTarget() != null && ScorchEntity.this.getTarget().isAlive();
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
-            LivingEntity livingentity = ScorchEntity.this.getAttackTarget();
+        public void start() {
+            LivingEntity livingentity = ScorchEntity.this.getTarget();
             Vector3d vector3d = livingentity.getEyePosition(1.0F);
-            ScorchEntity.this.moveController.setMoveTo(vector3d.x, vector3d.y, vector3d.z, 1.0D);
-            ScorchEntity.this.setCharging(true);
-            ScorchEntity.this.playSound(SoundEvents.ENTITY_VEX_CHARGE, 1.0F, 1.0F);
+            ScorchEntity.this.moveControl.setWantedPosition(vector3d.x, vector3d.y, vector3d.z, 1.0D);
+            ScorchEntity.this.setChargingCrossbow(true);
+            ScorchEntity.this.playSound(SoundEvents.VEX_CHARGE, 1.0F, 1.0F);
         }
 
         /**
          * Reset the task's internal state. Called when this task is interrupted by another one
          */
-        public void resetTask() {
-            ScorchEntity.this.setCharging(false);
+        public void stop() {
+            ScorchEntity.this.setChargingCrossbow(false);
         }
 
         /**
          * Keep ticking a continuous task that has already been started
          */
         public void tick() {
-            LivingEntity livingentity = ScorchEntity.this.getAttackTarget();
+            LivingEntity livingentity = ScorchEntity.this.getTarget();
             if (ScorchEntity.this.getBoundingBox().intersects(livingentity.getBoundingBox())) {
-                ScorchEntity.this.attackEntityAsMob(livingentity);
-                ScorchEntity.this.setCharging(false);
+                ScorchEntity.this.doHurtTarget(livingentity);
+                ScorchEntity.this.setChargingCrossbow(false);
             } else {
-                double d0 = ScorchEntity.this.getDistanceSq(livingentity);
+                double d0 = ScorchEntity.this.distanceToSqr(livingentity);
                 if (d0 < 9.0D) {
                     Vector3d vector3d = livingentity.getEyePosition(1.0F);
-                    ScorchEntity.this.moveController.setMoveTo(vector3d.x, vector3d.y, vector3d.z, 1.0D);
+                    ScorchEntity.this.moveControl.setWantedPosition(vector3d.x, vector3d.y, vector3d.z, 1.0D);
                 }
             }
 
@@ -235,21 +235,21 @@ public class ScorchEntity extends MinionEntity {
 
     class MoveRandomGoal extends Goal {
         public MoveRandomGoal() {
-            this.setMutexFlags(EnumSet.of(Flag.MOVE));
+            this.setFlags(EnumSet.of(Flag.MOVE));
         }
 
         /**
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
-            return !ScorchEntity.this.getMoveHelper().isUpdating() && ScorchEntity.this.rand.nextInt(7) == 0;
+        public boolean canUse() {
+            return !ScorchEntity.this.getMoveControl().hasWanted() && ScorchEntity.this.random.nextInt(7) == 0;
         }
 
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
-        public boolean shouldContinueExecuting() {
+        public boolean canContinueToUse() {
             return false;
         }
 
@@ -259,15 +259,15 @@ public class ScorchEntity extends MinionEntity {
         public void tick() {
             BlockPos blockpos = ScorchEntity.this.getBoundOrigin();
             if (blockpos == null) {
-                blockpos = ScorchEntity.this.getPosition();
+                blockpos = ScorchEntity.this.blockPosition();
             }
 
             for(int i = 0; i < 3; ++i) {
-                BlockPos blockpos1 = blockpos.add(ScorchEntity.this.rand.nextInt(15) - 7, ScorchEntity.this.rand.nextInt(11) - 5, ScorchEntity.this.rand.nextInt(15) - 7);
-                if (ScorchEntity.this.world.isAirBlock(blockpos1)) {
-                    ScorchEntity.this.moveController.setMoveTo((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
-                    if (ScorchEntity.this.getAttackTarget() == null) {
-                        ScorchEntity.this.getLookController().setLookPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);
+                BlockPos blockpos1 = blockpos.offset(ScorchEntity.this.random.nextInt(15) - 7, ScorchEntity.this.random.nextInt(11) - 5, ScorchEntity.this.random.nextInt(15) - 7);
+                if (ScorchEntity.this.level.isEmptyBlock(blockpos1)) {
+                    ScorchEntity.this.moveControl.setWantedPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
+                    if (ScorchEntity.this.getTarget() == null) {
+                        ScorchEntity.this.getLookControl().setLookAt((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);
                     }
                     break;
                 }

@@ -19,7 +19,7 @@ public class ZealotRenderer extends AbstractCultistRenderer<ZealotEntity>{
     }
 
     @Override
-    public ResourceLocation getEntityTexture(ZealotEntity entity) {
+    public ResourceLocation getTextureLocation(ZealotEntity entity) {
         return TEXTURE;
     }
 }

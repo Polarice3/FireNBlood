@@ -46,18 +46,18 @@ public class PenanceEntity extends CreatureEntity implements IRangedAttackMob {
 
     public PenanceEntity(EntityType<? extends CreatureEntity> type, World worldIn) {
         super(type, worldIn);
-        this.stepHeight = 1.0F;
-        this.experienceValue = 50;
+        this.maxUpStep = 1.0F;
+        this.xpReward = 50;
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 200.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.35D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 6.0D)
-                .createMutableAttribute(Attributes.ARMOR, 6.0D)
-                .createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 0.6D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .add(Attributes.MAX_HEALTH, 200.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.35D)
+                .add(Attributes.ATTACK_DAMAGE, 6.0D)
+                .add(Attributes.ARMOR, 6.0D)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 0.6D);
     }
 
     @Override
@@ -73,42 +73,42 @@ public class PenanceEntity extends CreatureEntity implements IRangedAttackMob {
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_SKELETON_HORSE_AMBIENT;
+        return SoundEvents.SKELETON_HORSE_AMBIENT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_SKELETON_HORSE_DEATH;
+        return SoundEvents.SKELETON_HORSE_DEATH;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_SKELETON_HORSE_HURT;
+        return SoundEvents.SKELETON_HORSE_HURT;
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_HORSE_STEP, 0.25F, 1.0F);
+        this.playSound(SoundEvents.HORSE_STEP, 0.25F, 1.0F);
     }
 
-    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-        this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(RegistryHandler.WARPED_SPEAR.get()));
+    protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+        this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(RegistryHandler.WARPED_SPEAR.get()));
     }
 
     @Override
-    protected boolean isDespawnPeaceful() {
+    protected boolean shouldDespawnInPeaceful() {
         return true;
     }
 
-    public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
-        WarpedSpearEntity spearEntity = new WarpedSpearEntity(this.world, this, new ItemStack(RegistryHandler.WARPED_SPEAR.get()));
-        double d0 = target.getPosX() - this.getPosX();
-        double d1 = target.getPosYHeight(0.3333333333333333D) - spearEntity.getPosY();
-        double d2 = target.getPosZ() - this.getPosZ();
+    public void performRangedAttack(LivingEntity target, float distanceFactor) {
+        WarpedSpearEntity spearEntity = new WarpedSpearEntity(this.level, this, new ItemStack(RegistryHandler.WARPED_SPEAR.get()));
+        double d0 = target.getX() - this.getX();
+        double d1 = target.getY(0.3333333333333333D) - spearEntity.getY();
+        double d2 = target.getZ() - this.getZ();
         double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
-        spearEntity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
-        this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
-        this.world.addEntity(spearEntity);
+        spearEntity.shoot(d0, d1 + d3 * (double)0.2F, d2, 1.6F, (float)(14 - this.level.getDifficulty().getId() * 4));
+        this.playSound(SoundEvents.DROWNED_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+        this.level.addFreshEntity(spearEntity);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -121,14 +121,14 @@ public class PenanceEntity extends CreatureEntity implements IRangedAttackMob {
         return this.roarTick;
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         compound.putInt("StunTick", this.stunTick);
         compound.putInt("RoarTick", this.roarTick);
     }
 
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         this.stunTick = compound.getInt("StunTick");
         this.roarTick = compound.getInt("RoarTick");
     }
@@ -138,27 +138,27 @@ public class PenanceEntity extends CreatureEntity implements IRangedAttackMob {
         return MathHelper.lerp(p_110223_1_, this.prevRearingAmount, this.rearingAmount);
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        Entity entity = source.getImmediateSource();
+    public boolean hurt(DamageSource source, float amount) {
+        Entity entity = source.getDirectEntity();
         if (this.isInvulnerableTo(source)) {
             return false;
         } else if (this.stunTick == 0 && !(entity instanceof SpectralArrowEntity) && !(entity instanceof FireballEntity)) {
             return false;
         } else if (entity instanceof SpectralArrowEntity) {
             this.stunTick = 60;
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         } else if (entity instanceof FireballEntity) {
             this.stunTick = 60;
-            return super.attackEntityFrom(source, amount);
-        } else if (entity == this.getRidingEntity()){
+            return super.hurt(source, amount);
+        } else if (entity == this.getVehicle()){
             return false;
         }  else {
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         }
     }
 
-    public void livingTick() {
-        super.livingTick();
+    public void aiStep() {
+        super.aiStep();
         this.prevHeadLean = this.headLean;
         this.headLean += (0.0F - this.headLean) * 0.4F - 0.05F;
         if (this.headLean < 0.0F) {
@@ -174,7 +174,7 @@ public class PenanceEntity extends CreatureEntity implements IRangedAttackMob {
         }
 
         if (this.roarTick == 0){
-            this.removePotionEffect(Effects.GLOWING);
+            this.removeEffect(Effects.GLOWING);
             this.rearingAmount += (0.8F * this.rearingAmount * this.rearingAmount * this.rearingAmount - this.rearingAmount) * 0.6F - 0.05F;
             if (this.rearingAmount < 0.0F) {
                 this.rearingAmount = 0.0F;
@@ -198,55 +198,55 @@ public class PenanceEntity extends CreatureEntity implements IRangedAttackMob {
             --this.stunTick;
             this.func_213682_eh();
             if (this.stunTick == 0) {
-                this.playSound(SoundEvents.ENTITY_SKELETON_HORSE_DEATH, 1.0F, 1.0F);
+                this.playSound(SoundEvents.SKELETON_HORSE_DEATH, 1.0F, 1.0F);
                 this.roarTick = 20;
             }
         }
     }
 
     private void func_213682_eh() {
-        if (this.rand.nextInt(6) == 0) {
-            double d0 = this.getPosX() - (double)this.getWidth() * Math.sin((double)(this.renderYawOffset * ((float)Math.PI / 180F))) + (this.rand.nextDouble() * 0.6D - 0.3D);
-            double d1 = this.getPosY() + (double)this.getHeight() - 0.3D;
-            double d2 = this.getPosZ() + (double)this.getWidth() * Math.cos((double)(this.renderYawOffset * ((float)Math.PI / 180F))) + (this.rand.nextDouble() * 0.6D - 0.3D);
-            this.world.addParticle(ParticleTypes.ENTITY_EFFECT, d0, d1, d2, 0.4980392156862745D, 0.5137254901960784D, 0.5725490196078431D);
+        if (this.random.nextInt(6) == 0) {
+            double d0 = this.getX() - (double)this.getBbWidth() * Math.sin((double)(this.yBodyRot * ((float)Math.PI / 180F))) + (this.random.nextDouble() * 0.6D - 0.3D);
+            double d1 = this.getY() + (double)this.getBbHeight() - 0.3D;
+            double d2 = this.getZ() + (double)this.getBbWidth() * Math.cos((double)(this.yBodyRot * ((float)Math.PI / 180F))) + (this.random.nextDouble() * 0.6D - 0.3D);
+            this.level.addParticle(ParticleTypes.ENTITY_EFFECT, d0, d1, d2, 0.4980392156862745D, 0.5137254901960784D, 0.5725490196078431D);
         }
 
     }
 
-    protected boolean isMovementBlocked() {
-        return super.isMovementBlocked() || this.stunTick > 0 || this.roarTick > 0;
+    protected boolean isImmobile() {
+        return super.isImmobile() || this.stunTick > 0 || this.roarTick > 0;
     }
 
-    public boolean canEntityBeSeen(Entity entityIn) {
-        return this.stunTick <= 0 && this.roarTick <= 0 && super.canEntityBeSeen(entityIn);
+    public boolean canSee(Entity entityIn) {
+        return this.stunTick <= 0 && this.roarTick <= 0 && super.canSee(entityIn);
     }
 
     private void roar() {
         if (this.isAlive()) {
-            for(Entity entity : this.world.getEntitiesWithinAABB(LivingEntity.class, this.getBoundingBox().grow(4.0D), field_213690_b)) {
-                entity.attackEntityFrom(DamageSource.causeMobDamage(this), 6.0F);
-                entity.setFire(30);
+            for(Entity entity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0D), field_213690_b)) {
+                entity.hurt(DamageSource.mobAttack(this), 6.0F);
+                entity.setSecondsOnFire(30);
                 this.launch(entity);
             }
 
             Vector3d vector3d = this.getBoundingBox().getCenter();
 
             for(int i = 0; i < 40; ++i) {
-                double d0 = this.rand.nextGaussian() * 0.2D;
-                double d1 = this.rand.nextGaussian() * 0.2D;
-                double d2 = this.rand.nextGaussian() * 0.2D;
-                this.world.addParticle(ParticleTypes.SOUL_FIRE_FLAME, vector3d.x, vector3d.y, vector3d.z, d0, d1, d2);
+                double d0 = this.random.nextGaussian() * 0.2D;
+                double d1 = this.random.nextGaussian() * 0.2D;
+                double d2 = this.random.nextGaussian() * 0.2D;
+                this.level.addParticle(ParticleTypes.SOUL_FIRE_FLAME, vector3d.x, vector3d.y, vector3d.z, d0, d1, d2);
             }
         }
 
     }
 
     private void launch(Entity p_213688_1_) {
-        double d0 = p_213688_1_.getPosX() - this.getPosX();
-        double d1 = p_213688_1_.getPosZ() - this.getPosZ();
+        double d0 = p_213688_1_.getX() - this.getX();
+        double d1 = p_213688_1_.getZ() - this.getZ();
         double d2 = Math.max(d0 * d0 + d1 * d1, 0.001D);
-        p_213688_1_.addVelocity(d0 / d2 * 4.0D, 0.2D, d1 / d2 * 4.0D);
+        p_213688_1_.push(d0 / d2 * 4.0D, 0.2D, d1 / d2 * 4.0D);
     }
 
     static class PenanceAttackGoal extends RangedAttackGoal {
@@ -257,20 +257,20 @@ public class PenanceEntity extends CreatureEntity implements IRangedAttackMob {
             this.field_204728_a = (PenanceEntity)p_i48907_1_;
         }
 
-        public boolean shouldExecute() {
-            return super.shouldExecute() && this.field_204728_a.stunTick <= 0 && this.field_204728_a.roarTick <= 0 && this.field_204728_a.getHeldItemMainhand().getItem() == RegistryHandler.WARPED_SPEAR.get();
+        public boolean canUse() {
+            return super.canUse() && this.field_204728_a.stunTick <= 0 && this.field_204728_a.roarTick <= 0 && this.field_204728_a.getMainHandItem().getItem() == RegistryHandler.WARPED_SPEAR.get();
         }
 
-        public void startExecuting() {
-            super.startExecuting();
-            this.field_204728_a.setAggroed(true);
-            this.field_204728_a.setActiveHand(Hand.MAIN_HAND);
+        public void start() {
+            super.start();
+            this.field_204728_a.setAggressive(true);
+            this.field_204728_a.startUsingItem(Hand.MAIN_HAND);
         }
 
-        public void resetTask() {
-            super.resetTask();
-            this.field_204728_a.resetActiveHand();
-            this.field_204728_a.setAggroed(false);
+        public void stop() {
+            super.stop();
+            this.field_204728_a.stopUsingItem();
+            this.field_204728_a.setAggressive(false);
         }
     }
 

@@ -41,27 +41,27 @@ public class TLightningTotemTileEntity extends TileEntity implements ITickableTi
     }
 
     public CompoundNBT getUpdateTag() {
-        return this.write(new CompoundNBT());
+        return this.save(new CompoundNBT());
     }
 
-    public World getWorld() {
-        return TLightningTotemTileEntity.this.world;
+    public World getLevel() {
+        return TLightningTotemTileEntity.this.level;
     }
 
-    public void read(BlockState state, CompoundNBT nbt) {
-        super.read(state, nbt);
-        if (nbt.hasUniqueId("Target")) {
-            this.targetUuid = nbt.getUniqueId("Target");
+    public void load(BlockState state, CompoundNBT nbt) {
+        super.load(state, nbt);
+        if (nbt.hasUUID("Target")) {
+            this.targetUuid = nbt.getUUID("Target");
         } else {
             this.targetUuid = null;
         }
 
     }
 
-    public CompoundNBT write(CompoundNBT compound) {
-        super.write(compound);
+    public CompoundNBT save(CompoundNBT compound) {
+        super.save(compound);
         if (this.target != null) {
-            compound.putUniqueId("Target", this.target.getUniqueID());
+            compound.putUUID("Target", this.target.getUUID());
         }
 
         return compound;
@@ -73,16 +73,16 @@ public class TLightningTotemTileEntity extends TileEntity implements ITickableTi
 
     @Nullable
     private LivingEntity findExistingTarget() {
-        int i = this.pos.getX();
-        int j = this.pos.getY();
-        int k = this.pos.getZ();
-        assert this.world != null;
-        List<PlayerEntity> list = this.world.getEntitiesWithinAABB(PlayerEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).grow(16.0D, 16.0D, 16.0D));
+        int i = this.worldPosition.getX();
+        int j = this.worldPosition.getY();
+        int k = this.worldPosition.getZ();
+        assert this.level != null;
+        List<PlayerEntity> list = this.level.getEntitiesOfClass(PlayerEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(16.0D, 16.0D, 16.0D));
         if (list.size() > 0) {
             PlayerEntity livingEntity = list.get(0);
             if (livingEntity.isCreative()) {
                 if (list.size() > 1) {
-                    return list.get(this.world.rand.nextInt(list.size()));
+                    return list.get(this.level.random.nextInt(list.size()));
                 } else {
                     return null;
                 }
@@ -95,7 +95,7 @@ public class TLightningTotemTileEntity extends TileEntity implements ITickableTi
     }
 
     public double ParticleSpeed(){
-        long t = this.world.getGameTime();
+        long t = this.level.getGameTime();
         if (t % 40L == 0L && this.target != null){
             return 0.7D;
         } else {
@@ -105,29 +105,29 @@ public class TLightningTotemTileEntity extends TileEntity implements ITickableTi
 
     @Override
     public void tick() {
-        assert this.world != null;
-        if (!this.world.isRemote()) {
-            int i = this.pos.getX();
-            int j = this.pos.getY();
-            int k = this.pos.getZ();
+        assert this.level != null;
+        if (!this.level.isClientSide()) {
+            int i = this.worldPosition.getX();
+            int j = this.worldPosition.getY();
+            int k = this.worldPosition.getZ();
             int j1 = this.levels;
             this.checkBeaconLevel(i, j, k);
             if (j1 >= 3) {
                 this.updateClientTarget();
                 this.SpawnParticles();
-                long t = this.world.getGameTime();
+                long t = this.level.getGameTime();
                 if (t % 40L == 0L && this.target != null){
                     this.activated = 100;
                     this.attackMobs();
                 }
                 if (this.activated != 0){
                     --this.activated;
-                    this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(TLightningTotemBlock.POWERED, true), 3);
+                    this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(TLightningTotemBlock.POWERED, true), 3);
                 } else {
-                    this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(TLightningTotemBlock.POWERED, false), 3);
+                    this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(TLightningTotemBlock.POWERED, false), 3);
                 }
             } else {
-                this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(TLightningTotemBlock.POWERED, false), 3);
+                this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(TLightningTotemBlock.POWERED, false), 3);
             }
         }
     }
@@ -141,8 +141,8 @@ public class TLightningTotemTileEntity extends TileEntity implements ITickableTi
                 break;
             }
 
-            assert this.world != null;
-            boolean flag = this.world.getBlockState(new BlockPos(beaconXIn, j, beaconZIn)).matchesBlock(RegistryHandler.CURSED_TOTEM_BLOCK.get());
+            assert this.level != null;
+            boolean flag = this.level.getBlockState(new BlockPos(beaconXIn, j, beaconZIn)).is(RegistryHandler.CURSED_TOTEM_BLOCK.get());
 
             if (!flag) {
                 break;
@@ -152,43 +152,43 @@ public class TLightningTotemTileEntity extends TileEntity implements ITickableTi
     }
 
     public void playSound(SoundEvent sound) {
-        this.world.playSound(null, this.pos, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        this.level.playSound(null, this.worldPosition, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
 
-    public void remove() {
-        this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE);
-        super.remove();
+    public void setRemoved() {
+        this.playSound(SoundEvents.GENERIC_EXTINGUISH_FIRE);
+        super.setRemoved();
     }
 
     @Nullable
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(this.pos, 3, this.getUpdateTag());
+        return new SUpdateTileEntityPacket(this.worldPosition, 3, this.getUpdateTag());
     }
 
     private void SpawnParticles(){
-        double d0 = pos.getX() + 0.5;
-        double d1 = pos.getY();
-        double d2 = pos.getZ() + 0.5;
+        double d0 = worldPosition.getX() + 0.5;
+        double d1 = worldPosition.getY();
+        double d2 = worldPosition.getZ() + 0.5;
 
         for (int p = 0; p < 4; ++p) {
-            this.world.addParticle(ParticleTypes.FLAME, d0, d1, d2, this.ParticleSpeed(), this.ParticleSpeed(), this.ParticleSpeed());
+            this.level.addParticle(ParticleTypes.FLAME, d0, d1, d2, this.ParticleSpeed(), this.ParticleSpeed(), this.ParticleSpeed());
         }
     }
 
     public void attackMobs(){
-        int i = this.pos.getX();
-        int j = this.pos.getY();
-        int k = this.pos.getZ();
-        this.playSound(SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL);
-        for (PlayerEntity entity : this.getWorld().getEntitiesWithinAABB(PlayerEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).grow(16.0D, 16.0D, 16.0D))) {
-            LightningTrapEntity lightningTrap = new LightningTrapEntity(this.getWorld(), entity.getPosX(), entity.getPosY(), entity.getPosZ());
+        int i = this.worldPosition.getX();
+        int j = this.worldPosition.getY();
+        int k = this.worldPosition.getZ();
+        this.playSound(SoundEvents.ILLUSIONER_CAST_SPELL);
+        for (PlayerEntity entity : this.getLevel().getEntitiesOfClass(PlayerEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(16.0D, 16.0D, 16.0D))) {
+            LightningTrapEntity lightningTrap = new LightningTrapEntity(this.getLevel(), entity.getX(), entity.getY(), entity.getZ());
             lightningTrap.setDuration(60);
-            AreaEffectCloudEntity areaeffectcloudentity = new AreaEffectCloudEntity(this.getWorld(), entity.getPosX(), entity.getPosY(), entity.getPosZ());
-            areaeffectcloudentity.setParticleData(ParticleTypes.CLOUD);
+            AreaEffectCloudEntity areaeffectcloudentity = new AreaEffectCloudEntity(this.getLevel(), entity.getX(), entity.getY(), entity.getZ());
+            areaeffectcloudentity.setParticle(ParticleTypes.CLOUD);
             areaeffectcloudentity.setRadius(2.0F);
             areaeffectcloudentity.setDuration(60);
-            this.getWorld().addEntity(areaeffectcloudentity);
-            this.getWorld().addEntity(lightningTrap);
+            this.getLevel().addFreshEntity(areaeffectcloudentity);
+            this.getLevel().addFreshEntity(lightningTrap);
         }
     }
 }

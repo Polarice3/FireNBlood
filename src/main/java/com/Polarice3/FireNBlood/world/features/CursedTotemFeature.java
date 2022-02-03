@@ -13,31 +13,32 @@ import net.minecraft.world.gen.feature.NoFeatureConfig;
 
 import java.util.Random;
 
+
 public class CursedTotemFeature extends Feature<NoFeatureConfig> {
     private static final BlockStateMatcher IS_GRASS = BlockStateMatcher.forBlock(Blocks.GRASS_BLOCK);
-    private final BlockState cursedtiles = RegistryHandler.CURSED_TILES_BLOCK.get().getDefaultState();
-    private final BlockState cursedtotem = RegistryHandler.CURSED_TOTEM_BLOCK.get().getDefaultState();
-    private final BlockState fanghead = RegistryHandler.FANG_TOTEM.get().getDefaultState();
-    private final BlockState mutatehead = RegistryHandler.MUTATE_TOTEM.get().getDefaultState();
+    private final BlockState cursedtiles = RegistryHandler.CURSED_TILES_BLOCK.get().defaultBlockState();
+    private final BlockState cursedtotem = RegistryHandler.CURSED_TOTEM_BLOCK.get().defaultBlockState();
+    private final BlockState fanghead = RegistryHandler.FANG_TOTEM.get().defaultBlockState();
+    private final BlockState mutatehead = RegistryHandler.MUTATE_TOTEM.get().defaultBlockState();
 
     public CursedTotemFeature(Codec<NoFeatureConfig> codec) {
         super(codec);
     }
 
-    public boolean generate(ISeedReader reader, ChunkGenerator generator, Random rand, BlockPos pos, NoFeatureConfig config) {
-        int h = rand.nextInt(3) + 3;
-        int totem = rand.nextInt(2);
+    public boolean place(ISeedReader reader, ChunkGenerator generator, Random random, BlockPos pos, NoFeatureConfig config) {
+        int h = random.nextInt(3) + 3;
+        int totem = random.nextInt(2);
 
-        reader.setBlockState(pos.add(0, -1, 0), this.cursedtiles, 2);
+        reader.setBlock(pos.offset(0, -1, 0), this.cursedtiles, 2);
 
         for (int t = 0; t < h; ++t){
-            reader.setBlockState(pos.add(0, t, 0), this.cursedtotem, 2);
+            reader.setBlock(pos.offset(0, t, 0), this.cursedtotem, 2);
         }
 
         if (totem == 1){
-            reader.setBlockState(pos.add(0, h, 0), this.fanghead, 2);
+            reader.setBlock(pos.offset(0, h, 0), this.fanghead, 2);
         } else {
-            reader.setBlockState(pos.add(0, h, 0), this.mutatehead, 2);
+            reader.setBlock(pos.offset(0, h, 0), this.mutatehead, 2);
         }
 
         return true;

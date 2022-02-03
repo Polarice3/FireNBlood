@@ -74,7 +74,7 @@ public class SoulForgeTileEntity extends LockableTileEntity implements ISidedInv
         super(ModTileEntityType.SOULFORGE.get());
     }
 
-    public int getSizeInventory() {
+    public int getContainerSize() {
         return this.items.size();
     }
 
@@ -88,7 +88,7 @@ public class SoulForgeTileEntity extends LockableTileEntity implements ISidedInv
         return true;
     }
 
-    public ItemStack getStackInSlot(int index) {
+    public ItemStack getItem(int index) {
         return this.items.get(index);
     }
 
@@ -97,10 +97,10 @@ public class SoulForgeTileEntity extends LockableTileEntity implements ISidedInv
     }
 
     public boolean isUsableByPlayer(PlayerEntity player) {
-        if (this.world.getTileEntity(this.pos) != this) {
+        if (this.level.getTileEntity(this.pos) != this) {
             return false;
         } else {
-            return player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
+            return player.distanceToSqr((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
         }
     }
 
@@ -119,7 +119,7 @@ public class SoulForgeTileEntity extends LockableTileEntity implements ISidedInv
     }
 
     @Override
-    public void setInventorySlotContents(int index, ItemStack stack) {
+    public void setItem(int index, ItemStack stack) {
 
     }
 
@@ -202,10 +202,10 @@ public class SoulForgeTileEntity extends LockableTileEntity implements ISidedInv
                     return true;
                 } else if (!itemstack1.isItemEqual(itemstack)) {
                     return false;
-                } else if (itemstack1.getCount() + itemstack.getCount() <= this.getInventoryStackLimit() && itemstack1.getCount() + itemstack.getCount() <= itemstack1.getMaxStackSize()) {
+                } else if (itemstack1.getCount() + itemstack.getCount() <= this.getInventoryStackLimit() && itemstack1.getCount() + itemstack.getCount() <= itemstack1.getstacksTo()) {
                     return true;
                 } else {
-                    return itemstack1.getCount() + itemstack.getCount() <= itemstack.getMaxStackSize();
+                    return itemstack1.getCount() + itemstack.getCount() <= itemstack.getstacksTo();
                 }
             }
         } else {
@@ -244,14 +244,14 @@ public class SoulForgeTileEntity extends LockableTileEntity implements ISidedInv
 
     @Override
     public CompoundNBT write(CompoundNBT compoundNBT){
-        super.write(compoundNBT);
+        super.save(compoundNBT);
         return compoundNBT;
     }
 
     @Override
     public void read(BlockState blockState, CompoundNBT compoundNBT){
         super.read(blockState,compoundNBT);
-        this.items = NonNullList.withSize(getSizeInventory(), ItemStack.EMPTY);
+        this.items = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
     }
 }
 

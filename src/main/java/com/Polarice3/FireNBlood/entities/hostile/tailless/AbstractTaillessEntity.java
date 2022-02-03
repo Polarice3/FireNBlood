@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 
 public class AbstractTaillessEntity extends MonsterEntity {
     private LivingEntity Target;
-    public int Random;
+    public int randomint;
 
     protected AbstractTaillessEntity(EntityType<? extends AbstractTaillessEntity> type, World worldIn){
         super(type, worldIn);
@@ -28,16 +28,16 @@ public class AbstractTaillessEntity extends MonsterEntity {
         super.registerGoals();
     }
 
-    public int getRandom() {
-        return Random;
+    public int getRandomInt() {
+        return randomint;
     }
 
-    public void setRandom(int random) {
-        Random = random;
+    public void setrandom(int random) {
+        random = random;
     }
 
     public boolean EvilEyeGiver(){
-        return Random > 0;
+        return randomint > 0;
     }
 
     public AbstractTaillessEntity.ArmPose getArmPose() {
@@ -48,45 +48,45 @@ public class AbstractTaillessEntity extends MonsterEntity {
         this.Target = TargetIn;
     }
 
-    public void onDeath(DamageSource cause) {
-        Entity entity = cause.getTrueSource();
+    public void die(DamageSource cause) {
+        Entity entity = cause.getEntity();
         PlayerEntity playerentity;
         if (this.EvilEyeGiver()) {
             if (entity instanceof PlayerEntity) {
                 playerentity = (PlayerEntity) entity;
-                int random = this.world.rand.nextInt(this.getRandom());
+                int random = this.level.random.nextInt(this.getRandomInt());
                 if (random == 0) {
-                    EffectInstance effectinstance1 = playerentity.getActivePotionEffect(RegistryHandler.EVIL_EYE.get());
+                    EffectInstance effectinstance1 = playerentity.getEffect(RegistryHandler.EVIL_EYE.get());
                     if (effectinstance1 == null) {
                         EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, 0);
-                        playerentity.addPotionEffect(effectinstance);
+                        playerentity.addEffect(effectinstance);
                     } else {
                         int amp = effectinstance1.getAmplifier();
                         int i = amp + 1;
                         i = MathHelper.clamp(i, 0, 5);
-                        playerentity.removeActivePotionEffect(RegistryHandler.EVIL_EYE.get());
+                        playerentity.removeEffectNoUpdate(RegistryHandler.EVIL_EYE.get());
                         EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, i);
-                        playerentity.addPotionEffect(effectinstance);
+                        playerentity.addEffect(effectinstance);
                     }
                 }
             } else if (entity instanceof WolfEntity) {
                 WolfEntity wolfentity = (WolfEntity) entity;
                 LivingEntity livingentity = wolfentity.getOwner();
-                if (wolfentity.isTamed() && livingentity instanceof PlayerEntity) {
+                if (wolfentity.isTame() && livingentity instanceof PlayerEntity) {
                     playerentity = (PlayerEntity) livingentity;
-                    int random = this.world.rand.nextInt(this.getRandom());
+                    int random = this.level.random.nextInt(this.getRandomInt());
                     if (random == 0) {
-                        EffectInstance effectinstance1 = playerentity.getActivePotionEffect(RegistryHandler.EVIL_EYE.get());
+                        EffectInstance effectinstance1 = playerentity.getEffect(RegistryHandler.EVIL_EYE.get());
                         if (effectinstance1 == null) {
                             EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, 0);
-                            playerentity.addPotionEffect(effectinstance);
+                            playerentity.addEffect(effectinstance);
                         } else {
                             int amp = effectinstance1.getAmplifier();
                             int i = amp + 1;
                             i = MathHelper.clamp(i, 0, 5);
-                            playerentity.removeActivePotionEffect(RegistryHandler.EVIL_EYE.get());
+                            playerentity.removeEffectNoUpdate(RegistryHandler.EVIL_EYE.get());
                             EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, i);
-                            playerentity.addPotionEffect(effectinstance);
+                            playerentity.addEffect(effectinstance);
                         }
                     }
                 }
@@ -95,19 +95,19 @@ public class AbstractTaillessEntity extends MonsterEntity {
                 LivingEntity livingentity = wolfentity.getTrueOwner();
                 if (wolfentity.getTrueOwner() != null && livingentity instanceof PlayerEntity) {
                     playerentity = (PlayerEntity) livingentity;
-                    int random = this.world.rand.nextInt(this.getRandom());
+                    int random = this.level.random.nextInt(this.getRandomInt());
                     if (random == 0) {
-                        EffectInstance effectinstance1 = playerentity.getActivePotionEffect(RegistryHandler.EVIL_EYE.get());
+                        EffectInstance effectinstance1 = playerentity.getEffect(RegistryHandler.EVIL_EYE.get());
                         if (effectinstance1 == null) {
                             EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, 0);
-                            playerentity.addPotionEffect(effectinstance);
+                            playerentity.addEffect(effectinstance);
                         } else {
                             int amp = effectinstance1.getAmplifier();
                             int i = amp + 1;
                             i = MathHelper.clamp(i, 0, 5);
-                            playerentity.removeActivePotionEffect(RegistryHandler.EVIL_EYE.get());
+                            playerentity.removeEffectNoUpdate(RegistryHandler.EVIL_EYE.get());
                             EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, i);
-                            playerentity.addPotionEffect(effectinstance);
+                            playerentity.addEffect(effectinstance);
                         }
                     }
                 }
@@ -116,25 +116,25 @@ public class AbstractTaillessEntity extends MonsterEntity {
                 LivingEntity livingentity = wolfentity.getTrueOwner();
                 if (wolfentity.getTrueOwner() != null && livingentity instanceof PlayerEntity) {
                     playerentity = (PlayerEntity) livingentity;
-                    int random = this.world.rand.nextInt(this.getRandom());
+                    int random = this.level.random.nextInt(this.getRandomInt());
                     if (random == 0) {
-                        EffectInstance effectinstance1 = playerentity.getActivePotionEffect(RegistryHandler.EVIL_EYE.get());
+                        EffectInstance effectinstance1 = playerentity.getEffect(RegistryHandler.EVIL_EYE.get());
                         if (effectinstance1 == null) {
                             EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, 0);
-                            playerentity.addPotionEffect(effectinstance);
+                            playerentity.addEffect(effectinstance);
                         } else {
                             int amp = effectinstance1.getAmplifier();
                             int i = amp + 1;
                             i = MathHelper.clamp(i, 0, 5);
-                            playerentity.removeActivePotionEffect(RegistryHandler.EVIL_EYE.get());
+                            playerentity.removeEffectNoUpdate(RegistryHandler.EVIL_EYE.get());
                             EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, i);
-                            playerentity.addPotionEffect(effectinstance);
+                            playerentity.addEffect(effectinstance);
                         }
                     }
                 }
             }
         }
-        super.onDeath(cause);
+        super.die(cause);
     }
 
     @Nullable

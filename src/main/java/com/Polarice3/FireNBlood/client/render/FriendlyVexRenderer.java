@@ -16,15 +16,15 @@ public class FriendlyVexRenderer extends BipedRenderer<FriendlyVexEntity, Minion
         super(renderManagerIn, new MinionModel<>(), 0.3F);
     }
 
-    protected int getBlockLight(FriendlyVexEntity entityIn, BlockPos pos) {
+    protected int getBlockLightLevel(FriendlyVexEntity entityIn, BlockPos pos) {
         return 15;
     }
 
-    public ResourceLocation getEntityTexture(FriendlyVexEntity entity) {
+    public ResourceLocation getTextureLocation(FriendlyVexEntity entity) {
         return entity.isCharging() ? VEX_CHARGING_TEXTURE : VEX_TEXTURE;
     }
 
-    protected void preRenderCallback(FriendlyVexEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(FriendlyVexEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         matrixStackIn.scale(0.4F, 0.4F, 0.4F);
     }
 }

@@ -18,11 +18,11 @@ public class SlowBombRenderer extends EntityRenderer<SlowBombEntity> {
 
     public SlowBombRenderer(EntityRendererManager renderManagerIn) {
         super(renderManagerIn);
-        this.shadowSize = 0.5F;
+        this.shadowRadius = 0.5F;
     }
 
     public void render(SlowBombEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
 /*        matrixStackIn.translate(0.0D, 0.5D, 0.0D);*/
         if ((float)entityIn.getFuse() - partialTicks + 1.0F < 10.0F) {
             float f = 1.0F - ((float)entityIn.getFuse() - partialTicks + 1.0F) / 10.0F;
@@ -33,14 +33,14 @@ public class SlowBombRenderer extends EntityRenderer<SlowBombEntity> {
             matrixStackIn.scale(f1, f1, f1);
         }
 
-        IVertexBuilder ivertexbuilder = bufferIn.getBuffer(this.model.getRenderType(TEXTURE));
-        this.model.render(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
-        matrixStackIn.pop();
+        IVertexBuilder ivertexbuilder = bufferIn.getBuffer(this.model.renderType(TEXTURE));
+        this.model.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+        matrixStackIn.popPose();
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
     @Override
-    public ResourceLocation getEntityTexture(SlowBombEntity entity) {
+    public ResourceLocation getTextureLocation(SlowBombEntity entity) {
         return TEXTURE;
     }
 }

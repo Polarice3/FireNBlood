@@ -19,18 +19,18 @@ public class AcolyteRenderer extends MobRenderer<AcolyteEntity, AcolyteModel> {
     }
 
     public void render(AcolyteEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        this.entityModel.func_205074_a(!entityIn.getHeldItemMainhand().isEmpty());
+        this.model.setHoldingItem(!entityIn.getMainHandItem().isEmpty());
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
     /**
      * Returns the location of an entity's texture.
      */
-    public ResourceLocation getEntityTexture(AcolyteEntity entity) {
+    public ResourceLocation getTextureLocation(AcolyteEntity entity) {
         return TEXTURE;
     }
 
-    protected void preRenderCallback(AcolyteEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(AcolyteEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         float f = 0.9375F;
         matrixStackIn.scale(0.9375F, 0.9375F, 0.9375F);
     }

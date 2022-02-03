@@ -28,7 +28,7 @@ public class VizierRenderer extends MobRenderer<VizierEntity, VizierModel> {
     }
 
     @Override
-    public ResourceLocation getEntityTexture(VizierEntity entity) {
+    public ResourceLocation getTextureLocation(VizierEntity entity) {
         return TEXTURE;
     }
 }

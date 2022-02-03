@@ -80,11 +80,11 @@ public class ClientEventBusSubscriber {
         ClientRegistry.bindTileEntityRenderer(ModTileEntityType.FANG_TOTEM.get(), FangTotemTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntityType.MUTATE_TOTEM.get(), MutateTotemTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntityType.TLIGHTNING_TOTEM.get(), TLightningTotemTileEntityRenderer::new);
-        RenderTypeLookup.setRenderLayer(RegistryHandler.CURSED_CAGE_BLOCK.get(), RenderType.getTranslucent());
-        RenderTypeLookup.setRenderLayer(RegistryHandler.CURSED_BARS_BLOCK.get(), RenderType.getTranslucent());
-        ScreenManager.registerFactory(ModContainerType.WAND.get(), SoulItemScreen::new);
-        ScreenManager.registerFactory(ModContainerType.FOCUSBAG.get(), FocusBagScreen::new);
-        ScreenManager.registerFactory(ModContainerType.WANDANDBAG.get(), WandandBagScreen::new);
+        RenderTypeLookup.setRenderLayer(RegistryHandler.CURSED_CAGE_BLOCK.get(), RenderType.translucent());
+        RenderTypeLookup.setRenderLayer(RegistryHandler.CURSED_BARS_BLOCK.get(), RenderType.translucent());
+        ScreenManager.register(ModContainerType.WAND.get(), SoulItemScreen::new);
+        ScreenManager.register(ModContainerType.FOCUSBAG.get(), FocusBagScreen::new);
+        ScreenManager.register(ModContainerType.WANDANDBAG.get(), WandandBagScreen::new);
     }
 
     @SubscribeEvent

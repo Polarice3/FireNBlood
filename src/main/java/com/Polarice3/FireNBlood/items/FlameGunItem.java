@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.items;
 
+
 import java.util.Random;
 import java.util.function.Predicate;
 
@@ -25,7 +26,7 @@ import net.minecraft.world.World;
 public class FlameGunItem extends Item {
 
     public FlameGunItem() {
-        super(new Item.Properties().group(FireNBlood.TAB).maxDamage(256));
+        super(new Item.Properties().tab(FireNBlood.TAB).durability(256));
     }
 
     private static float getCharge(int useTime, ItemStack stack) {
@@ -37,12 +38,12 @@ public class FlameGunItem extends Item {
         return f;
     }
 
-    public static int getChargeTime(ItemStack stack) {
-        int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.QUICK_CHARGE, stack);
+    public static int getChargeDuration(ItemStack stack) {
+        int i = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.QUICK_CHARGE, stack);
         return i == 0 ? 25 : 25 - 5 * i;
     }
 
-    public static boolean isCharged(ItemStack stack) {
+    public static boolean isPowered(ItemStack stack) {
         CompoundNBT compoundnbt = stack.getTag();
         return compoundnbt != null && compoundnbt.getBoolean("Charged");
     }
@@ -59,37 +60,37 @@ public class FlameGunItem extends Item {
             float f = getCharge(i, stack);
             if (f >= 1.0) {
                 setCharged(stack, true);
-                if (!worldIn.isRemote && isCharged(stack)) {
-                    Vector3d vector3d = playerentity.getLook(1.0F);
-                    Random random = worldIn.rand;
+                if (!worldIn.isClientSide && isPowered(stack)) {
+                    Vector3d vector3d = playerentity.getViewVector( 1.0F);
+                    Random random = worldIn.random;
                     double d2 = random.nextGaussian() * 0.01D + vector3d.x;
                     double d3 = random.nextGaussian() * 0.01D + vector3d.y;
                     double d4 = random.nextGaussian() * 0.01D + vector3d.z;
                     FireballEntity fireballEntity = new FireballEntity(worldIn, playerentity, d2, d3, d4);
-                    fireballEntity.setPosition(playerentity.getPosX() + vector3d.x * 2.0D, playerentity.getPosYHeight(0.5D) + 0.5D, playerentity.getPosZ() + vector3d.z * 2.0D);
-                    worldIn.addEntity(fireballEntity);
+                    fireballEntity.setPos(playerentity.getX() + vector3d.x * 2.0D, playerentity.getY(0.5D) + 0.5D, playerentity.getZ() + vector3d.z * 2.0D);
+                    worldIn.addFreshEntity(fireballEntity);
                     if (!playerentity.isSilent()) {
-                        playerentity.world.playEvent(null, 1016, playerentity.getPosition(), 0);
+                        playerentity.level.levelEvent(null, 1016, playerentity.blockPosition(), 0);
                     }
-                    stack.damageItem(1, playerentity, (player) -> {
-                        player.sendBreakAnimation(playerentity.getActiveHand());
+                    stack.hurtAndBreak(1, playerentity, (player) -> {
+                        player.broadcastBreakEvent(playerentity.getUsedItemHand());
                     });
                 }
             } else {
-                if (!worldIn.isRemote && !isCharged(stack)) {
-                    Vector3d vector3d = playerentity.getLook(1.0F);
-                    Random random = worldIn.rand;
+                if (!worldIn.isClientSide && !isPowered(stack)) {
+                    Vector3d vector3d = playerentity.getViewVector( 1.0F);
+                    Random random = worldIn.random;
                     double d2 = random.nextGaussian() * 0.05D + (double) vector3d.x;
                     double d3 = random.nextGaussian() * 0.05D + (double) vector3d.y;
                     double d4 = random.nextGaussian() * 0.05D + (double) vector3d.z;
                     SmallFireballEntity fireballEntity = new SmallFireballEntity(worldIn, playerentity, d2, d3, d4);
-                    fireballEntity.setPosition(playerentity.getPosX() + vector3d.x * 2.0D, playerentity.getPosYHeight(0.5D) + 0.5D, playerentity.getPosZ() + vector3d.z * 2.0D);
-                    worldIn.addEntity(fireballEntity);
+                    fireballEntity.setPos(playerentity.getX() + vector3d.x * 2.0D, playerentity.getY(0.5D) + 0.5D, playerentity.getZ() + vector3d.z * 2.0D);
+                    worldIn.addFreshEntity(fireballEntity);
                     if (!playerentity.isSilent()) {
-                        playerentity.world.playEvent(null, 1016, playerentity.getPosition(), 0);
+                        playerentity.level.levelEvent(null, 1016, playerentity.blockPosition(), 0);
                     }
-                    stack.damageItem(1, playerentity, (player) -> {
-                        player.sendBreakAnimation(playerentity.getActiveHand());
+                    stack.hurtAndBreak(1, playerentity, (player) -> {
+                        player.broadcastBreakEvent(playerentity.getUsedItemHand());
                     });
                 }
             }
@@ -100,17 +101,17 @@ public class FlameGunItem extends Item {
         return 72000;
     }
 
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAction getUseAnimation(ItemStack stack) {
         return UseAction.BOW;
     }
 
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        playerIn.setActiveHand(handIn);
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
-        if (isCharged(itemstack)) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        playerIn.startUsingItem(handIn);
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
+        if (isPowered(itemstack)) {
             setCharged(itemstack, false);
         }
-        return ActionResult.resultConsume(itemstack);
+        return ActionResult.consume(itemstack);
     }
 
 }

@@ -17,15 +17,15 @@ public class CallerAuraLayer extends EnergyLayer<CallerEntity, CallerModel<Calle
         super(p_i50915_1_);
     }
 
-    protected float func_225634_a_(float p_225634_1_) {
+    protected float xOffset(float p_225634_1_) {
         return MathHelper.cos(p_225634_1_ * 0.02F) * 3.0F;
     }
 
-    protected ResourceLocation func_225633_a_() {
+    protected ResourceLocation getTextureLocation() {
         return CALLER_ARMOR;
     }
 
-    protected EntityModel<CallerEntity> func_225635_b_() {
+    protected EntityModel<CallerEntity> model() {
         return this.callerModel;
     }
 }

@@ -8,12 +8,9 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
@@ -26,27 +23,27 @@ public class FangTotemBlock extends ContainerBlock implements IForgeBlock {
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
     public FangTotemBlock() {
-        super(AbstractBlock.Properties.create(Material.ROCK)
-                .hardnessAndResistance(3.0F, 9.0F)
+        super(AbstractBlock.Properties.of(Material.STONE)
+                .strength(3.0F, 9.0F)
                 .sound(SoundType.STONE)
                 .harvestLevel(0)
                 .harvestTool(ToolType.PICKAXE)
         );
-        this.setDefaultState(this.stateContainer.getBaseState().with(POWERED, Boolean.FALSE));
+        this.registerDefaultState(this.stateDefinition.any().setValue(POWERED, Boolean.FALSE));
     }
 
     @Override
-    public int getExpDrop(BlockState state, net.minecraft.world.IWorldReader world, BlockPos pos, int fortune, int silktouch) {
+    public int getExpDrop(BlockState state, net.minecraft.world.IWorldReader level, BlockPos pos, int fortune, int silktouch) {
         return 15 + RANDOM.nextInt(15) + RANDOM.nextInt(15);
     }
 
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
         builder.add(POWERED);
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random rand) {
-        if (stateIn.get(POWERED)) {
+    public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random random) {
+        if (stateIn.getValue(POWERED)) {
             double d0 = pos.getX() + 0.5;
             double d1 = pos.getY();
             double d2 = pos.getZ() + 0.5;
@@ -59,11 +56,11 @@ public class FangTotemBlock extends ContainerBlock implements IForgeBlock {
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(IBlockReader worldIn) {
+    public TileEntity newBlockEntity(IBlockReader worldIn) {
         return new FangTotemTileEntity();
     }
 
-    public BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderShape(BlockState state) {
         return BlockRenderType.MODEL;
     }
 

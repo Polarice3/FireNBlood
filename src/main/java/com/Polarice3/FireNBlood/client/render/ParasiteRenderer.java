@@ -19,7 +19,7 @@ public class ParasiteRenderer extends MobRenderer<ParasiteEntity, EndermiteModel
         return 180.0F;
     }
 
-    public ResourceLocation getEntityTexture(ParasiteEntity entity) {
+    public ResourceLocation getTextureLocation(ParasiteEntity entity) {
         return TEXTURES;
     }
 }

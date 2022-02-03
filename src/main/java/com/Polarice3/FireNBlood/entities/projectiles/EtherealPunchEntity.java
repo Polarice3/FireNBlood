@@ -28,51 +28,51 @@ public class EtherealPunchEntity extends DamagingProjectileEntity {
         super(ModEntityType.ETHEREAL_PUNCH.get(), shooter, accelX, accelY, accelZ, worldIn);
     }
 
-    protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
-        super.onEntityHit(p_213868_1_);
+    protected void onHitEntity(EntityRayTraceResult p_213868_1_) {
+        super.onHitEntity(p_213868_1_);
         Entity entity = p_213868_1_.getEntity();
-        Entity entity1 = this.getShooter();
+        Entity entity1 = this.getOwner();
         LivingEntity livingentity = entity1 instanceof LivingEntity ? (LivingEntity)entity1 : null;
         assert livingentity != null;
-        boolean flag = entity.attackEntityFrom(DamageSource.causeIndirectDamage(this, livingentity).setProjectile(), 4.0F);
+        boolean flag = entity.hurt(DamageSource.indirectMobAttack(this, livingentity).setProjectile(), 4.0F);
         if (flag) {
-            this.applyEnchantments(livingentity, entity);
+            this.doEnchantDamageEffects(livingentity, entity);
         }
 
     }
 
-    protected void onImpact(RayTraceResult result) {
-        super.onImpact(result);
-        if (!this.world.isRemote) {
-            this.world.createExplosion(this, this.getPosX(), this.getPosY(), this.getPosZ(), 1.0F, false, Explosion.Mode.NONE);
+    protected void onHit(RayTraceResult result) {
+        super.onHit(result);
+        if (!this.level.isClientSide) {
+            this.level.explode(this, this.getX(), this.getY(), this.getZ(), 1.0F, false, Explosion.Mode.NONE);
             this.remove();
         }
     }
 
-    public boolean isBurning() {
+    public boolean isOnFire() {
         return false;
     }
 
-    public boolean isImmuneToExplosions(){return true;}
+    public boolean ignoreExplosion(){return true;}
 
     public boolean canBeCollidedWith() {
         return false;
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         return false;
     }
 
-    protected IParticleData getParticle() {
+    protected IParticleData getTrailParticle() {
         return ParticleTypes.SOUL_FIRE_FLAME;
     }
 
-    protected boolean isFireballFiery() {
+    protected boolean shouldBurn() {
         return false;
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

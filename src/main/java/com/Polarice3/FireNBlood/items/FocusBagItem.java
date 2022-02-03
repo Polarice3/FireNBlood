@@ -26,22 +26,22 @@ import javax.annotation.Nullable;
 public class FocusBagItem extends Item {
     public FocusBagItem(){
         super(new Item.Properties()
-                .group(FireNBlood.TAB)
+                .tab(FireNBlood.TAB)
                 .rarity(Rarity.UNCOMMON)
                 .setNoRepair()
-                .maxStackSize(1)
+                .stacksTo(1)
         );
     }
 
     @Nonnull
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
-        if (!worldIn.isRemote) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
+        if (!worldIn.isClientSide) {
             SimpleNamedContainerProvider provider = new SimpleNamedContainerProvider(
-                    (id, inventory, player) -> new FocusBagContainer(id, inventory, FocusBagItemHandler.get(itemstack), itemstack), getDisplayName(itemstack));
+                    (id, inventory, player) -> new FocusBagContainer(id, inventory, FocusBagItemHandler.get(itemstack), itemstack), getName(itemstack));
             NetworkHooks.openGui((ServerPlayerEntity) playerIn, provider, (buffer) -> {});
         }
-        return ActionResult.resultPass(itemstack);
+        return ActionResult.pass(itemstack);
     }
 
     @Override

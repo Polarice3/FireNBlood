@@ -46,27 +46,27 @@ public class FangTotemTileEntity extends TileEntity implements ITickableTileEnti
     }
 
     public CompoundNBT getUpdateTag() {
-        return this.write(new CompoundNBT());
+        return this.save(new CompoundNBT());
     }
 
-    public World getWorld() {
-        return FangTotemTileEntity.this.world;
+    public World getLevel() {
+        return FangTotemTileEntity.this.level;
     }
 
-    public void read(BlockState state, CompoundNBT nbt) {
-        super.read(state, nbt);
-        if (nbt.hasUniqueId("Target")) {
-            this.targetUuid = nbt.getUniqueId("Target");
+    public void load(BlockState state, CompoundNBT nbt) {
+        super.load(state, nbt);
+        if (nbt.hasUUID("Target")) {
+            this.targetUuid = nbt.getUUID("Target");
         } else {
             this.targetUuid = null;
         }
 
     }
 
-    public CompoundNBT write(CompoundNBT compound) {
-        super.write(compound);
+    public CompoundNBT save(CompoundNBT compound) {
+        super.save(compound);
         if (this.target != null) {
-            compound.putUniqueId("Target", this.target.getUniqueID());
+            compound.putUUID("Target", this.target.getUUID());
         }
 
         return compound;
@@ -78,16 +78,16 @@ public class FangTotemTileEntity extends TileEntity implements ITickableTileEnti
 
     @Nullable
     private LivingEntity findExistingTarget() {
-        int i = this.pos.getX();
-        int j = this.pos.getY();
-        int k = this.pos.getZ();
-        List<LivingEntity> list = this.world.getEntitiesWithinAABB(LivingEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).grow(10.0D, 10.0D, 10.0D));
+        int i = this.worldPosition.getX();
+        int j = this.worldPosition.getY();
+        int k = this.worldPosition.getZ();
+        List<LivingEntity> list = this.level.getEntitiesOfClass(LivingEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(10.0D, 10.0D, 10.0D));
         if (list.size() > 0) {
             LivingEntity livingEntity = list.get(0);
             if (livingEntity instanceof PlayerEntity) {
                 if (((PlayerEntity) livingEntity).isCreative()) {
                     if (list.size() > 1) {
-                        return list.get(this.world.rand.nextInt(list.size()));
+                        return list.get(this.level.random.nextInt(list.size()));
                     } else {
                         return null;
                     }
@@ -103,7 +103,7 @@ public class FangTotemTileEntity extends TileEntity implements ITickableTileEnti
     }
 
     public double ParticleSpeed(){
-        long t = this.world.getGameTime();
+        long t = this.level.getGameTime();
         if (t % 40L == 0L && this.target != null){
             return 0.7D;
         } else {
@@ -113,29 +113,29 @@ public class FangTotemTileEntity extends TileEntity implements ITickableTileEnti
 
     @Override
     public void tick() {
-        assert this.world != null;
-        if (!this.world.isRemote()) {
-            int i = this.pos.getX();
-            int j = this.pos.getY();
-            int k = this.pos.getZ();
+        assert this.level != null;
+        if (!this.level.isClientSide()) {
+            int i = this.worldPosition.getX();
+            int j = this.worldPosition.getY();
+            int k = this.worldPosition.getZ();
             int j1 = this.levels;
             this.checkBeaconLevel(i, j, k);
             if (j1 >= 3) {
                 this.updateClientTarget();
                 this.SpawnParticles();
-                long t = this.world.getGameTime();
+                long t = this.level.getGameTime();
                 if (t % 40L == 0L && this.target != null){
                     this.activated = 20;
                     this.attackMobs();
                 }
                 if (this.activated != 0){
                     --this.activated;
-                    this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(FangTotemBlock.POWERED, true), 3);
+                    this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(FangTotemBlock.POWERED, true), 3);
                 } else {
-                    this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(FangTotemBlock.POWERED, false), 3);
+                    this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(FangTotemBlock.POWERED, false), 3);
                 }
             } else {
-                this.world.setBlockState(this.pos, this.world.getBlockState(this.pos).with(FangTotemBlock.POWERED, false), 3);
+                this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(FangTotemBlock.POWERED, false), 3);
             }
         }
     }
@@ -149,8 +149,8 @@ public class FangTotemTileEntity extends TileEntity implements ITickableTileEnti
                 break;
             }
 
-            assert this.world != null;
-            boolean flag = this.world.getBlockState(new BlockPos(beaconXIn, j, beaconZIn)).matchesBlock(RegistryHandler.CURSED_TOTEM_BLOCK.get());
+            assert this.level != null;
+            boolean flag = this.level.getBlockState(new BlockPos(beaconXIn, j, beaconZIn)).is(RegistryHandler.CURSED_TOTEM_BLOCK.get());
 
             if (!flag) {
                 break;
@@ -160,38 +160,38 @@ public class FangTotemTileEntity extends TileEntity implements ITickableTileEnti
     }
 
     public void playSound(SoundEvent sound) {
-        this.world.playSound(null, this.pos, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        this.level.playSound(null, this.worldPosition, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
 
-    public void remove() {
-        this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE);
-        super.remove();
+    public void setRemoved() {
+        this.playSound(SoundEvents.GENERIC_EXTINGUISH_FIRE);
+        super.setRemoved();
     }
 
     @Nullable
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(this.pos, 3, this.getUpdateTag());
+        return new SUpdateTileEntityPacket(this.worldPosition, 3, this.getUpdateTag());
     }
 
     private void SpawnParticles(){
-        double d0 = pos.getX() + 0.5;
-        double d1 = pos.getY();
-        double d2 = pos.getZ() + 0.5;
+        double d0 = worldPosition.getX() + 0.5;
+        double d1 = worldPosition.getY();
+        double d2 = worldPosition.getZ() + 0.5;
 
         for (int p = 0; p < 4; ++p) {
-            this.world.addParticle(ParticleTypes.FLAME, d0, d1, d2, this.ParticleSpeed(), this.ParticleSpeed(), this.ParticleSpeed());
+            this.level.addParticle(ParticleTypes.FLAME, d0, d1, d2, this.ParticleSpeed(), this.ParticleSpeed(), this.ParticleSpeed());
         }
     }
 
     public void attackMobs(){
-        int i = this.pos.getX();
-        int j = this.pos.getY();
-        int k = this.pos.getZ();
-        this.playSound(SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK);
-        for (LivingEntity entity : this.getWorld().getEntitiesWithinAABB(LivingEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).grow(10.0D, 10.0D, 10.0D))) {
-            float f = (float) MathHelper.atan2(entity.getPosZ() - this.getPos().getZ(), entity.getPosX() - this.getPos().getX());
+        int i = this.worldPosition.getX();
+        int j = this.worldPosition.getY();
+        int k = this.worldPosition.getZ();
+        this.playSound(SoundEvents.EVOKER_PREPARE_ATTACK);
+        for (LivingEntity entity : this.getLevel().getEntitiesOfClass(LivingEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(10.0D, 10.0D, 10.0D))) {
+            float f = (float) MathHelper.atan2(entity.getZ() - this.getBlockPos().getZ(), entity.getX() - this.getBlockPos().getX());
 
-            this.spawnFangs(entity.getPosX(), entity.getPosZ(), entity.getPosY(), entity.getPosY() + 1.0D, f, 1);
+            this.spawnFangs(entity.getX(), entity.getZ(), entity.getY(), entity.getY() + 1.0D, f, 1);
         }
     }
 
@@ -201,14 +201,14 @@ public class FangTotemTileEntity extends TileEntity implements ITickableTileEnti
         double d0 = 0.0D;
 
         do {
-            BlockPos blockpos1 = blockpos.down();
-            BlockState blockstate = this.getWorld().getBlockState(blockpos1);
-            if (blockstate.isSolidSide(this.getWorld(), blockpos1, Direction.UP)) {
-                if (!this.getWorld().isAirBlock(blockpos)) {
-                    BlockState blockstate1 = this.getWorld().getBlockState(blockpos);
-                    VoxelShape voxelshape = blockstate1.getCollisionShape(this.getWorld(), blockpos);
+            BlockPos blockpos1 = blockpos.below();
+            BlockState blockstate = this.getLevel().getBlockState(blockpos1);
+            if (blockstate.isFaceSturdy(this.getLevel(), blockpos1, Direction.UP)) {
+                if (!this.getLevel().isEmptyBlock(blockpos)) {
+                    BlockState blockstate1 = this.getLevel().getBlockState(blockpos);
+                    VoxelShape voxelshape = blockstate1.getCollisionShape(this.getLevel(), blockpos);
                     if (!voxelshape.isEmpty()) {
-                        d0 = voxelshape.getEnd(Direction.Axis.Y);
+                        d0 = voxelshape.max(Direction.Axis.Y);
                     }
                 }
 
@@ -216,11 +216,11 @@ public class FangTotemTileEntity extends TileEntity implements ITickableTileEnti
                 break;
             }
 
-            blockpos = blockpos.down();
+            blockpos = blockpos.below();
         } while(blockpos.getY() >= MathHelper.floor(p_190876_5_) - 1);
 
         if (flag) {
-            this.getWorld().addEntity(new EvokerFangsEntity(this.getWorld(), p_190876_1_, (double)blockpos.getY() + d0, p_190876_3_, p_190876_9_, p_190876_10_, null));
+            this.getLevel().addFreshEntity(new EvokerFangsEntity(this.getLevel(), p_190876_1_, (double)blockpos.getY() + d0, p_190876_3_, p_190876_9_, p_190876_10_, null));
         }
 
     }

@@ -42,17 +42,17 @@ import java.util.UUID;
 public class AcolyteEntity extends CreatureEntity implements IRangedAttackMob {
     private static final UUID MODIFIER_UUID = UUID.fromString("ed267621-aa4a-4b46-8dfe-6a10d164ab30");
     private static final AttributeModifier MODIFIER = new AttributeModifier(MODIFIER_UUID, "Drinking speed penalty", -0.25D, AttributeModifier.Operation.ADDITION);
-    private static final DataParameter<Boolean> IS_DRINKING = EntityDataManager.createKey(AcolyteEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> IS_DRINKING = EntityDataManager.defineId(AcolyteEntity.class, DataSerializers.BOOLEAN);
     private int potionUseTimer;
     private int witchtime;
 
     public AcolyteEntity(EntityType<? extends AcolyteEntity> type, World worldIn) {
         super(type, worldIn);
-        this.setPathPriority(PathNodeType.DANGER_FIRE, 16.0F);
-        this.setPathPriority(PathNodeType.DAMAGE_FIRE, -1.0F);
-        ((GroundPathNavigator)this.getNavigator()).setBreakDoors(true);
+        this.setPathfindingMalus(PathNodeType.DANGER_FIRE, 16.0F);
+        this.setPathfindingMalus(PathNodeType.DAMAGE_FIRE, -1.0F);
+        ((GroundPathNavigator)this.getNavigation()).setCanOpenDoors(true);
         this.witchtime = 720000;
-        this.getNavigator().setCanSwim(true);
+        this.getNavigation().setCanFloat(true);
     }
 
     protected void registerGoals() {
@@ -73,66 +73,66 @@ public class AcolyteEntity extends CreatureEntity implements IRangedAttackMob {
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_VILLAGER_AMBIENT;
+        return SoundEvents.VILLAGER_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_VILLAGER_HURT;
+        return SoundEvents.VILLAGER_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_VILLAGER_DEATH;
+        return SoundEvents.VILLAGER_DEATH;
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 20.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 20.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.25D);
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.getDataManager().register(IS_DRINKING, false);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.getEntityData().define(IS_DRINKING, false);
     }
 
-    public boolean canBeLeashedTo(PlayerEntity player) {
+    public boolean canBeLeashed(PlayerEntity player) {
         return false;
     }
 
     public void setDrinkingPotion(boolean drinkingPotion) {
-        this.getDataManager().set(IS_DRINKING, drinkingPotion);
+        this.getEntityData().set(IS_DRINKING, drinkingPotion);
     }
 
     public boolean isDrinkingPotion() {
-        return this.getDataManager().get(IS_DRINKING);
+        return this.getEntityData().get(IS_DRINKING);
     }
 
-    public void livingTick() {
-        if (!this.world.isRemote && this.isAlive()) {
+    public void aiStep() {
+        if (!this.level.isClientSide && this.isAlive()) {
             if (this.witchtime > 0) {
                 --this.witchtime;
             } else {
-                BrewerEntity witchentity = ModEntityType.BREWER.get().create(this.world);
-                witchentity.setLocationAndAngles(this.getPosX(), this.getPosY(), this.getPosZ(), this.rotationYaw, this.rotationPitch);
-                witchentity.onInitialSpawn((IServerWorld) this.world, this.world.getDifficultyForLocation(witchentity.getPosition()), SpawnReason.CONVERSION, (ILivingEntityData) null, (CompoundNBT) null);
-                witchentity.setNoAI(this.isAIDisabled());
+                BrewerEntity witchentity = ModEntityType.BREWER.get().create(this.level);
+                witchentity.moveTo(this.getX(), this.getY(), this.getZ(), this.yRot, this.xRot);
+                witchentity.finalizeSpawn((IServerWorld) this.level, this.level.getCurrentDifficultyAt(witchentity.blockPosition()), SpawnReason.CONVERSION, (ILivingEntityData) null, (CompoundNBT) null);
+                witchentity.setNoAi(this.isNoAi());
                 if (this.hasCustomName()) {
                     witchentity.setCustomName(this.getCustomName());
                     witchentity.setCustomNameVisible(this.isCustomNameVisible());
                 }
-                witchentity.enablePersistence();
+                witchentity.setPersistenceRequired();
                 this.remove();
             }
             if (this.isDrinkingPotion()) {
                 if (this.potionUseTimer-- <= 0) {
                     this.setDrinkingPotion(false);
-                    ItemStack itemstack = this.getHeldItemMainhand();
-                    this.setItemStackToSlot(EquipmentSlotType.MAINHAND, ItemStack.EMPTY);
+                    ItemStack itemstack = this.getMainHandItem();
+                    this.setItemSlot(EquipmentSlotType.MAINHAND, ItemStack.EMPTY);
                     if (itemstack.getItem() == Items.POTION) {
-                        List<EffectInstance> list = PotionUtils.getEffectsFromStack(itemstack);
+                        List<EffectInstance> list = PotionUtils.getMobEffects(itemstack);
                         if (list != null) {
                             for(EffectInstance effectinstance : list) {
-                                this.addPotionEffect(new EffectInstance(effectinstance));
+                                this.addEffect(new EffectInstance(effectinstance));
                             }
                         }
                     }
@@ -141,71 +141,71 @@ public class AcolyteEntity extends CreatureEntity implements IRangedAttackMob {
                 }
             } else {
                 Potion potion = null;
-                if (this.rand.nextFloat() < 0.05F && this.getHealth() < this.getMaxHealth()) {
+                if (this.random.nextFloat() < 0.05F && this.getHealth() < this.getMaxHealth()) {
                     potion = Potions.REGENERATION;
                 }
 
                 if (potion != null) {
-                    this.setItemStackToSlot(EquipmentSlotType.MAINHAND, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), potion));
-                    this.potionUseTimer = this.getHeldItemMainhand().getUseDuration();
+                    this.setItemSlot(EquipmentSlotType.MAINHAND, PotionUtils.setPotion(new ItemStack(Items.POTION), potion));
+                    this.potionUseTimer = this.getMainHandItem().getUseDuration();
                     this.setDrinkingPotion(true);
                     if (!this.isSilent()) {
-                        this.world.playSound((PlayerEntity) null, this.getPosX(), this.getPosY(), this.getPosZ(), SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0F, 0.8F + this.rand.nextFloat() * 0.4F);
+                        this.level.playSound((PlayerEntity) null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_DRINK, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
                     }
 
                     ModifiableAttributeInstance modifiableattributeinstance = this.getAttribute(Attributes.MOVEMENT_SPEED);
                     modifiableattributeinstance.removeModifier(MODIFIER);
-                    modifiableattributeinstance.applyNonPersistentModifier(MODIFIER);
+                    modifiableattributeinstance.addTransientModifier(MODIFIER);
                 }
             }
-            if (this.rand.nextFloat() < 7.5E-4F) {
-                this.world.setEntityState(this, (byte)15);
+            if (this.random.nextFloat() < 7.5E-4F) {
+                this.level.broadcastEntityEvent(this, (byte)15);
             }
 
         }
-        super.livingTick();
+        super.aiStep();
     }
 
-    public void causeLightningStrike(ServerWorld p_241841_1_, LightningBoltEntity p_241841_2_) {
+    public void thunderHit(ServerWorld p_241841_1_, LightningBoltEntity p_241841_2_) {
         if (p_241841_1_.getDifficulty() != Difficulty.PEACEFUL) {
             BrewerEntity witchentity = ModEntityType.BREWER.get().create(p_241841_1_);
-            witchentity.setLocationAndAngles(this.getPosX(), this.getPosY(), this.getPosZ(), this.rotationYaw, this.rotationPitch);
-            witchentity.onInitialSpawn(p_241841_1_, p_241841_1_.getDifficultyForLocation(witchentity.getPosition()), SpawnReason.CONVERSION, (ILivingEntityData)null, (CompoundNBT)null);
-            witchentity.setNoAI(this.isAIDisabled());
+            witchentity.moveTo(this.getX(), this.getY(), this.getZ(), this.yRot, this.xRot);
+            witchentity.finalizeSpawn(p_241841_1_, p_241841_1_.getCurrentDifficultyAt(witchentity.blockPosition()), SpawnReason.CONVERSION, (ILivingEntityData)null, (CompoundNBT)null);
+            witchentity.setNoAi(this.isNoAi());
             if (this.hasCustomName()) {
                 witchentity.setCustomName(this.getCustomName());
                 witchentity.setCustomNameVisible(this.isCustomNameVisible());
             }
-            witchentity.enablePersistence();
-            p_241841_1_.func_242417_l(witchentity);
+            witchentity.setPersistenceRequired();
+            p_241841_1_.addFreshEntityWithPassengers(witchentity);
             this.remove();
         } else {
-            super.causeLightningStrike(p_241841_1_, p_241841_2_);
+            super.thunderHit(p_241841_1_, p_241841_2_);
         }
 
     }
 
-    public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
+    public void performRangedAttack(LivingEntity target, float distanceFactor) {
         if (!this.isDrinkingPotion()) {
-            Vector3d vector3d = target.getMotion();
-            double d0 = target.getPosX() + vector3d.x - this.getPosX();
-            double d1 = target.getPosYEye() - (double)1.1F - this.getPosY();
-            double d2 = target.getPosZ() + vector3d.z - this.getPosZ();
+            Vector3d vector3d = target.getDeltaMovement();
+            double d0 = target.getX() + vector3d.x - this.getX();
+            double d1 = target.getEyeY() - (double)1.1F - this.getY();
+            double d2 = target.getZ() + vector3d.z - this.getZ();
             float f = MathHelper.sqrt(d0 * d0 + d2 * d2);
             Potion potion = ModPotions.MINOR_HARM.get();
-            if (target.getHealth() >= 8.0F && !target.isPotionActive(Effects.POISON)) {
+            if (target.getHealth() >= 8.0F && !target.hasEffect(Effects.POISON)) {
                 potion = Potions.POISON;
             }
 
-            PotionEntity potionentity = new PotionEntity(this.world, this);
-            potionentity.setItem(PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), potion));
-            potionentity.rotationPitch -= -20.0F;
+            PotionEntity potionentity = new PotionEntity(this.level, this);
+            potionentity.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
+            potionentity.xRot -= -20.0F;
             potionentity.shoot(d0, d1 + (double)(f * 0.2F), d2, 0.75F, 8.0F);
             if (!this.isSilent()) {
-                this.world.playSound((PlayerEntity)null, this.getPosX(), this.getPosY(), this.getPosZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0F, 0.8F + this.rand.nextFloat() * 0.4F);
+                this.level.playSound((PlayerEntity)null, this.getX(), this.getY(), this.getZ(), SoundEvents.WITCH_THROW, this.getSoundSource(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
             }
 
-            this.world.addEntity(potionentity);
+            this.level.addFreshEntity(potionentity);
         }
     }
 
@@ -218,7 +218,7 @@ public class AcolyteEntity extends CreatureEntity implements IRangedAttackMob {
         private BrewerEntity brewerEntity;
         private final double moveSpeed;
         private int delayCounter;
-        private final EntityPredicate brewer = (new EntityPredicate().setDistance(32.0D));
+        private final EntityPredicate brewer = (new EntityPredicate().range(32.0D));
 
         public FollowBrewerGoal(AcolyteEntity acolyte, double speed) {
             this.acolyteEntity = acolyte;
@@ -229,13 +229,13 @@ public class AcolyteEntity extends CreatureEntity implements IRangedAttackMob {
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
-            List<BrewerEntity> list = this.acolyteEntity.world.getTargettableEntitiesWithinAABB(BrewerEntity.class, this.brewer, this.acolyteEntity, this.acolyteEntity.getBoundingBox().grow(32.0D, 4.0D, 32.0D));
+        public boolean canUse() {
+            List<BrewerEntity> list = this.acolyteEntity.level.getNearbyEntities(BrewerEntity.class, this.brewer, this.acolyteEntity, this.acolyteEntity.getBoundingBox().inflate(32.0D, 4.0D, 32.0D));
             BrewerEntity brewerEntity = null;
             double d0 = Double.MAX_VALUE;
 
             for(BrewerEntity brewerEntity1 : list) {
-                double d1 = this.acolyteEntity.getDistanceSq(brewerEntity1);
+                double d1 = this.acolyteEntity.distanceToSqr(brewerEntity1);
                 if (!(d1 > d0)) {
                     d0 = d1;
                     brewerEntity = brewerEntity1;
@@ -255,11 +255,11 @@ public class AcolyteEntity extends CreatureEntity implements IRangedAttackMob {
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
-        public boolean shouldContinueExecuting() {
+        public boolean canContinueToUse() {
             if (!this.brewerEntity.isAlive()) {
                 return false;
             } else {
-                double d0 = this.acolyteEntity.getDistanceSq(this.brewerEntity);
+                double d0 = this.acolyteEntity.distanceToSqr(this.brewerEntity);
                 return !(d0 < 18.0D) && !(d0 > 256.0D);
             }
         }
@@ -267,14 +267,14 @@ public class AcolyteEntity extends CreatureEntity implements IRangedAttackMob {
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
+        public void start() {
             this.delayCounter = 0;
         }
 
         /**
          * Reset the task's internal state. Called when this task is interrupted by another one
          */
-        public void resetTask() {
+        public void stop() {
             this.brewerEntity = null;
         }
 
@@ -284,7 +284,7 @@ public class AcolyteEntity extends CreatureEntity implements IRangedAttackMob {
         public void tick() {
             if (--this.delayCounter <= 0) {
                 this.delayCounter = 10;
-                this.acolyteEntity.getNavigator().tryMoveToEntityLiving(this.brewerEntity, this.moveSpeed);
+                this.acolyteEntity.getNavigation().moveTo(this.brewerEntity, this.moveSpeed);
             }
         }
     }

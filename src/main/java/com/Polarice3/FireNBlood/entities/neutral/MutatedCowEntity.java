@@ -25,32 +25,32 @@ public class MutatedCowEntity extends MutatedEntity {
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new SwimGoal(this));
         this.goalSelector.addGoal(1, new PanicGoal(this, 1.0D));
-        this.goalSelector.addGoal(3, new TemptGoal(this, 1.25D, Ingredient.fromItems(Items.WHEAT), false));
+        this.goalSelector.addGoal(3, new TemptGoal(this, 1.25D, Ingredient.of(Items.WHEAT), false));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
         this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 6.0F));
         this.goalSelector.addGoal(7, new LookRandomlyGoal(this));
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 20.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.2D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 20.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.2D);
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_COW_AMBIENT;
+        return SoundEvents.COW_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_COW_HURT;
+        return SoundEvents.COW_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_COW_DEATH;
+        return SoundEvents.COW_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_COW_STEP, 0.15F, 1.0F);
+        this.playSound(SoundEvents.COW_STEP, 0.15F, 1.0F);
     }
 
     /**
@@ -60,34 +60,34 @@ public class MutatedCowEntity extends MutatedEntity {
         return 0.4F;
     }
 
-    protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
-        super.dropSpecialItems(source, looting, recentlyHitIn);
-        int random = this.world.rand.nextInt(4);
+    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
+        super.dropCustomDeathLoot(source, looting, recentlyHitIn);
+        int random = this.level.random.nextInt(4);
         if (random == 1 || looting > 2) {
-            this.entityDropItem(RegistryHandler.MUTATED_STEAK_UNCOOKED.get());
-            for (int i = 0; i < 4 + this.world.rand.nextInt(8); ++i) {
-                this.entityDropItem(Items.LEATHER);
+            this.spawnAtLocation(RegistryHandler.MUTATED_STEAK_UNCOOKED.get());
+            for (int i = 0; i < 4 + this.level.random.nextInt(8); ++i) {
+                this.spawnAtLocation(Items.LEATHER);
             }
         } else {
-            for (int i = 0; i < 4 + this.world.rand.nextInt(8); ++i) {
-                this.entityDropItem(Items.ROTTEN_FLESH);
+            for (int i = 0; i < 4 + this.level.random.nextInt(8); ++i) {
+                this.spawnAtLocation(Items.ROTTEN_FLESH);
             }
-            for (int i = 0; i < 2 + this.world.rand.nextInt(2); ++i) {
-                this.entityDropItem(Items.LEATHER);
+            for (int i = 0; i < 2 + this.level.random.nextInt(2); ++i) {
+                this.spawnAtLocation(Items.LEATHER);
             }
         }
 
     }
 
-    public ActionResultType getEntityInteractionResult(PlayerEntity playerIn, Hand hand) {
-        ItemStack itemstack = playerIn.getHeldItem(hand);
-        if (itemstack.getItem() == Items.BUCKET && !this.isChild()) {
-            playerIn.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
-            ItemStack itemstack1 = DrinkHelper.fill(itemstack, playerIn, Items.MILK_BUCKET.getDefaultInstance());
-            playerIn.setHeldItem(hand, itemstack1);
-            return ActionResultType.func_233537_a_(this.world.isRemote);
+    public ActionResultType mobInteract(PlayerEntity playerIn, Hand hand) {
+        ItemStack itemstack = playerIn.getItemInHand(hand);
+        if (itemstack.getItem() == Items.BUCKET) {
+            playerIn.playSound(SoundEvents.COW_MILK, 1.0F, 1.0F);
+            ItemStack itemstack1 = DrinkHelper.createFilledResult(itemstack, playerIn, Items.MILK_BUCKET.getDefaultInstance());
+            playerIn.setItemInHand(hand, itemstack1);
+            return ActionResultType.sidedSuccess(this.level.isClientSide);
         } else {
-            return super.getEntityInteractionResult(playerIn, hand);
+            return super.mobInteract(playerIn, hand);
         }
     }
 
@@ -95,9 +95,4 @@ public class MutatedCowEntity extends MutatedEntity {
         return 1.3F;
     }
 
-    @Nullable
-    @Override
-    public AgeableEntity createChild(ServerWorld world, AgeableEntity mate) {
-        return null;
-    }
 }

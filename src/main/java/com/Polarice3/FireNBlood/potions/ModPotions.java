@@ -14,10 +14,7 @@ public class ModPotions {
     public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(ForgeRegistries.POTION_TYPES, FireNBlood.MOD_ID);
 
     public static final RegistryObject<Potion> MINING_FATIGUE = POTIONS.register("mining_fatigue",
-            () -> new Potion("mining_fatigue", new EffectInstance(Effects.MINING_FATIGUE, 1800, 1)));
-
-    public static final RegistryObject<Potion> CURSED = POTIONS.register("cursed",
-            () -> new Potion("cursed", new EffectInstance(RegistryHandler.CURSED.get(), 1800)));
+            () -> new Potion("mining_fatigue", new EffectInstance(Effects.DIG_SLOWDOWN, 1800, 1)));
 
     public static final RegistryObject<Potion> MINOR_HARM = POTIONS.register("minorharm",
             () -> new Potion("minorharm", new EffectInstance(RegistryHandler.MINOR_HARM.get(), 1)));

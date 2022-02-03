@@ -11,17 +11,17 @@ import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public class ConfiguredStructures {
-    public static StructureFeature<?, ?> CONFIGURED_TAVERN = RegistryStructures.TAVERN.get().withConfiguration(NoFeatureConfig.NO_FEATURE_CONFIG);
-    public static StructureFeature<?, ?> CONFIGURED_PROFANEDTOWER = RegistryStructures.PROFANEDTOWER.get().withConfiguration(NoFeatureConfig.NO_FEATURE_CONFIG);
-    public static StructureFeature<?, ?> CONFIGURED_PROFANEDSHRINE= RegistryStructures.PROFANEDSHRINE.get().withConfiguration(NoFeatureConfig.NO_FEATURE_CONFIG);
+    public static StructureFeature<?, ?> CONFIGURED_TAVERN = RegistryStructures.TAVERN.get().configured(NoFeatureConfig.NONE);
+    public static StructureFeature<?, ?> CONFIGURED_PROFANEDTOWER = RegistryStructures.PROFANEDTOWER.get().configured(NoFeatureConfig.NONE);
+    public static StructureFeature<?, ?> CONFIGURED_PROFANEDSHRINE= RegistryStructures.PROFANEDSHRINE.get().configured(NoFeatureConfig.NONE);
 
     public static void registerConfiguredStructures() {
         Registry<StructureFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_STRUCTURE_FEATURE;
         Registry.register(registry, new ResourceLocation(FireNBlood.MOD_ID, "configured_tavern"), CONFIGURED_TAVERN);
-        FlatGenerationSettings.STRUCTURES.put(RegistryStructures.TAVERN.get(), CONFIGURED_TAVERN);
+        FlatGenerationSettings.STRUCTURE_FEATURES.put(RegistryStructures.TAVERN.get(), CONFIGURED_TAVERN);
         Registry.register(registry, new ResourceLocation(FireNBlood.MOD_ID, "configured_profanedtower"), CONFIGURED_PROFANEDTOWER);
-        FlatGenerationSettings.STRUCTURES.put(RegistryStructures.PROFANEDTOWER.get(), CONFIGURED_PROFANEDTOWER);
+        FlatGenerationSettings.STRUCTURE_FEATURES.put(RegistryStructures.PROFANEDTOWER.get(), CONFIGURED_PROFANEDTOWER);
         Registry.register(registry, new ResourceLocation(FireNBlood.MOD_ID, "configured_profanedshrine"), CONFIGURED_PROFANEDSHRINE);
-        FlatGenerationSettings.STRUCTURES.put(RegistryStructures.PROFANEDSHRINE.get(), CONFIGURED_PROFANEDSHRINE);
+        FlatGenerationSettings.STRUCTURE_FEATURES.put(RegistryStructures.PROFANEDSHRINE.get(), CONFIGURED_PROFANEDSHRINE);
     }
 }

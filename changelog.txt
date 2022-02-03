@@ -930,7 +930,7 @@ Build: 1.16.1-32.0.101 - Mon Aug 03 22:55:18 GMT 2020
 	diesieben07:
 		Re-introduce "outdated" notification on Mods button in main menu (#7123)
 
-	brandon4261:
+	brandomon4261:
 		Add support for custom elytra (#7202)
 
 =========
@@ -1250,7 +1250,7 @@ Build: 1.16.1-32.0.44 - Thu Jul 02 17:17:45 GMT 2020
 
 =========
 Build: 1.16.1-32.0.43 - Thu Jul 02 12:54:03 GMT 2020
-	MartijnvandenBrand:
+	MartijnvandenBrandom:
 		Include model data in getQuads call (#6884)
 		
 		The model data wasn't included when getting quads from specific sides, but was when getting quads for side = null.

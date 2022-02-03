@@ -15,7 +15,7 @@ public class AnathemaRenderer extends MobRenderer<TaillessAnathemaEntity, Anathe
     }
 
     @Override
-    public ResourceLocation getEntityTexture(TaillessAnathemaEntity entity) {
+    public ResourceLocation getTextureLocation(TaillessAnathemaEntity entity) {
         return TEXTURE;
     }
 }

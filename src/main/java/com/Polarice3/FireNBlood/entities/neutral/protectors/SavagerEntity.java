@@ -54,7 +54,7 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
 
     public SavagerEntity(EntityType<? extends AbstractProtectorEntity> type, World worldIn) {
         super(type, worldIn);
-        this.stepHeight = 1.0F;
+        this.maxUpStep = 1.0F;
     }
 
     protected void registerGoals() {
@@ -70,8 +70,8 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
         this.goalSelector.addGoal(10, new LookAtGoal(this, MobEntity.class, 8.0F));
         this.targetSelector.addGoal(1, new AbstractProtectorEntity.OwnerHurtTargetGoal(this));
         this.targetSelector.addGoal(2, new AbstractProtectorEntity.OwnerHurtByTargetGoal(this));
-        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, AbstractProtectorEntity.class)).setCallsForHelp());
-        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, AbstractVillagerEntity.class)).setCallsForHelp());
+        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, AbstractProtectorEntity.class)).setAlertOthers());
+        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, AbstractVillagerEntity.class)).setAlertOthers());
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractTaillessEntity.class, true));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractRaiderEntity.class, true));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, false, false, (p_234199_0_) -> {
@@ -80,51 +80,51 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 100.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.35D)
-                .createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 0.75D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 12.0D)
-                .createMutableAttribute(Attributes.ATTACK_KNOCKBACK, 3.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .add(Attributes.MAX_HEALTH, 100.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.35D)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 0.75D)
+                .add(Attributes.ATTACK_DAMAGE, 12.0D)
+                .add(Attributes.ATTACK_KNOCKBACK, 3.0D);
     }
 
-    public boolean isOnSameTeam(Entity entityIn) {
+    public boolean isAlliedTo(Entity entityIn) {
         if (entityIn instanceof AbstractProtectorEntity){
             return this.getTeam() == null && entityIn.getTeam() == null;
         }
-        return super.isOnSameTeam(entityIn);
+        return super.isAlliedTo(entityIn);
     }
 
-    protected void updateMovementGoalFlags() {
+    protected void updateControlFlags() {
         boolean flag = !(this.getControllingPassenger() instanceof MobEntity) || this.getControllingPassenger() instanceof AbstractProtectorEntity;
-        boolean flag1 = !(this.getRidingEntity() instanceof BoatEntity);
-        this.goalSelector.setFlag(Goal.Flag.MOVE, flag);
-        this.goalSelector.setFlag(Goal.Flag.JUMP, flag && flag1);
-        this.goalSelector.setFlag(Goal.Flag.LOOK, flag);
-        this.goalSelector.setFlag(Goal.Flag.TARGET, flag);
+        boolean flag1 = !(this.getVehicle() instanceof BoatEntity);
+        this.goalSelector.setControlFlag(Goal.Flag.MOVE, flag);
+        this.goalSelector.setControlFlag(Goal.Flag.JUMP, flag && flag1);
+        this.goalSelector.setControlFlag(Goal.Flag.LOOK, flag);
+        this.goalSelector.setControlFlag(Goal.Flag.TARGET, flag);
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        Entity entity = source.getTrueSource();
+    public boolean hurt(DamageSource source, float amount) {
+        Entity entity = source.getEntity();
         if (this.isInvulnerableTo(source)) {
             return false;
         } else if (entity instanceof AbstractProtectorEntity && !(entity instanceof BrewerEntity)) {
             return false;
-        } else if (entity == this.getRidingEntity()){
+        } else if (entity == this.getVehicle()){
             return false;
         } else if (this.isDying()){
             return false;
         } else if (this.isHired() && entity == this.getOwner()){
             --this.loyaltyPoints;
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         } else {
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         }
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         compound.putInt("hiredTimer", this.hiredTimer);
         compound.putInt("dyingTimer", this.dyingTimer);
         compound.putInt("loyaltyPoints", this.loyaltyPoints);
@@ -135,8 +135,8 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
         compound.putBoolean("isLoyal", this.loyal);
     }
 
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         this.hiredTimer = compound.getInt("hiredTimer");
         this.dyingTimer = compound.getInt("dyingTimer");
         this.loyaltyPoints = compound.getInt("loyaltyPoints");
@@ -149,16 +149,16 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
         this.setLoyal(this.loyal);
     }
 
-    protected PathNavigator createNavigator(World worldIn) {
+    protected PathNavigator createNavigation(World worldIn) {
         return new SavagerEntity.Navigator(this, worldIn);
     }
 
-    public int getHorizontalFaceSpeed() {
+    public int getMaxHeadYRot() {
         return 45;
     }
 
-    public double getMountedYOffset() {
-        if (this.getRidingEntity() instanceof PlayerEntity){
+    public double getPassengersRidingOffset() {
+        if (this.getVehicle() instanceof PlayerEntity){
             return 2.5D;
         } else {
             return 2.0D;
@@ -166,15 +166,15 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
     }
 
     @Nullable
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        ILivingEntityData ilivingentitydata = super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
-        this.setEquipmentBasedOnDifficulty(difficultyIn);
-        this.setEnchantmentBasedOnDifficulty(difficultyIn);
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        ILivingEntityData ilivingentitydata = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+        this.populateDefaultEquipmentSlots(difficultyIn);
+        this.populateDefaultEquipmentEnchantments(difficultyIn);
         return ilivingentitydata;
     }
 
     public boolean canBeSteered() {
-        return !this.isAIDisabled() && this.getControllingPassenger() instanceof LivingEntity;
+        return !this.isNoAi() && this.getControllingPassenger() instanceof LivingEntity;
     }
 
     public boolean isSavagerJumping() {
@@ -190,28 +190,28 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
         return this.getPassengers().isEmpty() ? null : this.getPassengers().get(0);
     }
 
-    private final EntityPredicate mobs = (new EntityPredicate().setDistance(8.0D));
+    private final EntityPredicate mobs = (new EntityPredicate().range(8.0D));
 
-    public void livingTick() {
+    public void aiStep() {
         if (this.isAlive()) {
-            double d0 = this.getAttackTarget() != null ? 0.35D : 0.3D;
+            double d0 = this.getTarget() != null ? 0.35D : 0.3D;
             double d1 = this.getAttribute(Attributes.MOVEMENT_SPEED).getBaseValue();
             this.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(MathHelper.lerp(0.1D, d1, d0));
 
-            if (this.collidedHorizontally && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this)) {
+            if (this.horizontalCollision && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this)) {
                 boolean flag = false;
-                AxisAlignedBB axisalignedbb = this.getBoundingBox().grow(0.2D);
+                AxisAlignedBB axisalignedbb = this.getBoundingBox().inflate(0.2D);
 
-                for(BlockPos blockpos : BlockPos.getAllInBoxMutable(MathHelper.floor(axisalignedbb.minX), MathHelper.floor(axisalignedbb.minY), MathHelper.floor(axisalignedbb.minZ), MathHelper.floor(axisalignedbb.maxX), MathHelper.floor(axisalignedbb.maxY), MathHelper.floor(axisalignedbb.maxZ))) {
-                    BlockState blockstate = this.world.getBlockState(blockpos);
+                for(BlockPos blockpos : BlockPos.betweenClosed(MathHelper.floor(axisalignedbb.minX), MathHelper.floor(axisalignedbb.minY), MathHelper.floor(axisalignedbb.minZ), MathHelper.floor(axisalignedbb.maxX), MathHelper.floor(axisalignedbb.maxY), MathHelper.floor(axisalignedbb.maxZ))) {
+                    BlockState blockstate = this.level.getBlockState(blockpos);
                     Block block = blockstate.getBlock();
                     if (block instanceof LeavesBlock) {
-                        flag = this.world.destroyBlock(blockpos, true, this) || flag;
+                        flag = this.level.destroyBlock(blockpos, true, this) || flag;
                     }
                 }
 
                 if (!flag && this.onGround) {
-                    this.jump();
+                    this.jumpFromGround();
                 }
             }
 
@@ -230,49 +230,49 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
                 --this.cooldownTick;
             }
 
-            List<MonsterEntity> mobs = this.world.getTargettableEntitiesWithinAABB(MonsterEntity.class, this.mobs, this, this.getBoundingBox().grow(4.0D, 4.0D, 4.0D));
+            List<MonsterEntity> mobs = this.level.getNearbyEntities(MonsterEntity.class, this.mobs, this, this.getBoundingBox().inflate(4.0D, 4.0D, 4.0D));
             if (!mobs.isEmpty() && mobs.size() >= 4 && !this.isDying()) {
                 if (this.cooldownTick <= 0) {
-                    this.playSound(SoundEvents.ENTITY_RAVAGER_ROAR, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.RAVAGER_ROAR, 1.0F, 1.0F);
                     this.cooldownTick = 300;
                     this.roarTick = 20;
                 }
             }
         }
-        super.livingTick();
+        super.aiStep();
     }
 
-    public ActionResultType getEntityInteractionResult(PlayerEntity p_230254_1_, Hand p_230254_2_) {
-        ItemStack itemstack = p_230254_1_.getHeldItem(p_230254_2_);
+    public ActionResultType mobInteract(PlayerEntity p_230254_1_, Hand p_230254_2_) {
+        ItemStack itemstack = p_230254_1_.getItemInHand(p_230254_2_);
         Item item = itemstack.getItem();
         if (this.isDying()){
             if (item == Revive()){
-                if (!p_230254_1_.abilities.isCreativeMode) {
+                if (!p_230254_1_.abilities.instabuild) {
                     itemstack.shrink(1);
                 }
                 if (!this.isLoyal()){
                     ++this.loyaltyPoints;
                 }
-                this.playSound(SoundEvents.ENTITY_GENERIC_EAT, 1.0F, 1.0F);
+                this.playSound(SoundEvents.GENERIC_EAT, 1.0F, 1.0F);
                 this.func_233687_w_(false);
                 this.setDying(false);
                 this.getAttribute(Attributes.MAX_HEALTH).removeModifier(MODIFIER);
                 this.heal(HealAmount());
-                this.addPotionEffect(new EffectInstance(Effects.REGENERATION, 120));
-                this.addPotionEffect(new EffectInstance(Effects.RESISTANCE, 120));
+                this.addEffect(new EffectInstance(Effects.REGENERATION, 120));
+                this.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 120));
                 this.dyingTimer = DyingTimer();
                 this.setInvulnerable(false);
                 return ActionResultType.SUCCESS;
             } else {
                 return ActionResultType.PASS;
             }
-        } else if (item == Payment() && !this.isLoyal() && !this.isBeingRidden()) {
+        } else if (item == Payment() && !this.isLoyal() && !this.isVehicle()) {
             if (!this.isHired()) {
-                if (!p_230254_1_.abilities.isCreativeMode) {
+                if (!p_230254_1_.abilities.instabuild) {
                     itemstack.shrink(1);
                 }
-                if (p_230254_1_.getItemStackFromSlot(EquipmentSlotType.HEAD).isEmpty()){
-                    p_230254_1_.setItemStackToSlot(EquipmentSlotType.HEAD, AbstractProtectorEntity.createProtectorBanner());
+                if (p_230254_1_.getItemBySlot(EquipmentSlotType.HEAD).isEmpty()){
+                    p_230254_1_.setItemSlot(EquipmentSlotType.HEAD, AbstractProtectorEntity.createProtectorBanner());
                 }
                 if (this.isSummoned()){
                     this.setSummoned(false);
@@ -280,85 +280,85 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
                 this.setHiredBy(p_230254_1_);
                 this.hiredTimer = AbstractProtectorEntity.HiredTimer();
                 this.dyingTimer = DyingTimer();
-                this.navigator.clearPath();
-                this.setAttackTarget((LivingEntity) null);
+                this.navigation.stop();
+                this.setTarget((LivingEntity) null);
                 this.func_233687_w_(true);
-                this.world.setEntityState(this, (byte) 7);
+                this.level.broadcastEntityEvent(this, (byte) 7);
                 for (int i = 0; i < 7; ++i) {
-                    double d0 = this.rand.nextGaussian() * 0.02D;
-                    double d1 = this.rand.nextGaussian() * 0.02D;
-                    double d2 = this.rand.nextGaussian() * 0.02D;
-                    this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
+                    double d0 = this.random.nextGaussian() * 0.02D;
+                    double d1 = this.random.nextGaussian() * 0.02D;
+                    double d2 = this.random.nextGaussian() * 0.02D;
+                    this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                 }
                 return ActionResultType.SUCCESS;
             } else {
-                if (!p_230254_1_.abilities.isCreativeMode) {
+                if (!p_230254_1_.abilities.instabuild) {
                     itemstack.shrink(1);
                 }
                 this.hiredTimer = this.hiredTimer + 24000;
                 ++this.loyaltyPoints;
                 if (this.loyaltyPoints >= 10){
                     this.setLoyal(true);
-                    this.playSound(SoundEvents.ENTITY_VINDICATOR_CELEBRATE, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.VINDICATOR_CELEBRATE, 1.0F, 1.0F);
                 }
                 for (int i = 0; i < 7; ++i) {
-                    double d0 = this.rand.nextGaussian() * 0.02D;
-                    double d1 = this.rand.nextGaussian() * 0.02D;
-                    double d2 = this.rand.nextGaussian() * 0.02D;
-                    this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
+                    double d0 = this.random.nextGaussian() * 0.02D;
+                    double d1 = this.random.nextGaussian() * 0.02D;
+                    double d2 = this.random.nextGaussian() * 0.02D;
+                    this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                 }
                 return ActionResultType.SUCCESS;
             }
         } else {
             if (this.isHired() && !this.isDying()){
                 if (item == Items.MILK_BUCKET){
-                    if (!p_230254_1_.abilities.isCreativeMode) {
+                    if (!p_230254_1_.abilities.instabuild) {
                         itemstack.shrink(1);
-                        p_230254_1_.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BUCKET));
+                        p_230254_1_.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BUCKET));
                     }
-                    this.playSound(SoundEvents.ENTITY_GENERIC_DRINK, 1.0F, 1.0F);
-                    this.clearActivePotions();
+                    this.playSound(SoundEvents.GENERIC_DRINK, 1.0F, 1.0F);
+                    this.removeAllEffects();
                     for (int i = 0; i < 7; ++i) {
-                        double d0 = this.rand.nextGaussian() * 0.02D;
-                        double d1 = this.rand.nextGaussian() * 0.02D;
-                        double d2 = this.rand.nextGaussian() * 0.02D;
-                        this.world.addParticle(ParticleTypes.POOF, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
+                        double d0 = this.random.nextGaussian() * 0.02D;
+                        double d1 = this.random.nextGaussian() * 0.02D;
+                        double d2 = this.random.nextGaussian() * 0.02D;
+                        this.level.addParticle(ParticleTypes.POOF, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     return ActionResultType.SUCCESS;
                 }
                 if (item == Food() && this.getHealth() < this.getMaxHealth()){
-                    if (!p_230254_1_.abilities.isCreativeMode) {
+                    if (!p_230254_1_.abilities.instabuild) {
                         itemstack.shrink(1);
                     }
-                    this.playSound(SoundEvents.ENTITY_GENERIC_EAT, 1.0F, 1.0F);
+                    this.playSound(SoundEvents.GENERIC_EAT, 1.0F, 1.0F);
                     this.heal(HealAmount());
                     for (int i = 0; i < 7; ++i) {
-                        double d0 = this.rand.nextGaussian() * 0.02D;
-                        double d1 = this.rand.nextGaussian() * 0.02D;
-                        double d2 = this.rand.nextGaussian() * 0.02D;
-                        this.world.addParticle(ParticleTypes.HEART, this.getPosXRandom(1.0D), this.getPosYRandom() + 0.5D, this.getPosZRandom(1.0D), d0, d1, d2);
+                        double d0 = this.random.nextGaussian() * 0.02D;
+                        double d1 = this.random.nextGaussian() * 0.02D;
+                        double d2 = this.random.nextGaussian() * 0.02D;
+                        this.level.addParticle(ParticleTypes.HEART, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                     }
                     return ActionResultType.SUCCESS;
                 }
                 if (item == Termination() && p_230254_1_ == this.getOwner()){
                     this.remove();
                     this.setHired(false);
-                    if (!p_230254_1_.abilities.isCreativeMode) {
+                    if (!p_230254_1_.abilities.instabuild) {
                         itemstack.shrink(1);
                     }
-                    if (!this.world.isRemote && this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES) && this.getOwner() instanceof ServerPlayerEntity) {
-                        this.getOwner().sendMessage(new StringTextComponent(this.getDisplayName().getString() + " has been release from duty!"), Util.DUMMY_UUID);
+                    if (!this.level.isClientSide && this.level.getGameRules().getBoolean(GameRules.RULE_SHOWDEATHMESSAGES) && this.getOwner() instanceof ServerPlayerEntity) {
+                        this.getOwner().sendMessage(new StringTextComponent(this.getDisplayName().getString() + " has been release from duty!"), Util.NIL_UUID);
                     }
                 }
-                if (!p_230254_1_.isCrouching() && p_230254_1_.getHeldItemMainhand().getItem() == Items.AIR){
+                if (!p_230254_1_.isCrouching() && p_230254_1_.getMainHandItem().getItem() == Items.AIR){
                     this.mountTo(p_230254_1_);
                     this.func_233687_w_(false);
                 } else {
-                    this.func_233687_w_(!this.isSitting());
+                    this.func_233687_w_(!this.riding());
                 }
-                this.isJumping = false;
-                this.navigator.clearPath();
-                this.setAttackTarget((LivingEntity) null);
+                this.jumping = false;
+                this.navigation.stop();
+                this.setTarget((LivingEntity) null);
                 return ActionResultType.SUCCESS;
             } else {
                 return ActionResultType.PASS;
@@ -366,14 +366,14 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
         }
     }
 
-    protected boolean isMovementBlocked() {
-        return super.isMovementBlocked() || this.attackTick > 0 || this.roarTick > 0 || this.isDying();
+    protected boolean isImmobile() {
+        return super.isImmobile() || this.attackTick > 0 || this.roarTick > 0 || this.isDying();
     }
 
     protected void mountTo(PlayerEntity player) {
-        if (!this.world.isRemote) {
-            player.rotationYaw = this.rotationYaw;
-            player.rotationPitch = this.rotationPitch;
+        if (!this.level.isClientSide) {
+            player.yRot = this.yRot;
+            player.xRot = this.xRot;
             player.startRiding(this);
         }
 
@@ -381,50 +381,50 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
 
     public void travel(Vector3d travelVector) {
         if (this.isAlive()) {
-            if (this.isBeingRidden() && this.canBeSteered() && this.getControllingPassenger() instanceof PlayerEntity) {
+            if (this.isVehicle() && this.canBeSteered() && this.getControllingPassenger() instanceof PlayerEntity) {
                 LivingEntity livingentity = (LivingEntity) this.getControllingPassenger();
                 assert livingentity != null;
-                this.rotationYaw = livingentity.rotationYaw;
-                this.prevRotationYaw = this.rotationYaw;
-                this.rotationPitch = livingentity.rotationPitch * 0.5F;
-                this.setRotation(this.rotationYaw, this.rotationPitch);
-                this.renderYawOffset = this.rotationYaw;
-                this.rotationYawHead = this.renderYawOffset;
-                float f = livingentity.moveStrafing * 0.5F;
-                float f1 = livingentity.moveForward;
+                this.yRot = livingentity.yRot;
+                this.yRotO = this.yRot;
+                this.xRot = livingentity.xRot * 0.5F;
+                this.setRot(this.yRot, this.xRot);
+                this.yBodyRot = this.yRot;
+                this.yHeadRot = this.yBodyRot;
+                float f = livingentity.xxa * 0.5F;
+                float f1 = livingentity.zza;
                 if (f1 <= 0.0F) {
                     f1 *= 0.25F;
                 }
 
                 if (this.jumpPower > 0.0F && !this.isSavagerJumping() && this.onGround) {
-                    double d0 = 0.7F * (double)this.jumpPower * (double)this.getJumpFactor();
+                    double d0 = 0.7F * (double)this.jumpPower * (double)this.getJumpPower();
                     double d1;
-                    if (this.isPotionActive(Effects.JUMP_BOOST)) {
-                        d1 = d0 + (double)((float)(this.getActivePotionEffect(Effects.JUMP_BOOST).getAmplifier() + 1) * 0.1F);
+                    if (this.hasEffect(Effects.JUMP)) {
+                        d1 = d0 + (double)((float)(this.getEffect(Effects.JUMP).getAmplifier() + 1) * 0.1F);
                     } else {
                         d1 = d0;
                     }
 
-                    Vector3d vector3d = this.getMotion();
-                    this.setMotion(vector3d.x, d1, vector3d.z);
+                    Vector3d vector3d = this.getDeltaMovement();
+                    this.setDeltaMovement(vector3d.x, d1, vector3d.z);
                     this.setSavagerJumping(true);
-                    this.isAirBorne = true;
+                    this.hasImpulse = true;
                     net.minecraftforge.common.ForgeHooks.onLivingJump(this);
                     if (f1 > 0.0F) {
-                        float f2 = MathHelper.sin(this.rotationYaw * ((float)Math.PI / 180F));
-                        float f3 = MathHelper.cos(this.rotationYaw * ((float)Math.PI / 180F));
-                        this.setMotion(this.getMotion().add((double)(-0.4F * f2 * this.jumpPower), 0.0D, (double)(0.4F * f3 * this.jumpPower)));
+                        float f2 = MathHelper.sin(this.yRot * ((float)Math.PI / 180F));
+                        float f3 = MathHelper.cos(this.yRot * ((float)Math.PI / 180F));
+                        this.setDeltaMovement(this.getDeltaMovement().add((double)(-0.4F * f2 * this.jumpPower), 0.0D, (double)(0.4F * f3 * this.jumpPower)));
                     }
 
                     this.jumpPower = 0.0F;
                 }
 
-                this.jumpMovementFactor = this.getAIMoveSpeed() * 0.1F;
-                if (this.canPassengerSteer()) {
-                    this.setAIMoveSpeed((float) this.getAttributeValue(Attributes.MOVEMENT_SPEED));
+                this.flyingSpeed = this.getSpeed() * 0.1F;
+                if (this.isControlledByLocalInstance()) {
+                    this.setSpeed((float) this.getAttributeValue(Attributes.MOVEMENT_SPEED));
                     super.travel(new Vector3d((double) f, travelVector.y, (double) f1));
                 } else if (livingentity instanceof PlayerEntity) {
-                    this.setMotion(Vector3d.ZERO);
+                    this.setDeltaMovement(Vector3d.ZERO);
                 }
 
                 if (this.onGround) {
@@ -432,17 +432,17 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
                     this.setSavagerJumping(false);
                 }
 
-                this.func_233629_a_(this, false);
+                this.calculateEntityAnimation(this, false);
             } else {
-                this.jumpMovementFactor = 0.02F;
+                this.flyingSpeed = 0.02F;
                 super.travel(travelVector);
             }
         }
     }
 
     @Override
-    public void setJumpPower(int jumpPowerIn) {
-        if (this.isBeingRidden()) {
+    public void onPlayerJump(int jumpPowerIn) {
+        if (this.isVehicle()) {
             if (jumpPowerIn < 0) {
                 jumpPowerIn = 0;
             }
@@ -477,32 +477,32 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
         }
 
         protected double getAttackReachSqr(LivingEntity attackTarget) {
-            float f = SavagerEntity.this.getWidth() - 0.5F;
-            return (double)(f * 4.0F + attackTarget.getWidth());
+            float f = SavagerEntity.this.getBbWidth() - 0.5F;
+            return (double)(f * 4.0F + attackTarget.getBbWidth());
         }
 
     }
 
-    public boolean canEntityBeSeen(Entity entityIn) {
-        return this.roarTick <= 0 && super.canEntityBeSeen(entityIn);
+    public boolean canSee(Entity entityIn) {
+        return this.roarTick <= 0 && super.canSee(entityIn);
     }
 
-    protected void constructKnockBackVector(LivingEntity entityIn) {
+    protected void blockedByShield(LivingEntity entityIn) {
         if (this.roarTick == 0) {
-            if (this.rand.nextDouble() < 0.5D) {
+            if (this.random.nextDouble() < 0.5D) {
                 this.launch(entityIn);
             }
 
-            entityIn.velocityChanged = true;
+            entityIn.hurtMarked = true;
         }
 
     }
 
     private void roar() {
         if (this.isAlive()) {
-            for(Entity entity : this.world.getEntitiesWithinAABB(LivingEntity.class, this.getBoundingBox().grow(4.0D), field_213690_b)) {
+            for(Entity entity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0D), field_213690_b)) {
                 if (!(entity == this.getOwner())) {
-                    entity.attackEntityFrom(DamageSource.causeMobDamage(this), 6.0F);
+                    entity.hurt(DamageSource.mobAttack(this), 6.0F);
                     this.launch(entity);
                 }
 
@@ -511,29 +511,29 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
             Vector3d vector3d = this.getBoundingBox().getCenter();
 
             for(int i = 0; i < 40; ++i) {
-                double d0 = this.rand.nextGaussian() * 0.2D;
-                double d1 = this.rand.nextGaussian() * 0.2D;
-                double d2 = this.rand.nextGaussian() * 0.2D;
-                this.world.addParticle(ParticleTypes.POOF, vector3d.x, vector3d.y, vector3d.z, d0, d1, d2);
+                double d0 = this.random.nextGaussian() * 0.2D;
+                double d1 = this.random.nextGaussian() * 0.2D;
+                double d2 = this.random.nextGaussian() * 0.2D;
+                this.level.addParticle(ParticleTypes.POOF, vector3d.x, vector3d.y, vector3d.z, d0, d1, d2);
             }
         }
 
     }
 
     private void launch(Entity p_213688_1_) {
-        double d0 = p_213688_1_.getPosX() - this.getPosX();
-        double d1 = p_213688_1_.getPosZ() - this.getPosZ();
+        double d0 = p_213688_1_.getX() - this.getX();
+        double d1 = p_213688_1_.getZ() - this.getZ();
         double d2 = Math.max(d0 * d0 + d1 * d1, 0.001D);
-        p_213688_1_.addVelocity(d0 / d2 * 4.0D, 0.2D, d1 / d2 * 4.0D);
+        p_213688_1_.push(d0 / d2 * 4.0D, 0.2D, d1 / d2 * 4.0D);
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void handleStatusUpdate(byte id) {
+    public void handleEntityEvent(byte id) {
         if (id == 4) {
             this.attackTick = 10;
-            this.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.0F, 1.0F);
+            this.playSound(SoundEvents.RAVAGER_ATTACK, 1.0F, 1.0F);
         }
-        super.handleStatusUpdate(id);
+        super.handleEntityEvent(id);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -546,32 +546,32 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
         return this.roarTick;
     }
 
-    public boolean attackEntityAsMob(Entity entityIn) {
+    public boolean doHurtTarget(Entity entityIn) {
         this.attackTick = 10;
-        this.world.setEntityState(this, (byte)4);
-        this.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.0F, 1.0F);
-        return super.attackEntityAsMob(entityIn);
+        this.level.broadcastEntityEvent(this, (byte)4);
+        this.playSound(SoundEvents.RAVAGER_ATTACK, 1.0F, 1.0F);
+        return super.doHurtTarget(entityIn);
     }
 
     @Nullable
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_RAVAGER_AMBIENT;
+        return SoundEvents.RAVAGER_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_RAVAGER_HURT;
+        return SoundEvents.RAVAGER_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_RAVAGER_DEATH;
+        return SoundEvents.RAVAGER_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_RAVAGER_STEP, 0.15F, 1.0F);
+        this.playSound(SoundEvents.RAVAGER_STEP, 0.15F, 1.0F);
     }
 
-    public boolean isNotColliding(IWorldReader worldIn) {
-        return !worldIn.containsAnyLiquid(this.getBoundingBox());
+    public boolean checkSpawnObstruction(IWorldReader levelIn) {
+        return !levelIn.containsAnyLiquid(this.getBoundingBox());
     }
 
     static class Navigator extends GroundPathNavigator {
@@ -579,9 +579,9 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
             super(p_i50754_1_, p_i50754_2_);
         }
 
-        protected PathFinder getPathFinder(int p_179679_1_) {
-            this.nodeProcessor = new SavagerEntity.Processor();
-            return new PathFinder(this.nodeProcessor, p_179679_1_);
+        protected PathFinder createPathFinder(int p_179679_1_) {
+            this.nodeEvaluator = new SavagerEntity.Processor();
+            return new PathFinder(this.nodeEvaluator, p_179679_1_);
         }
     }
 
@@ -589,8 +589,8 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
         private Processor() {
         }
 
-        protected PathNodeType refineNodeType(IBlockReader worldIn, boolean canOpenDoors, boolean canEnterDoors, BlockPos pos, PathNodeType nodeType) {
-            return nodeType == PathNodeType.LEAVES ? PathNodeType.OPEN : super.refineNodeType(worldIn, canOpenDoors, canEnterDoors, pos, nodeType);
+        protected PathNodeType evaluateBlockPathType(IBlockReader worldIn, boolean canOpenDoors, boolean canEnterDoors, BlockPos pos, PathNodeType nodeType) {
+            return nodeType == PathNodeType.LEAVES ? PathNodeType.OPEN : super.evaluateBlockPathType(worldIn, canOpenDoors, canEnterDoors, pos, nodeType);
         }
     }
 

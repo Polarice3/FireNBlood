@@ -35,10 +35,10 @@ public class FanaticEntity extends AbstractCultistEntity {
 
     public FanaticEntity(EntityType<? extends FanaticEntity> type, World worldIn) {
         super(type, worldIn);
-        this.setPathPriority(PathNodeType.DANGER_FIRE, 16.0F);
-        this.setPathPriority(PathNodeType.DAMAGE_FIRE, -1.0F);
-        ((GroundPathNavigator)this.getNavigator()).setBreakDoors(true);
-        this.getNavigator().setCanSwim(true);
+        this.setPathfindingMalus(PathNodeType.DANGER_FIRE, 16.0F);
+        this.setPathfindingMalus(PathNodeType.DAMAGE_FIRE, -1.0F);
+        ((GroundPathNavigator)this.getNavigation()).setCanOpenDoors(true);
+        this.getNavigation().setCanFloat(true);
     }
 
     protected void registerGoals() {
@@ -50,37 +50,37 @@ public class FanaticEntity extends AbstractCultistEntity {
         this.goalSelector.addGoal(8, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
         this.goalSelector.addGoal(9, new LookAtGoal(this, PlayerEntity.class, 15.0F));
         this.goalSelector.addGoal(10, new LookAtGoal(this, MobEntity.class, 8.0F));
-        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, AbstractCultistEntity.class)).setCallsForHelp());
-        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, WitchEntity.class)).setCallsForHelp());
+        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, AbstractCultistEntity.class)).setAlertOthers());
+        this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, WitchEntity.class)).setAlertOthers());
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractProtectorEntity.class, true));
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 20.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.35D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 3.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 20.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.35D)
+                .add(Attributes.ATTACK_DAMAGE, 3.0D);
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_EVOKER_AMBIENT;
+        return SoundEvents.EVOKER_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_EVOKER_HURT;
+        return SoundEvents.EVOKER_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_EVOKER_DEATH;
+        return SoundEvents.EVOKER_DEATH;
     }
 
-    public boolean canBeLeashedTo(PlayerEntity player) {
+    public boolean canBeLeashed(PlayerEntity player) {
         return false;
     }
 
     public boolean hasBomb(){
-        return this.getHeldItem(Hand.OFF_HAND).getItem() == RegistryHandler.WITCHBOMB.get();
+        return this.getItemInHand(Hand.OFF_HAND).getItem() == RegistryHandler.WITCHBOMB.get();
     }
 
     static class ThrowBombsGoal extends Goal{
@@ -92,22 +92,22 @@ public class FanaticEntity extends AbstractCultistEntity {
         }
 
         @Override
-        public boolean shouldExecute() {
-            if (this.fanatic.getAttackTarget() != null && this.fanatic.hasBomb()){
-                LivingEntity entity = this.fanatic.getAttackTarget();
-                return this.fanatic.getDistance(entity) >= 8.0;
+        public boolean canUse() {
+            if (this.fanatic.getTarget() != null && this.fanatic.hasBomb()){
+                LivingEntity entity = this.fanatic.getTarget();
+                return this.fanatic.distanceTo(entity) >= 8.0;
             } else {
                 return false;
             }
         }
 
         @Override
-        public boolean shouldContinueExecuting() {
-            return this.fanatic.getAttackTarget() != null && this.fanatic.hasBomb();
+        public boolean canContinueToUse() {
+            return this.fanatic.getTarget() != null && this.fanatic.hasBomb();
         }
 
         @Override
-        public void resetTask() {
+        public void stop() {
             this.bombTimer = 0;
         }
 
@@ -116,16 +116,16 @@ public class FanaticEntity extends AbstractCultistEntity {
             super.tick();
             ++this.bombTimer;
             if (this.bombTimer >= 200) {
-                LivingEntity livingEntity = this.fanatic.getAttackTarget();
-                WitchBombEntity snowballentity = new WitchBombEntity(this.fanatic.world, this.fanatic);
-                Vector3d vector3d = livingEntity.getMotion();
-                double d0 = livingEntity.getPosX() + vector3d.x - this.fanatic.getPosX();
-                double d1 = livingEntity.getPosYEye() - (double) 1.1F - this.fanatic.getPosY();
-                double d2 = livingEntity.getPosZ() + vector3d.z - this.fanatic.getPosZ();
+                LivingEntity livingEntity = this.fanatic.getTarget();
+                WitchBombEntity snowballentity = new WitchBombEntity(this.fanatic.level, this.fanatic);
+                Vector3d vector3d = livingEntity.getDeltaMovement();
+                double d0 = livingEntity.getX() + vector3d.x - this.fanatic.getX();
+                double d1 = livingEntity.getEyeY() - (double) 1.1F - this.fanatic.getY();
+                double d2 = livingEntity.getZ() + vector3d.z - this.fanatic.getZ();
                 float f = MathHelper.sqrt(d0 * d0 + d2 * d2);
                 snowballentity.shoot(d0, d1 + (double) (f * 0.2F), d2, 0.75F, 2.0F);
-                this.fanatic.playSound(SoundEvents.ENTITY_WITCH_THROW, 1.0F, 0.4F / (this.fanatic.getRNG().nextFloat() * 0.4F + 0.8F));
-                this.fanatic.world.addEntity(snowballentity);
+                this.fanatic.playSound(SoundEvents.WITCH_THROW, 1.0F, 0.4F / (this.fanatic.getRandom().nextFloat() * 0.4F + 0.8F));
+                this.fanatic.level.addFreshEntity(snowballentity);
                 this.bombTimer = 0;
             }
         }
@@ -145,50 +145,50 @@ public class FanaticEntity extends AbstractCultistEntity {
     }
 
     @Nullable
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        this.setEquipmentBasedOnDifficulty(difficultyIn);
-        this.setEnchantmentBasedOnDifficulty(difficultyIn);
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        this.populateDefaultEquipmentSlots(difficultyIn);
+        this.populateDefaultEquipmentEnchantments(difficultyIn);
         if ((double)worldIn.getRandom().nextFloat() < 0.05D) {
-            BlackBullEntity blackBullEntity = new BlackBullEntity(ModEntityType.BLACK_BULL.get(), world);
-            blackBullEntity.setLocationAndAngles(this.getPosX(), this.getPosY(), this.getPosZ(), this.rotationYaw, 0.0F);
-            blackBullEntity.onInitialSpawn(worldIn, difficultyIn, SpawnReason.JOCKEY, (ILivingEntityData)null, (CompoundNBT)null);
+            BlackBullEntity blackBullEntity = new BlackBullEntity(ModEntityType.BLACK_BULL.get(), level);
+            blackBullEntity.moveTo(this.getX(), this.getY(), this.getZ(), this.yRot, 0.0F);
+            blackBullEntity.finalizeSpawn(worldIn, difficultyIn, SpawnReason.JOCKEY, (ILivingEntityData)null, (CompoundNBT)null);
             this.startRiding(blackBullEntity);
-            worldIn.addEntity(blackBullEntity);
+            worldIn.addFreshEntity(blackBullEntity);
         }
-        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+        return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
-    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-        int random = this.rand.nextInt(9);
-        int random2 = this.rand.nextInt(5);
-        int random3 = this.rand.nextInt(4);
+    protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+        int random = this.random.nextInt(9);
+        int random2 = this.random.nextInt(5);
+        int random3 = this.random.nextInt(4);
         switch (random){
             case 0:
-                this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.STONE_SWORD));
+                this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.STONE_SWORD));
                 break;
             case 1:
-                this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.STONE_AXE));
+                this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.STONE_AXE));
                 break;
             case 2:
-                this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.STONE_PICKAXE));
+                this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.STONE_PICKAXE));
                 break;
             case 3:
-                this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.IRON_SWORD));
+                this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.IRON_SWORD));
                 break;
             case 4:
-                this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.IRON_AXE));
+                this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.IRON_AXE));
                 break;
             case 5:
-                this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
+                this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
                 break;
             case 6:
-                this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
+                this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
                 break;
             case 7:
-                this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
+                this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.GOLDEN_AXE));
                 break;
             case 8:
-                this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.GOLDEN_PICKAXE));
+                this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.GOLDEN_PICKAXE));
         }
         switch (random2){
             case 0:
@@ -196,18 +196,18 @@ public class FanaticEntity extends AbstractCultistEntity {
             case 2:
                 break;
             case 3:
-                this.setItemStackToSlot(EquipmentSlotType.CHEST, new ItemStack(Items.CHAINMAIL_CHESTPLATE));
+                this.setItemSlot(EquipmentSlotType.CHEST, new ItemStack(Items.CHAINMAIL_CHESTPLATE));
                 break;
             case 4:
-                this.setItemStackToSlot(EquipmentSlotType.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
+                this.setItemSlot(EquipmentSlotType.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
         }
         if (random3 == 0) {
-            this.setItemStackToSlot(EquipmentSlotType.OFFHAND, new ItemStack(RegistryHandler.WITCHBOMB.get()));
+            this.setItemSlot(EquipmentSlotType.OFFHAND, new ItemStack(RegistryHandler.WITCHBOMB.get()));
         }
     }
 
     @Override
-    public SoundEvent getRaidLossSound() {
-        return SoundEvents.ENTITY_EVOKER_CELEBRATE;
+    public SoundEvent getCelebrateSound() {
+        return SoundEvents.EVOKER_CELEBRATE;
     }
 }

@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 public class RoyalBulletEntity extends FlyingTaillessEntity {
-    protected static final DataParameter<Byte> BULLET_FLAGS = EntityDataManager.createKey(RoyalBulletEntity.class, DataSerializers.BYTE);
+    protected static final DataParameter<Byte> BULLET_FLAGS = EntityDataManager.defineId(RoyalBulletEntity.class, DataSerializers.BYTE);
 
     private MobEntity owner;
     @Nullable
@@ -39,13 +39,13 @@ public class RoyalBulletEntity extends FlyingTaillessEntity {
 
     public RoyalBulletEntity(EntityType<? extends FlyingTaillessEntity> type, World worldIn) {
         super(type, worldIn);
-        this.experienceValue = 0;
-        this.moveController = new RoyalBulletEntity.MoveHelperController(this);
+        this.xpReward = 0;
+        this.moveControl = new RoyalBulletEntity.MoveHelperController(this);
     }
 
     public void move(MoverType typeIn, Vector3d pos) {
         super.move(typeIn, pos);
-        this.doBlockCollisions();
+        this.checkInsideBlocks();
     }
 
     public void tick() {
@@ -53,18 +53,18 @@ public class RoyalBulletEntity extends FlyingTaillessEntity {
         this.setNoGravity(true);
         if (this.limitedLifespan && --this.limitedLifeTicks <= 0) {
             this.limitedLifeTicks = 20;
-            this.attackEntityFrom(DamageSource.STARVE, 1.0F);
+            this.hurt(DamageSource.STARVE, 1.0F);
         }
 
     }
 
-    public boolean isImmuneToExplosions(){return true;}
+    public boolean ignoreExplosion(){return true;}
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 5.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.4D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .add(Attributes.MAX_HEALTH, 5.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.4D);
     }
 
     protected void registerGoals() {
@@ -74,40 +74,40 @@ public class RoyalBulletEntity extends FlyingTaillessEntity {
         this.goalSelector.addGoal(8, new RoyalBulletEntity.MoveRandomGoal());
         this.goalSelector.addGoal(9, new LookAtGoal(this, PlayerEntity.class, 3.0F, 1.0F));
         this.goalSelector.addGoal(10, new LookAtGoal(this, MobEntity.class, 8.0F));
-        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, AbstractRaiderEntity.class)).setCallsForHelp());
+        this.targetSelector.addGoal(1, (new HurtByTargetGoal(this, AbstractRaiderEntity.class)).setAlertOthers());
         this.targetSelector.addGoal(2, new RoyalBulletEntity.CopyOwnerTargetGoal(this));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, AbstractIllagerEntity.class, true));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true));
     }
 
-    protected void updateAITasks() {
-        super.updateAITasks();
+    protected void customServerAiStep() {
+        super.customServerAiStep();
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_POLAR_BEAR_AMBIENT_BABY;
+        return SoundEvents.POLAR_BEAR_AMBIENT_BABY;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_FOX_HURT;
+        return SoundEvents.FOX_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_PHANTOM_DEATH;
+        return SoundEvents.PHANTOM_DEATH;
     }
 
-    protected boolean isDespawnPeaceful() {
+    protected boolean shouldDespawnInPeaceful() {
         return true;
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(BULLET_FLAGS, (byte)0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(BULLET_FLAGS, (byte)0);
     }
 
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if (compound.contains("BoundX")) {
             this.boundOrigin = new BlockPos(compound.getInt("BoundX"), compound.getInt("BoundY"), compound.getInt("BoundZ"));
         }
@@ -118,8 +118,8 @@ public class RoyalBulletEntity extends FlyingTaillessEntity {
 
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         if (this.boundOrigin != null) {
             compound.putInt("BoundX", this.boundOrigin.getX());
             compound.putInt("BoundY", this.boundOrigin.getY());
@@ -150,31 +150,31 @@ public class RoyalBulletEntity extends FlyingTaillessEntity {
         this.limitedLifeTicks = limitedLifeTicksIn;
     }
 
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
     private boolean getBulletFlag(int mask) {
-        int i = this.dataManager.get(BULLET_FLAGS);
+        int i = this.entityData.get(BULLET_FLAGS);
         return (i & mask) != 0;
     }
 
     private void setBulletFlag(int mask, boolean value) {
-        int i = this.dataManager.get(BULLET_FLAGS);
+        int i = this.entityData.get(BULLET_FLAGS);
         if (value) {
             i = i | mask;
         } else {
             i = i & ~mask;
         }
 
-        this.dataManager.set(BULLET_FLAGS, (byte)(i & 255));
+        this.entityData.set(BULLET_FLAGS, (byte)(i & 255));
     }
 
     public boolean isCharging() {
         return this.getBulletFlag(1);
     }
 
-    public void setCharging(boolean charging) {
+    public void setChargingCrossbow(boolean charging) {
         this.setBulletFlag(1, charging);
     }
 
@@ -186,9 +186,9 @@ public class RoyalBulletEntity extends FlyingTaillessEntity {
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
-            if (RoyalBulletEntity.this.getAttackTarget() != null && !RoyalBulletEntity.this.getMoveHelper().isUpdating()) {
-                return true/*RoyalBulletEntity.this.getDistance(RoyalBulletEntity.this.getAttackTarget()) > 4.0D*/;
+        public boolean canUse() {
+            if (RoyalBulletEntity.this.getTarget() != null && !RoyalBulletEntity.this.getMoveControl().hasWanted()) {
+                return true/*RoyalBulletEntity.this.distanceTo(RoyalBulletEntity.this.getTarget()) > 4.0D*/;
             } else {
                 return false;
             }
@@ -197,22 +197,22 @@ public class RoyalBulletEntity extends FlyingTaillessEntity {
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
-        public boolean shouldContinueExecuting() {
-            return RoyalBulletEntity.this.getMoveHelper().isUpdating() && RoyalBulletEntity.this.isCharging() && RoyalBulletEntity.this.getAttackTarget() != null && RoyalBulletEntity.this.getAttackTarget().isAlive();
+        public boolean canContinueToUse() {
+            return RoyalBulletEntity.this.getMoveControl().hasWanted() && RoyalBulletEntity.this.isCharging() && RoyalBulletEntity.this.getTarget() != null && RoyalBulletEntity.this.getTarget().isAlive();
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
-            LivingEntity livingentity = RoyalBulletEntity.this.getAttackTarget();
+        public void start() {
+            LivingEntity livingentity = RoyalBulletEntity.this.getTarget();
             Vector3d vector3d = livingentity.getEyePosition(1.0F);
-            RoyalBulletEntity.this.moveController.setMoveTo(vector3d.x, vector3d.y, vector3d.z, 1.0D);
-            RoyalBulletEntity.this.setCharging(true);
+            RoyalBulletEntity.this.moveControl.setWantedPosition(vector3d.x, vector3d.y, vector3d.z, 1.0D);
+            RoyalBulletEntity.this.setChargingCrossbow(true);
         }
 
-        public void resetTask() {
-            RoyalBulletEntity.this.setCharging(false);
+        public void stop() {
+            RoyalBulletEntity.this.setChargingCrossbow(false);
         }
 
 
@@ -220,24 +220,24 @@ public class RoyalBulletEntity extends FlyingTaillessEntity {
          * Keep ticking a continuous task that has already been started
          */
         public void tick() {
-            LivingEntity livingentity = RoyalBulletEntity.this.getAttackTarget();
-            if (RoyalBulletEntity.this.getBoundingBox().grow(1.0D).intersects(livingentity.getBoundingBox())) {
+            LivingEntity livingentity = RoyalBulletEntity.this.getTarget();
+            if (RoyalBulletEntity.this.getBoundingBox().inflate(1.0D).intersects(livingentity.getBoundingBox())) {
                 this.explode();
             }
 
         }
 
         public void explode() {
-            if (!world.isRemote) {
+            if (!level.isClientSide) {
                 RoyalBulletEntity.this.dead = true;
-                world.createExplosion(RoyalBulletEntity.this, RoyalBulletEntity.this.getPosX(), RoyalBulletEntity.this.getPosY(), RoyalBulletEntity.this.getPosZ(), 1.5F, false, Explosion.Mode.NONE);
+                level.explode(RoyalBulletEntity.this, RoyalBulletEntity.this.getX(), RoyalBulletEntity.this.getY(), RoyalBulletEntity.this.getZ(), 1.5F, false, Explosion.Mode.NONE);
                 RoyalBulletEntity.this.remove();
             }
         }
     }
 
     class CopyOwnerTargetGoal extends TargetGoal {
-        private final EntityPredicate field_220803_b = (new EntityPredicate()).setIgnoresLineOfSight().setUseInvisibilityCheck();
+        private final EntityPredicate field_220803_b = (new EntityPredicate()).allowUnseeable().ignoreInvisibilityTesting();
 
         public CopyOwnerTargetGoal(CreatureEntity creature) {
             super(creature, false);
@@ -247,16 +247,16 @@ public class RoyalBulletEntity extends FlyingTaillessEntity {
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
-            return RoyalBulletEntity.this.owner != null && RoyalBulletEntity.this.owner.getAttackTarget() != null && this.isSuitableTarget(RoyalBulletEntity.this.owner.getAttackTarget(), this.field_220803_b);
+        public boolean canUse() {
+            return RoyalBulletEntity.this.owner != null && RoyalBulletEntity.this.owner.getTarget() != null && this.canAttack(RoyalBulletEntity.this.owner.getTarget(), this.field_220803_b);
         }
 
         /**
          * Execute a one shot task or start executing a continuous task
          */
-        public void startExecuting() {
-            RoyalBulletEntity.this.setAttackTarget(RoyalBulletEntity.this.owner.getAttackTarget());
-            super.startExecuting();
+        public void start() {
+            RoyalBulletEntity.this.setTarget(RoyalBulletEntity.this.owner.getTarget());
+            super.start();
         }
     }
 
@@ -266,23 +266,23 @@ public class RoyalBulletEntity extends FlyingTaillessEntity {
         }
 
         public void tick() {
-            if (this.action == Action.MOVE_TO) {
-                Vector3d vector3d = new Vector3d(this.posX - RoyalBulletEntity.this.getPosX(), this.posY - RoyalBulletEntity.this.getPosY(), this.posZ - RoyalBulletEntity.this.getPosZ());
+            if (this.operation == Action.MOVE_TO) {
+                Vector3d vector3d = new Vector3d(this.wantedX - RoyalBulletEntity.this.getX(), this.wantedY - RoyalBulletEntity.this.getY(), this.wantedZ - RoyalBulletEntity.this.getZ());
                 double d0 = vector3d.length();
-                if (d0 < RoyalBulletEntity.this.getBoundingBox().getAverageEdgeLength()) {
-                    this.action = Action.WAIT;
-                    RoyalBulletEntity.this.setMotion(RoyalBulletEntity.this.getMotion().scale(0.5D));
+                if (d0 < RoyalBulletEntity.this.getBoundingBox().getSize()) {
+                    this.operation = Action.WAIT;
+                    RoyalBulletEntity.this.setDeltaMovement(RoyalBulletEntity.this.getDeltaMovement().scale(0.5D));
                 } else {
-                    RoyalBulletEntity.this.setMotion(RoyalBulletEntity.this.getMotion().add(vector3d.scale(this.speed * 0.05D / d0)));
-                    if (RoyalBulletEntity.this.getAttackTarget() == null) {
-                        Vector3d vector3d1 = RoyalBulletEntity.this.getMotion();
-                        RoyalBulletEntity.this.rotationYaw = -((float)MathHelper.atan2(vector3d1.x, vector3d1.z)) * (180F / (float)Math.PI);
-                        RoyalBulletEntity.this.renderYawOffset = RoyalBulletEntity.this.rotationYaw;
+                    RoyalBulletEntity.this.setDeltaMovement(RoyalBulletEntity.this.getDeltaMovement().add(vector3d.scale(this.speedModifier * 0.05D / d0)));
+                    if (RoyalBulletEntity.this.getTarget() == null) {
+                        Vector3d vector3d1 = RoyalBulletEntity.this.getDeltaMovement();
+                        RoyalBulletEntity.this.yRot = -((float)MathHelper.atan2(vector3d1.x, vector3d1.z)) * (180F / (float)Math.PI);
+                        RoyalBulletEntity.this.yBodyRot = RoyalBulletEntity.this.yRot;
                     } else {
-                        double d2 = RoyalBulletEntity.this.getAttackTarget().getPosX() - RoyalBulletEntity.this.getPosX();
-                        double d1 = RoyalBulletEntity.this.getAttackTarget().getPosZ() - RoyalBulletEntity.this.getPosZ();
-                        RoyalBulletEntity.this.rotationYaw = -((float)MathHelper.atan2(d2, d1)) * (180F / (float)Math.PI);
-                        RoyalBulletEntity.this.renderYawOffset = RoyalBulletEntity.this.rotationYaw;
+                        double d2 = RoyalBulletEntity.this.getTarget().getX() - RoyalBulletEntity.this.getX();
+                        double d1 = RoyalBulletEntity.this.getTarget().getZ() - RoyalBulletEntity.this.getZ();
+                        RoyalBulletEntity.this.yRot = -((float)MathHelper.atan2(d2, d1)) * (180F / (float)Math.PI);
+                        RoyalBulletEntity.this.yBodyRot = RoyalBulletEntity.this.yRot;
                     }
                 }
 
@@ -292,21 +292,21 @@ public class RoyalBulletEntity extends FlyingTaillessEntity {
 
     class MoveRandomGoal extends Goal {
         public MoveRandomGoal() {
-            this.setMutexFlags(EnumSet.of(Flag.MOVE));
+            this.setFlags(EnumSet.of(Flag.MOVE));
         }
 
         /**
          * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
          * method as well.
          */
-        public boolean shouldExecute() {
-            return !RoyalBulletEntity.this.getMoveHelper().isUpdating() && RoyalBulletEntity.this.rand.nextInt(7) == 0;
+        public boolean canUse() {
+            return !RoyalBulletEntity.this.getMoveControl().hasWanted() && RoyalBulletEntity.this.random.nextInt(7) == 0;
         }
 
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
-        public boolean shouldContinueExecuting() {
+        public boolean canContinueToUse() {
             return false;
         }
 
@@ -316,15 +316,15 @@ public class RoyalBulletEntity extends FlyingTaillessEntity {
         public void tick() {
             BlockPos blockpos = RoyalBulletEntity.this.getBoundOrigin();
             if (blockpos == null) {
-                blockpos = RoyalBulletEntity.this.getPosition();
+                blockpos = RoyalBulletEntity.this.blockPosition();
             }
 
             for(int i = 0; i < 3; ++i) {
-                BlockPos blockpos1 = blockpos.add(RoyalBulletEntity.this.rand.nextInt(15) - 7, RoyalBulletEntity.this.rand.nextInt(11) - 5, RoyalBulletEntity.this.rand.nextInt(15) - 7);
-                if (RoyalBulletEntity.this.world.isAirBlock(blockpos1)) {
-                    RoyalBulletEntity.this.moveController.setMoveTo((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
-                    if (RoyalBulletEntity.this.getAttackTarget() == null) {
-                        RoyalBulletEntity.this.getLookController().setLookPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);
+                BlockPos blockpos1 = blockpos.offset(RoyalBulletEntity.this.random.nextInt(15) - 7, RoyalBulletEntity.this.random.nextInt(11) - 5, RoyalBulletEntity.this.random.nextInt(15) - 7);
+                if (RoyalBulletEntity.this.level.isEmptyBlock(blockpos1)) {
+                    RoyalBulletEntity.this.moveControl.setWantedPosition((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 0.25D);
+                    if (RoyalBulletEntity.this.getTarget() == null) {
+                        RoyalBulletEntity.this.getLookControl().setLookAt((double)blockpos1.getX() + 0.5D, (double)blockpos1.getY() + 0.5D, (double)blockpos1.getZ() + 0.5D, 180.0F, 20.0F);
                     }
                     break;
                 }

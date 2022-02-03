@@ -28,7 +28,7 @@ public class FanaticRenderer extends AbstractCultistRenderer<FanaticEntity>{
     }
 
     @Override
-    public ResourceLocation getEntityTexture(FanaticEntity entity) {
+    public ResourceLocation getTextureLocation(FanaticEntity entity) {
         return TEXTURE;
     }
 }

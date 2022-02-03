@@ -4,10 +4,10 @@ import com.Polarice3.FireNBlood.entities.ally.SummonedEntity;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.TaillessDruidEntity;
 import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEntity;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,11 +36,11 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class ChannellerEntity extends AbstractCultistEntity {
-    private static final DataParameter<Boolean> IS_PRAYING = EntityDataManager.createKey(ChannellerEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> IS_PRAYING = EntityDataManager.defineId(ChannellerEntity.class, DataSerializers.BOOLEAN);
     private static final Predicate<LivingEntity> field_213690_b = (p_213685_0_) -> {
         return p_213685_0_.isAlive() && !(p_213685_0_ instanceof ChannellerEntity);
     };
-    private static final DataParameter<Integer> TARGET_ALLY = EntityDataManager.createKey(ChannellerEntity.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> TARGET_ALLY = EntityDataManager.defineId(ChannellerEntity.class, DataSerializers.INT);
     private MonsterEntity AllyTarget;
     private int prayingTick;
     private int prayingCooldown;
@@ -48,10 +48,10 @@ public class ChannellerEntity extends AbstractCultistEntity {
 
     public ChannellerEntity(EntityType<? extends ChannellerEntity> type, World worldIn) {
         super(type, worldIn);
-        this.setPathPriority(PathNodeType.DANGER_FIRE, 16.0F);
-        this.setPathPriority(PathNodeType.DAMAGE_FIRE, -1.0F);
-        ((GroundPathNavigator)this.getNavigator()).setBreakDoors(true);
-        this.getNavigator().setCanSwim(true);
+        this.setPathfindingMalus(PathNodeType.DANGER_FIRE, 16.0F);
+        this.setPathfindingMalus(PathNodeType.DAMAGE_FIRE, -1.0F);
+        ((GroundPathNavigator)this.getNavigation()).setCanOpenDoors(true);
+        this.getNavigation().setCanFloat(true);
         this.prayingCooldown = 0;
     }
 
@@ -66,53 +66,53 @@ public class ChannellerEntity extends AbstractCultistEntity {
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 26.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.35D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 26.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.35D);
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_VILLAGER_AMBIENT;
+        return SoundEvents.VILLAGER_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_VILLAGER_HURT;
+        return SoundEvents.VILLAGER_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_VILLAGER_DEATH;
+        return SoundEvents.VILLAGER_DEATH;
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(IS_PRAYING, false);
-        this.dataManager.register(TARGET_ALLY, 0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(IS_PRAYING, false);
+        this.entityData.define(TARGET_ALLY, 0);
     }
 
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         this.prayingTick = compound.getInt("prayingTick");
         this.prayingCooldown = compound.getInt("prayingCooldown");
         this.healTick = compound.getInt("healTick");
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
         compound.putInt("prayingTick", this.prayingTick);
         compound.putInt("prayingCooldown", this.prayingCooldown);
         compound.putInt("healTick", this.healTick);
     }
 
     private void setAllyTarget(int AllyTargetIn) {
-        this.dataManager.set(TARGET_ALLY, AllyTargetIn);
+        this.entityData.set(TARGET_ALLY, AllyTargetIn);
     }
 
     public boolean hasAllyTarget() {
-        return this.dataManager.get(TARGET_ALLY) != 0;
+        return this.entityData.get(TARGET_ALLY) != 0;
     }
 
     public MonsterEntity getAllyTarget() {
-        Entity entity = this.world.getEntityByID(this.dataManager.get(TARGET_ALLY));
+        Entity entity = this.level.getEntity(this.entityData.get(TARGET_ALLY));
         if (entity instanceof MonsterEntity
                 && !(entity instanceof CreeperEntity)
                 && !(entity instanceof TaillessDruidEntity)
@@ -123,11 +123,11 @@ public class ChannellerEntity extends AbstractCultistEntity {
         }
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount){
+    public boolean hurt(DamageSource source, float amount){
         if (!this.isPraying()) {
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         } else {
-            return super.attackEntityFrom(source, amount/2);
+            return super.hurt(source, amount/2);
         }
     }
 
@@ -141,62 +141,62 @@ public class ChannellerEntity extends AbstractCultistEntity {
     }
 
     @Nullable
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        ILivingEntityData ilivingentitydata = super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
-        this.setEquipmentBasedOnDifficulty(difficultyIn);
-        this.setEnchantmentBasedOnDifficulty(difficultyIn);
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        ILivingEntityData ilivingentitydata = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+        this.populateDefaultEquipmentSlots(difficultyIn);
+        this.populateDefaultEquipmentEnchantments(difficultyIn);
         return ilivingentitydata;
     }
 
-    public boolean canBeLeashedTo(PlayerEntity player) {
+    public boolean canBeLeashed(PlayerEntity player) {
         return false;
     }
 
-    private final EntityPredicate ally = (new EntityPredicate().setDistance(32.0D).setCustomPredicate(field_213690_b));
+    private final EntityPredicate ally = (new EntityPredicate().range(32.0D).selector(field_213690_b));
 
     public void setIsPraying(boolean praying) {
-        this.dataManager.set(IS_PRAYING, praying);
+        this.entityData.set(IS_PRAYING, praying);
     }
 
     public boolean isPraying() {
-        return this.dataManager.get(IS_PRAYING);
+        return this.entityData.get(IS_PRAYING);
     }
 
-    public void livingTick() {
-        super.livingTick();
+    public void aiStep() {
+        super.aiStep();
         if (this.prayingCooldown == 0) {
-            List<MonsterEntity> list = this.world.getTargettableEntitiesWithinAABB(MonsterEntity.class, this.ally, this, this.getBoundingBox().grow(64.0D, 8.0D, 64.0D));
+            List<MonsterEntity> list = this.level.getNearbyEntities(MonsterEntity.class, this.ally, this, this.getBoundingBox().inflate(64.0D, 8.0D, 64.0D));
             if (!list.isEmpty() && !this.hasAllyTarget()) {
-                MonsterEntity ally = list.get(this.rand.nextInt(list.size()));
-                this.setAllyTarget(ally.getEntityId());
+                MonsterEntity ally = list.get(this.random.nextInt(list.size()));
+                this.setAllyTarget(ally.getId());
             }
             if (this.hasAllyTarget()) {
                 if (this.prayingTick < 20) {
                     ++this.prayingTick;
                 } else {
                     if (this.getAllyTarget() != null) {
-                        if (this.getDistance(this.getAllyTarget()) >= 12.0D) {
-                            Vector3d vector3d = getAllyTarget().getPositionVec();
-                            this.getNavigator().tryMoveToXYZ(vector3d.x, vector3d.y, vector3d.z, 1.0D);
+                        if (this.distanceTo(this.getAllyTarget()) >= 12.0D) {
+                            Vector3d vector3d = getAllyTarget().position();
+                            this.getNavigation().moveTo(vector3d.x, vector3d.y, vector3d.z, 1.0D);
                         } else {
-                            this.navigator.clearPath();
-                            this.idleTime = 0;
+                            this.navigation.stop();
+                            this.noActionTime = 0;
                             this.setIsPraying(true);
-                            this.getLookController().setLookPositionWithEntity(this.getAllyTarget(), (float) this.getHorizontalFaceSpeed(), (float) this.getVerticalFaceSpeed());
-                            this.getAllyTarget().setAttackTarget(this.getAttackTarget());
-                            this.getAllyTarget().addPotionEffect(new EffectInstance(Effects.SPEED, 60, 1));
-                            this.getAllyTarget().addPotionEffect(new EffectInstance(Effects.RESISTANCE, 60, 1));
-                            this.getAllyTarget().enablePersistence();
+                            this.getLookControl().setLookAt(this.getAllyTarget(), (float) this.getMaxHeadYRot(), (float) this.getMaxHeadXRot());
+                            this.getAllyTarget().setTarget(this.getTarget());
+                            this.getAllyTarget().addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 60, 1));
+                            this.getAllyTarget().addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 60, 1));
+                            this.getAllyTarget().setPersistenceRequired();
                             if (this.getHealth() < this.getMaxHealth()) {
                                 ++this.healTick;
                                 if (this.healTick >= 10) {
-                                    this.getAllyTarget().attackEntityFrom(DamageSource.STARVE, 1.0F);
+                                    this.getAllyTarget().hurt(DamageSource.STARVE, 1.0F);
                                     this.heal(1.0F);
                                     this.healTick = 0;
                                 }
                             }
                         }
-                        if (this.getAllyTarget().getShouldBeDead()) {
+                        if (this.getAllyTarget().isDeadOrDying()) {
                             this.setAllyTarget(0);
                             this.setIsPraying(false);
                             this.prayingCooldown = 300;
@@ -220,31 +220,31 @@ public class ChannellerEntity extends AbstractCultistEntity {
     }
 
     public void RunAway(){
-        LivingEntity enemy = this.getAttackTarget();
+        LivingEntity enemy = this.getTarget();
         this.setIsPraying(false);
         if (enemy != null) {
-            this.world.setEntityState(this, (byte) 42);
-            PathNavigator navigation = this.getNavigator();
-            Vector3d vector3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 7, enemy.getPositionVec());
-            if (vector3d != null && enemy.getDistanceSq(vector3d.x, vector3d.y, vector3d.z) < enemy.getDistanceSq(this)) {
-                Path path = navigation.pathfind(vector3d.x, vector3d.y, vector3d.z, 0);
-                navigation.setPath(path, 0.6D);
-                if (this.getDistanceSq(enemy) < 49.0D) {
-                    this.getNavigator().setSpeed(1.0D);
+            this.level.broadcastEntityEvent(this, (byte) 42);
+            PathNavigator navigation = this.getNavigation();
+            Vector3d vector3d = RandomPositionGenerator.getLandPosAvoid(this, 16, 7, enemy.position());
+            if (vector3d != null && enemy.distanceToSqr(vector3d.x, vector3d.y, vector3d.z) < enemy.distanceToSqr(this)) {
+                Path path = navigation.createPath(vector3d.x, vector3d.y, vector3d.z, 0);
+                navigation.moveTo(path, 0.6D);
+                if (this.distanceToSqr(enemy) < 49.0D) {
+                    this.getNavigation().setSpeedModifier(1.0D);
                 } else {
-                    this.getNavigator().setSpeed(0.6D);
+                    this.getNavigation().setSpeedModifier(0.6D);
                 }
             }
         }
     }
 
-    protected float applyPotionDamageCalculations(DamageSource source, float damage) {
-        damage = super.applyPotionDamageCalculations(source, damage);
-        if (source.getTrueSource() == this) {
+    protected float getDamageAfterMagicAbsorb(DamageSource source, float damage) {
+        damage = super.getDamageAfterMagicAbsorb(source, damage);
+        if (source.getEntity() == this) {
             damage = 0.0F;
         }
 
-        if (source.isMagicDamage()) {
+        if (source.isMagic()) {
             damage = (float)((double)damage * 0.15D);
         }
 
@@ -252,12 +252,12 @@ public class ChannellerEntity extends AbstractCultistEntity {
     }
 
     @Override
-    public void applyWaveBonus(int wave, boolean p_213660_2_) {
+    public void applyRaidBuffs(int wave, boolean p_213660_2_) {
     }
 
     @Override
-    public SoundEvent getRaidLossSound() {
-        return SoundEvents.ENTITY_VILLAGER_CELEBRATE;
+    public SoundEvent getCelebrateSound() {
+        return SoundEvents.VILLAGER_CELEBRATE;
     }
 
     protected float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn) {

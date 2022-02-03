@@ -37,20 +37,20 @@ public class TankEntity extends AbstractTaillessEntity{
 
     public TankEntity(EntityType<? extends AbstractTaillessEntity> type, World worldIn) {
         super(type, worldIn);
-        this.setPathPriority(PathNodeType.WATER, -1.0F);
-        this.setPathPriority(PathNodeType.DANGER_FIRE, 0.0F);
-        this.setPathPriority(PathNodeType.DAMAGE_FIRE, 0.0F);
-        this.stepHeight = 1.0F;
+        this.setPathfindingMalus(PathNodeType.WATER, -1.0F);
+        this.setPathfindingMalus(PathNodeType.DANGER_FIRE, 0.0F);
+        this.setPathfindingMalus(PathNodeType.DAMAGE_FIRE, 0.0F);
+        this.maxUpStep = 1.0F;
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 256.0D)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 100.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.2D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 6.0D)
-                .createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
-                .createMutableAttribute(Attributes.ARMOR, 10.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 256.0D)
+                .add(Attributes.MAX_HEALTH, 100.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.2D)
+                .add(Attributes.ATTACK_DAMAGE, 6.0D)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
+                .add(Attributes.ARMOR, 10.0D);
     }
 
     @Override
@@ -61,54 +61,54 @@ public class TankEntity extends AbstractTaillessEntity{
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, AbstractIllagerEntity.class, true));
-        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractTaillessEntity.class)).setCallsForHelp());
-        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractPiglinEntity.class)).setCallsForHelp());
+        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractTaillessEntity.class)).setAlertOthers());
+        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractPiglinEntity.class)).setAlertOthers());
     }
 
     @Override
-    protected int getExperiencePoints(PlayerEntity player){
-        return 5 + this.world.rand.nextInt(5);
+    protected int getExperienceReward(PlayerEntity player){
+        return 5 + this.level.random.nextInt(5);
     }
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.BLOCK_FIRE_AMBIENT;
+        return SoundEvents.FIRE_AMBIENT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_IRON_GOLEM_DEATH;
+        return SoundEvents.IRON_GOLEM_DEATH;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.BLOCK_ANVIL_LAND;
+        return SoundEvents.ANVIL_LAND;
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_IRON_GOLEM_STEP, 0.25F, 1.0F);
+        this.playSound(SoundEvents.IRON_GOLEM_STEP, 0.25F, 1.0F);
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        Entity entity = source.getImmediateSource();
+    public boolean hurt(DamageSource source, float amount) {
+        Entity entity = source.getDirectEntity();
         if (this.isInvulnerableTo(source)) {
             return false;
         } else if (entity instanceof AbstractArrowEntity) {
             return false;
         } else {
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         }
     }
 
-    public void livingTick() {
-        if (this.world.isRemote) {
+    public void aiStep() {
+        if (this.level.isClientSide) {
             for(int i = 0; i < 2; ++i) {
-                this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.getPosXRandom(0.5D), this.getPosYRandom(), this.getPosZRandom(0.5D), 0.0D, 0.0D, 0.0D);
+                this.level.addParticle(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
             }
         }
 
-        super.livingTick();
+        super.aiStep();
     }
 
     class RangeAttackGoal extends Goal{
@@ -116,52 +116,52 @@ public class TankEntity extends AbstractTaillessEntity{
         public int attackTimes = 0;
 
         @Override
-        public boolean shouldExecute() {
-            if (TankEntity.this.getAttackTarget() == null) {
+        public boolean canUse() {
+            if (TankEntity.this.getTarget() == null) {
                 return false;
             } else {
                 return true;
             }
         }
 
-        public void startExecuting() {
+        public void start() {
             this.attackTimer = 0;
         }
 
         public void tick() {
-            LivingEntity livingentity = TankEntity.this.getAttackTarget();
+            LivingEntity livingentity = TankEntity.this.getTarget();
             assert livingentity != null;
-            if (livingentity.getDistanceSq(TankEntity.this) < 4096.0D && TankEntity.this.canEntityBeSeen(livingentity)) {
-                TankEntity.this.getLookController().setLookPositionWithEntity(livingentity, 10.0F, 10.0F);
+            if (livingentity.distanceToSqr(TankEntity.this) < 4096.0D && TankEntity.this.canSee(livingentity)) {
+                TankEntity.this.getLookControl().setLookAt(livingentity, 10.0F, 10.0F);
                 ++this.attackTimer;
-                World world = TankEntity.this.world;
+                World world = TankEntity.this.level;
                 if (this.attackTimes < 3) {
                     if (this.attackTimer >= 20) {
                         this.attackTimes = this.attackTimes + 1;
                         double d1 = 4.0D;
-                        Vector3d vector3d = TankEntity.this.getLook(1.0F);
-                        double d2 = livingentity.getPosX() - (TankEntity.this.getPosX() + vector3d.x * 2.0D);
-                        double d3 = livingentity.getPosYHeight(0.5D) - (0.5D + TankEntity.this.getPosYHeight(0.5D));
-                        double d4 = livingentity.getPosZ() - (TankEntity.this.getPosZ() + vector3d.z * 2.0D);
+                        Vector3d vector3d = TankEntity.this.getViewVector( 1.0F);
+                        double d2 = livingentity.getX() - (TankEntity.this.getX() + vector3d.x * 2.0D);
+                        double d3 = livingentity.getY(0.5D) - (0.5D + TankEntity.this.getY(0.5D));
+                        double d4 = livingentity.getZ() - (TankEntity.this.getZ() + vector3d.z * 2.0D);
                         FireballEntity fireballentity = new FireballEntity(world, TankEntity.this, d2, d3, d4);
-                        fireballentity.setPosition(TankEntity.this.getPosX() + vector3d.x * 2.0D, TankEntity.this.getPosYHeight(0.5D) + 0.25D, fireballentity.getPosZ() + vector3d.z * 2.0D);
-                        world.addEntity(fireballentity);
+                        fireballentity.setPos(TankEntity.this.getX() + vector3d.x * 2.0D, TankEntity.this.getY(0.5D) + 0.25D, fireballentity.getZ() + vector3d.z * 2.0D);
+                        level.addFreshEntity(fireballentity);
                         if (!TankEntity.this.isSilent()) {
-                            TankEntity.this.world.playEvent(null, 1016, TankEntity.this.getPosition(), 0);
+                            TankEntity.this.level.levelEvent(null, 1016, TankEntity.this.blockPosition(), 0);
                         }
                         this.attackTimer = -40;
                     }
                 } else {
                     if (this.attackTimer >= 20) {
-                        Vector3d vector3d = TankEntity.this.getLook(1.0F);
-                        double d2 = livingentity.getPosX() - (TankEntity.this.getPosX() + vector3d.x * 2.0D);
-                        double d3 = livingentity.getPosYHeight(0.5D) - (0.5D + TankEntity.this.getPosYHeight(0.5D));
-                        double d4 = livingentity.getPosZ() - (TankEntity.this.getPosZ() + vector3d.z * 2.0D);
+                        Vector3d vector3d = TankEntity.this.getViewVector( 1.0F);
+                        double d2 = livingentity.getX() - (TankEntity.this.getX() + vector3d.x * 2.0D);
+                        double d3 = livingentity.getY(0.5D) - (0.5D + TankEntity.this.getY(0.5D));
+                        double d4 = livingentity.getZ() - (TankEntity.this.getZ() + vector3d.z * 2.0D);
                         SmallFireballEntity smallfireballentity = new SmallFireballEntity(world, TankEntity.this, d2, d3, d4);
-                        smallfireballentity.setPosition(TankEntity.this.getPosX() + vector3d.x * 2.0D, TankEntity.this.getPosYHeight(0.5D) + 0.25D, smallfireballentity.getPosZ() + vector3d.z * 2.0D);
-                        world.addEntity(smallfireballentity);
+                        smallfireballentity.setPos(TankEntity.this.getX() + vector3d.x * 2.0D, TankEntity.this.getY(0.5D) + 0.25D, smallfireballentity.getZ() + vector3d.z * 2.0D);
+                        level.addFreshEntity(smallfireballentity);
                         if (!TankEntity.this.isSilent()) {
-                            TankEntity.this.world.playEvent(null, 1016, TankEntity.this.getPosition(), 0);
+                            TankEntity.this.level.levelEvent(null, 1016, TankEntity.this.blockPosition(), 0);
                         }
                         if (this.attackTimer >= 40) {
                             this.attackTimes = 0;
@@ -169,23 +169,23 @@ public class TankEntity extends AbstractTaillessEntity{
                         }
                     }
                 }
-                double d0 = TankEntity.this.getDistanceSq(livingentity);
+                double d0 = TankEntity.this.distanceToSqr(livingentity);
                 if (d0 > 16.0D) {
-                    TankEntity.this.getMoveHelper().setMoveTo(livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ(), 1.0D);
+                    TankEntity.this.getMoveControl().setWantedPosition(livingentity.getX(), livingentity.getY(), livingentity.getZ(), 1.0D);
                 }
-                for (Entity entity : TankEntity.this.world.getEntitiesWithinAABB(LivingEntity.class, TankEntity.this.getBoundingBox().grow(1.5D), field_213690_b)) {
+                for (Entity entity : TankEntity.this.level.getEntitiesOfClass(LivingEntity.class, TankEntity.this.getBoundingBox().inflate(1.5D), field_213690_b)) {
                     if (!(entity instanceof AbstractTaillessEntity)) {
-                        TankEntity.this.attackEntityAsMob(entity);
+                        TankEntity.this.doHurtTarget(entity);
                         this.launch(entity);
                     }
                 }
             }
         }
             private void launch(Entity p_213688_1_) {
-                double d0 = p_213688_1_.getPosX() - TankEntity.this.getPosX();
-                double d1 = p_213688_1_.getPosZ() - TankEntity.this.getPosZ();
+                double d0 = p_213688_1_.getX() - TankEntity.this.getX();
+                double d1 = p_213688_1_.getZ() - TankEntity.this.getZ();
                 double d2 = Math.max(d0 * d0 + d1 * d1, 0.001D);
-                p_213688_1_.addVelocity(d0 / d2 * 2.0D, 0.2D, d1 / d2 * 2.0D);
+                p_213688_1_.push(d0 / d2 * 2.0D, 0.2D, d1 / d2 * 2.0D);
             }
 
     }

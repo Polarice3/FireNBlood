@@ -10,25 +10,25 @@ public abstract class SummonSpells extends Spells{
     public abstract int SummonDownDuration();
 
     public boolean NecroPower(LivingEntity entityLiving){
-        return entityLiving.getItemStackFromSlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.NECROROBE.get();
+        return entityLiving.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.NECROROBE.get();
     }
 
     public boolean NecroMastery(LivingEntity entityLiving){
-        return entityLiving.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.NECROHELM.get();
+        return entityLiving.getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.NECROHELM.get();
     }
 
     public void SummonDown(LivingEntity entityLiving){
-        EffectInstance effectinstance1 = entityLiving.getActivePotionEffect(RegistryHandler.SUMMONDOWN.get());
+        EffectInstance effectinstance1 = entityLiving.getEffect(RegistryHandler.SUMMONDOWN.get());
         int i = 1;
         if (effectinstance1 != null) {
             i += effectinstance1.getAmplifier();
-            entityLiving.removeActivePotionEffect(RegistryHandler.SUMMONDOWN.get());
+            entityLiving.removeEffectNoUpdate(RegistryHandler.SUMMONDOWN.get());
         } else {
             --i;
         }
 
         i = MathHelper.clamp(i, 0, 4);
         EffectInstance effectinstance = new EffectInstance(RegistryHandler.SUMMONDOWN.get(), SummonDownDuration(), i, false, false, true);
-        entityLiving.addPotionEffect(effectinstance);
+        entityLiving.addEffect(effectinstance);
     }
 }

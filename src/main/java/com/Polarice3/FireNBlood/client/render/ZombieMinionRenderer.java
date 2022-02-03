@@ -19,7 +19,7 @@ public class ZombieMinionRenderer extends BipedRenderer<ZombieMinionEntity, Zomb
         this.addLayer(new ZombieMinionClothingLayer(this));
     }
 
-    public ResourceLocation getEntityTexture(ZombieMinionEntity entity) {
+    public ResourceLocation getTextureLocation(ZombieMinionEntity entity) {
         return TEXTURE;
     }
 }

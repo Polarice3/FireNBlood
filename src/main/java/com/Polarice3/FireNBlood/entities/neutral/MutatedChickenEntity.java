@@ -22,7 +22,7 @@ import net.minecraft.world.server.ServerWorld;
 import javax.annotation.Nullable;
 
 public class MutatedChickenEntity extends MutatedEntity {
-    private static final Ingredient TEMPTATION_ITEMS = Ingredient.fromItems(Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS);
+    private static final Ingredient TEMPTATION_ITEMS = Ingredient.of(Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS);
     public float wingRotation;
     public float destPos;
     public float oFlapSpeed;
@@ -31,7 +31,7 @@ public class MutatedChickenEntity extends MutatedEntity {
 
     public MutatedChickenEntity(EntityType<? extends MutatedChickenEntity> type, World worldIn) {
         super(type, worldIn);
-        this.setPathPriority(PathNodeType.WATER, 0.0F);
+        this.setPathfindingMalus(PathNodeType.WATER, 0.0F);
     }
 
     protected void registerGoals() {
@@ -48,19 +48,13 @@ public class MutatedChickenEntity extends MutatedEntity {
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 8.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.35D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 8.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.35D);
     }
 
-    @Nullable
-    @Override
-    public AgeableEntity createChild(ServerWorld world, AgeableEntity mate) {
-        return null;
-    }
-
-    public void livingTick() {
-        super.livingTick();
+    public void aiStep() {
+        super.aiStep();
         this.oFlap = this.wingRotation;
         this.oFlapSpeed = this.destPos;
         this.destPos = (float)((double)this.destPos + (double)(this.onGround ? -1 : 4) * 0.3D);
@@ -70,49 +64,49 @@ public class MutatedChickenEntity extends MutatedEntity {
         }
 
         this.wingRotDelta = (float)((double)this.wingRotDelta * 0.9D);
-        Vector3d vector3d = this.getMotion();
+        Vector3d vector3d = this.getDeltaMovement();
         if (!this.onGround && vector3d.y < 0.0D) {
-            this.setMotion(vector3d.mul(1.0D, 0.6D, 1.0D));
+            this.setDeltaMovement(vector3d.multiply(1.0D, 0.6D, 1.0D));
         }
 
         this.wingRotation += this.wingRotDelta * 2.0F;
 
     }
 
-    public boolean onLivingFall(float distance, float damageMultiplier) {
+    public boolean causeFallDamage(float distance, float damageMultiplier) {
         return false;
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_CHICKEN_AMBIENT;
+        return SoundEvents.CHICKEN_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_CHICKEN_HURT;
+        return SoundEvents.CHICKEN_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_CHICKEN_DEATH;
+        return SoundEvents.CHICKEN_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15F, 1.0F);
+        this.playSound(SoundEvents.CHICKEN_STEP, 0.15F, 1.0F);
     }
 
-    protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
-        super.dropSpecialItems(source, looting, recentlyHitIn);
-        int random = this.world.rand.nextInt(4);
+    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
+        super.dropCustomDeathLoot(source, looting, recentlyHitIn);
+        int random = this.level.random.nextInt(4);
         if (random == 1 || looting > 2) {
-            this.entityDropItem(RegistryHandler.MUTATED_CHICKEN_UNCOOKED.get());
-            for (int i = 0; i < 4 + this.world.rand.nextInt(8); ++i) {
-                this.entityDropItem(Items.FEATHER);
+            this.spawnAtLocation(RegistryHandler.MUTATED_CHICKEN_UNCOOKED.get());
+            for (int i = 0; i < 4 + this.level.random.nextInt(8); ++i) {
+                this.spawnAtLocation(Items.FEATHER);
             }
         } else {
-            for (int i = 0; i < 4 + this.world.rand.nextInt(8); ++i) {
-                this.entityDropItem(Items.ROTTEN_FLESH);
+            for (int i = 0; i < 4 + this.level.random.nextInt(8); ++i) {
+                this.spawnAtLocation(Items.ROTTEN_FLESH);
             }
-            for (int i = 0; i < 2 + this.world.rand.nextInt(2); ++i) {
-                this.entityDropItem(Items.FEATHER);
+            for (int i = 0; i < 2 + this.level.random.nextInt(2); ++i) {
+                this.spawnAtLocation(Items.FEATHER);
             }
         }
 

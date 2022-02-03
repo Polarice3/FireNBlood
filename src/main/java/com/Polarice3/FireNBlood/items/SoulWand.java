@@ -46,7 +46,7 @@ public class SoulWand extends Item{
     private static final String FOCUSBAG = "Focus Bag";
 
     public SoulWand() {
-        super(new Properties().group(FireNBlood.TAB).maxStackSize(1).setNoRepair().rarity(Rarity.RARE));
+        super(new Properties().tab(FireNBlood.TAB).stacksTo(1).setNoRepair().rarity(Rarity.RARE));
     }
 
     @Override
@@ -79,22 +79,22 @@ public class SoulWand extends Item{
     }
 
     public boolean SoulDiscount(LivingEntity entityLiving){
-        return entityLiving.getItemStackFromSlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.DARKROBE.get()
-                || entityLiving.getItemStackFromSlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.NECROROBE.get();
+        return entityLiving.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.DARKROBE.get()
+                || entityLiving.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.NECROROBE.get();
     }
 
     public boolean SoulCostUp(LivingEntity entityLiving){
-        return entityLiving.isPotionActive(RegistryHandler.SUMMONDOWN.get());
+        return entityLiving.hasEffect(RegistryHandler.SUMMONDOWN.get());
     }
 
     public boolean ReduceCastTime(LivingEntity entityLiving){
-        return entityLiving.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.DARKHELM.get()
-                || entityLiving.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.NECROHELM.get();
+        return entityLiving.getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.DARKHELM.get()
+                || entityLiving.getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.NECROHELM.get();
     }
 
     public int SoulUse(LivingEntity entityLiving, ItemStack stack){
         if (SoulCostUp(entityLiving)){
-            int amp = Objects.requireNonNull(entityLiving.getActivePotionEffect(RegistryHandler.SUMMONDOWN.get())).getAmplifier() + 2;
+            int amp = Objects.requireNonNull(entityLiving.getEffect(RegistryHandler.SUMMONDOWN.get())).getAmplifier() + 2;
             return SoulCost(stack) * amp;
         } else if (SoulDiscount(entityLiving)){
             return SoulCost(stack)/2;
@@ -112,14 +112,14 @@ public class SoulWand extends Item{
     }
 
     public void onUse(World worldIn, LivingEntity livingEntityIn, ItemStack stack, int count) {
-        if (!worldIn.isRemote) {
+        if (!worldIn.isClientSide) {
             SoundEvent soundevent = this.CastingSound(stack);
             int CastTime = stack.getUseDuration() - count;
             if (CastTime == 1) {
                 if (soundevent != null) {
-                    worldIn.playSound(null, livingEntityIn.getPosX(), livingEntityIn.getPosY(), livingEntityIn.getPosZ(), soundevent, SoundCategory.PLAYERS, 0.5F, 1.0F);
+                    worldIn.playSound(null, livingEntityIn.getX(), livingEntityIn.getY(), livingEntityIn.getZ(), soundevent, SoundCategory.PLAYERS, 0.5F, 1.0F);
                 } else {
-                    worldIn.playSound(null, livingEntityIn.getPosX(), livingEntityIn.getPosY(), livingEntityIn.getPosZ(), SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK, SoundCategory.PLAYERS, 0.5F, 1.0F);
+                    worldIn.playSound(null, livingEntityIn.getX(), livingEntityIn.getY(), livingEntityIn.getZ(), SoundEvents.EVOKER_PREPARE_ATTACK, SoundCategory.PLAYERS, 0.5F, 1.0F);
                 }
             }
             if (this.getSpell(stack) instanceof ChargingSpells){
@@ -142,13 +142,13 @@ public class SoulWand extends Item{
     }
 
     @Nonnull
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAction getUseAnimation(ItemStack stack) {
         return UseAction.BOW;
     }
 
     @Nonnull
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        super.onItemUseFinish(stack, worldIn, entityLiving);
+    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
+        super.finishUsingItem(stack, worldIn, entityLiving);
         if (!(this.getSpell(stack) instanceof ChargingSpells)){
             this.MagicResults(stack, worldIn, entityLiving);
         }
@@ -159,24 +159,24 @@ public class SoulWand extends Item{
     }
 
     @Nonnull
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
         if (!playerIn.isCrouching()) {
             if (this.getSpell(itemstack) != null) {
-                playerIn.setActiveHand(handIn);
-                for (int i = 0; i < playerIn.world.rand.nextInt(35) + 10; ++i) {
-                    double d = worldIn.rand.nextGaussian() * 0.2D;
-                    playerIn.world.addParticle(ParticleTypes.ENTITY_EFFECT, playerIn.getPosX(), playerIn.getPosYEye(), playerIn.getPosZ(), d, d, d);
+                playerIn.startUsingItem(handIn);
+                for (int i = 0; i < playerIn.level.random.nextInt(35) + 10; ++i) {
+                    double d = worldIn.random.nextGaussian() * 0.2D;
+                    playerIn.level.addParticle(ParticleTypes.ENTITY_EFFECT, playerIn.getX(), playerIn.getEyeY(), playerIn.getZ(), d, d, d);
                 }
             }
-            return ActionResult.resultConsume(itemstack);
+            return ActionResult.consume(itemstack);
         } else {
-            if (!worldIn.isRemote) {
+            if (!worldIn.isClientSide) {
                 SimpleNamedContainerProvider provider = new SimpleNamedContainerProvider(
-                        (id, inventory, player) -> new SoulItemContainer(id, inventory, SoulUsingItemHandler.get(itemstack), itemstack, handIn), getDisplayName(itemstack));
+                        (id, inventory, player) -> new SoulItemContainer(id, inventory, SoulUsingItemHandler.get(itemstack), itemstack, handIn), getName(itemstack));
                 NetworkHooks.openGui((ServerPlayerEntity) playerIn, provider, (buffer) -> buffer.writeBoolean(handIn == Hand.MAIN_HAND));
             }
-            return ActionResult.resultPass(itemstack);
+            return ActionResult.pass(itemstack);
         }
 
     }
@@ -265,7 +265,7 @@ public class SoulWand extends Item{
         ItemStack foundStack = ItemStack.EMPTY;
         PlayerEntity playerEntity = (PlayerEntity) entityLiving;
         for (int i = 0; i <= 9; i++) {
-            ItemStack itemStack = playerEntity.inventory.getStackInSlot(i);
+            ItemStack itemStack = playerEntity.inventory.getItem(i);
             if (!itemStack.isEmpty() && itemStack.getItem() == RegistryHandler.GOLDTOTEM.get()) {
                 foundStack = itemStack;
                 break;
@@ -276,10 +276,10 @@ public class SoulWand extends Item{
             assert stack.getTag() != null;
             this.getSpell(stack).WandResult(worldIn, entityLiving);
         } else {
-            worldIn.playSound(null, entityLiving.getPosX(), entityLiving.getPosY(), entityLiving.getPosZ(), SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-            for(int i = 0; i < entityLiving.world.rand.nextInt(35) + 10; ++i) {
-                double d = worldIn.rand.nextGaussian() * 0.2D;
-                entityLiving.world.addParticle(ParticleTypes.CLOUD, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), d, d, d);
+            worldIn.playSound(null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+            for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
+                double d = worldIn.random.nextGaussian() * 0.2D;
+                entityLiving.level.addParticle(ParticleTypes.CLOUD, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), d, d, d);
             }
         }
     }
@@ -317,8 +317,8 @@ public class SoulWand extends Item{
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
         if (stack.getTag() != null) {
             int SoulUse = stack.getTag().getInt(SOULUSE);
             tooltip.add(new TranslationTextComponent("info.firenblood.soulitems.cost", SoulUse));
@@ -326,7 +326,7 @@ public class SoulWand extends Item{
             tooltip.add(new TranslationTextComponent("info.firenblood.soulitems.cost", SoulCost(stack)));
         }
         if (getFocus(stack) != ItemStack.EMPTY){
-            tooltip.add(new TranslationTextComponent("info.firenblood.soulitems.focus", getFocus(stack).getItem().getName()));
+            tooltip.add(new TranslationTextComponent("info.firenblood.soulitems.focus", getFocus(stack).getItem().getDescription()));
         } else {
             tooltip.add(new TranslationTextComponent("info.firenblood.soulitems.focus", "Empty"));
         }

@@ -29,212 +29,212 @@ public class EvilEyeEvent {
     @SubscribeEvent
     public static void EvilEyeEvent(TickEvent.PlayerTickEvent event) {
         PlayerEntity player = event.player;
-        World world = event.player.world;
-        if (player.isPotionActive(RegistryHandler.EVIL_EYE.get()) && player.world.getDimensionType().doesBedWork()) {
+        World level = event.player.level;
+        if (player.hasEffect(RegistryHandler.EVIL_EYE.get()) && player.level.dimensionType().bedWorks()) {
             int evileyeLevel = 0;
-            evileyeLevel += player.getActivePotionEffect(RegistryHandler.EVIL_EYE.get()).getAmplifier() + 1;
+            evileyeLevel += player.getEffect(RegistryHandler.EVIL_EYE.get()).getAmplifier() + 1;
             evileyeLevel = MathHelper.clamp(evileyeLevel, 0, 5);
-            int random = world.rand.nextInt(120);
+            int random = level.random.nextInt(120);
             if (random == 0) {
-                int random2 = world.rand.nextInt(40);
-                float f = world.rand.nextFloat() * ((float) Math.PI * 2F);
-                double d = (world.rand.nextBoolean() ? 1: -1);
-                double e = (world.rand.nextBoolean() ? 1: -1);
-                double g = (world.rand.nextBoolean() ? 32: 16);
-                double d0 = player.getPosX() + (world.rand.nextDouble() - world.rand.nextDouble()) * (double)16 + (g * d);
-                double d2 = player.getPosZ() + (world.rand.nextDouble() - world.rand.nextDouble()) * (double)16 + (g * e);
-                double d1 = world.getHeight(Heightmap.Type.WORLD_SURFACE, (int) d0, (int) d2);
+                int random2 = level.random.nextInt(40);
+                float f = level.random.nextFloat() * ((float) Math.PI * 2F);
+                double d = (level.random.nextBoolean() ? 1: -1);
+                double e = (level.random.nextBoolean() ? 1: -1);
+                double g = (level.random.nextBoolean() ? 32: 16);
+                double d0 = player.getX() + (level.random.nextDouble() - level.random.nextDouble()) * (double)16 + (g * d);
+                double d2 = player.getZ() + (level.random.nextDouble() - level.random.nextDouble()) * (double)16 + (g * e);
+                double d1 = level.getHeight(Heightmap.Type.WORLD_SURFACE, (int) d0, (int) d2);
                 if (evileyeLevel == 1) {
                     if (random2 == 0) {
                         for (int i = 0; i < 3; ++i) {
-                            BlackBullEntity blackbull = new BlackBullEntity(ModEntityType.BLACK_BULL.get(), world);
-                            blackbull.setPosition(d0, d1, d2);
+                            BlackBullEntity blackbull = new BlackBullEntity(ModEntityType.BLACK_BULL.get(), level);
+                            blackbull.setPos(d0, d1, d2);
                             blackbull.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(blackbull));
-                            world.addEntity(blackbull);
+                            level.addFreshEntity(blackbull);
                         }
                     }
                     if (random2 == 2) {
-                        TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), world);
-                        wretch.setPosition(d0, d1, d2);
-                        wretch.setHeldItem(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
+                        TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), level);
+                        wretch.setPos(d0, d1, d2);
+                        wretch.setItemInHand(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
                         wretch.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(wretch));
-                        world.addEntity(wretch);
+                        level.addFreshEntity(wretch);
                     }
                 }
                 if (evileyeLevel == 2) {
                     if (random2 == 0) {
                         for (int i = 0; i < 3; ++i) {
-                            BlackBullEntity blackbull = new BlackBullEntity(ModEntityType.BLACK_BULL.get(), world);
-                            blackbull.setPosition(d0, d1, d2);
+                            BlackBullEntity blackbull = new BlackBullEntity(ModEntityType.BLACK_BULL.get(), level);
+                            blackbull.setPos(d0, d1, d2);
                             blackbull.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(blackbull));
-                            world.addEntity(blackbull);
+                            level.addFreshEntity(blackbull);
                         }
                     }
                     if (random2 == 2) {
-                        TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), world);
-                        wretch.setPosition(d0, d1, d2);
-                        wretch.setHeldItem(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
+                        TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), level);
+                        wretch.setPos(d0, d1, d2);
+                        wretch.setItemInHand(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
                         wretch.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(wretch));
-                        world.addEntity(wretch);
+                        level.addFreshEntity(wretch);
                     }
                     if (random2 == 4) {
-                        TaillessHorrorEntity horror = new TaillessHorrorEntity(ModEntityType.TAILLESS_HORROR.get(), world);
-                        horror.setPosition(player.getPosXRandom(4.0F), d1 + 16.0D, player.getPosZRandom(4.0F));
+                        TaillessHorrorEntity horror = new TaillessHorrorEntity(ModEntityType.TAILLESS_HORROR.get(), level);
+                        horror.setPos(player.getRandomX(4.0F), d1 + 16.0D, player.getRandomZ(4.0F));
                         horror.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(horror));
-                        world.addEntity(horror);
+                        level.addFreshEntity(horror);
                     }
                 }
                 if (evileyeLevel == 3) {
                     if (random2 == 0) {
                         for (int i = 0; i < 3; ++i) {
-                            BlackBullEntity blackbull = new BlackBullEntity(ModEntityType.BLACK_BULL.get(), world);
-                            blackbull.setPosition(d0, d1, d2);
+                            BlackBullEntity blackbull = new BlackBullEntity(ModEntityType.BLACK_BULL.get(), level);
+                            blackbull.setPos(d0, d1, d2);
                             blackbull.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(blackbull));
-                            world.addEntity(blackbull);
+                            level.addFreshEntity(blackbull);
                         }
                         for (int i = 0; i < 2; ++i) {
-                            TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), world);
-                            wretch.setPosition(d0, d1, d2);
-                            wretch.setHeldItem(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
+                            TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), level);
+                            wretch.setPos(d0, d1, d2);
+                            wretch.setItemInHand(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
                             wretch.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(wretch));
-                            world.addEntity(wretch);
+                            level.addFreshEntity(wretch);
                         }
                     }
                     if (random2 == 2) {
                         for (int i = 0; i < 2; ++i) {
-                            TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), world);
-                            wretch.setPosition(d0, d1, d2);
-                            wretch.setHeldItem(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
+                            TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), level);
+                            wretch.setPos(d0, d1, d2);
+                            wretch.setItemInHand(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
                             wretch.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(wretch));
-                            world.addEntity(wretch);
+                            level.addFreshEntity(wretch);
                         }
                     }
                     if (random2 == 4) {
-                        TaillessHorrorEntity horror = new TaillessHorrorEntity(ModEntityType.TAILLESS_HORROR.get(), world);
-                        horror.setPosition(player.getPosXRandom(4.0F), d1 + 16.0D, player.getPosZRandom(4.0F));
+                        TaillessHorrorEntity horror = new TaillessHorrorEntity(ModEntityType.TAILLESS_HORROR.get(), level);
+                        horror.setPos(player.getRandomX(4.0F), d1 + 16.0D, player.getRandomZ(4.0F));
                         horror.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(horror));
-                        world.addEntity(horror);
+                        level.addFreshEntity(horror);
                     }
                     if (random2 == 6) {
-                        TaillessDruidEntity druid = new TaillessDruidEntity(ModEntityType.TAILLESS_DRUID.get(), world);
-                        druid.setPosition(d0, d1, d2);
+                        TaillessDruidEntity druid = new TaillessDruidEntity(ModEntityType.TAILLESS_DRUID.get(), level);
+                        druid.setPos(d0, d1, d2);
                         druid.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(druid));
-                        world.addEntity(druid);
+                        level.addFreshEntity(druid);
                     }
                 }
                 if (evileyeLevel == 4) {
                     if (random2 == 0) {
                         for (int i = 0; i < 4; ++i) {
-                            BlackBullEntity blackbull = new BlackBullEntity(ModEntityType.BLACK_BULL.get(), world);
-                            blackbull.setPosition(d0, d1, d2);
+                            BlackBullEntity blackbull = new BlackBullEntity(ModEntityType.BLACK_BULL.get(), level);
+                            blackbull.setPos(d0, d1, d2);
                             blackbull.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(blackbull));
-                            world.addEntity(blackbull);
+                            level.addFreshEntity(blackbull);
                         }
                         for (int i = 0; i < 2; ++i) {
-                            TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), world);
-                            wretch.setPosition(d0, d1, d2);
-                            wretch.setHeldItem(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
+                            TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), level);
+                            wretch.setPos(d0, d1, d2);
+                            wretch.setItemInHand(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
                             wretch.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(wretch));
-                            world.addEntity(wretch);
+                            level.addFreshEntity(wretch);
                         }
                     }
                     if (random2 == 2) {
                         for (int i = 0; i < 2; ++i) {
-                            TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), world);
-                            wretch.setPosition(d0, d1, d2);
-                            wretch.setHeldItem(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
+                            TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), level);
+                            wretch.setPos(d0, d1, d2);
+                            wretch.setItemInHand(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
                             wretch.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(wretch));
-                            world.addEntity(wretch);
+                            level.addFreshEntity(wretch);
                         }
                     }
                     if (random2 == 4) {
                         for (int i = 0; i < 2; ++i) {
-                            TaillessHorrorEntity horror = new TaillessHorrorEntity(ModEntityType.TAILLESS_HORROR.get(), world);
-                            horror.setPosition(player.getPosXRandom(4.0F), d1 + 16.0D, player.getPosZRandom(4.0F));
+                            TaillessHorrorEntity horror = new TaillessHorrorEntity(ModEntityType.TAILLESS_HORROR.get(), level);
+                            horror.setPos(player.getRandomX(4.0F), d1 + 16.0D, player.getRandomZ(4.0F));
                             horror.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(horror));
-                            world.addEntity(horror);
+                            level.addFreshEntity(horror);
                         }
                     }
                     if (random2 == 6) {
-                        TaillessDruidEntity druid = new TaillessDruidEntity(ModEntityType.TAILLESS_DRUID.get(), world);
-                        druid.setPosition(d0, d1, d2);
+                        TaillessDruidEntity druid = new TaillessDruidEntity(ModEntityType.TAILLESS_DRUID.get(), level);
+                        druid.setPos(d0, d1, d2);
                         druid.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(druid));
-                        world.addEntity(druid);
+                        level.addFreshEntity(druid);
                     }
                     if (random2 == 8) {
-                        TankEntity tank = new TankEntity(ModEntityType.TANK.get(), world);
-                        tank.setPosition(d0, d1, d2);
+                        TankEntity tank = new TankEntity(ModEntityType.TANK.get(), level);
+                        tank.setPos(d0, d1, d2);
                         tank.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(tank));
-                        world.addEntity(tank);
+                        level.addFreshEntity(tank);
                     }
                 }
                 if (evileyeLevel == 5) {
                     if (random2 == 0) {
                         for (int i = 0; i < 4; ++i) {
-                            BlackBullEntity blackbull = new BlackBullEntity(ModEntityType.BLACK_BULL.get(), world);
-                            blackbull.setPosition(d0, d1, d2);
+                            BlackBullEntity blackbull = new BlackBullEntity(ModEntityType.BLACK_BULL.get(), level);
+                            blackbull.setPos(d0, d1, d2);
                             blackbull.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(blackbull));
-                            world.addEntity(blackbull);
+                            level.addFreshEntity(blackbull);
                         }
                         for (int i = 0; i < 2; ++i) {
-                            TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), world);
-                            wretch.setPosition(d0, d1, d2);
-                            wretch.setHeldItem(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
+                            TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), level);
+                            wretch.setPos(d0, d1, d2);
+                            wretch.setItemInHand(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
                             wretch.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(wretch));
-                            world.addEntity(wretch);
+                            level.addFreshEntity(wretch);
                         }
                     }
                     if (random2 == 2) {
                         for (int i = 0; i < 4; ++i) {
-                            TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), world);
-                            wretch.setPosition(d0, d1, d2);
-                            wretch.setHeldItem(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
+                            TaillessWretchEntity wretch = new TaillessWretchEntity(ModEntityType.TAILLESS_WRETCH.get(), level);
+                            wretch.setPos(d0, d1, d2);
+                            wretch.setItemInHand(Hand.MAIN_HAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
                             wretch.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(wretch));
-                            world.addEntity(wretch);
+                            level.addFreshEntity(wretch);
                         }
                     }
                     if (random2 == 4) {
                         for (int i = 0; i < 2; ++i) {
-                            TaillessHorrorEntity horror = new TaillessHorrorEntity(ModEntityType.TAILLESS_HORROR.get(), world);
-                            horror.setPosition(player.getPosXRandom(4.0F), d1 + 16.0D, player.getPosZRandom(4.0F));
+                            TaillessHorrorEntity horror = new TaillessHorrorEntity(ModEntityType.TAILLESS_HORROR.get(), level);
+                            horror.setPos(player.getRandomX(4.0F), d1 + 16.0D, player.getRandomZ(4.0F));
                             horror.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(horror));
-                            world.addEntity(horror);
+                            level.addFreshEntity(horror);
                         }
                     }
                     if (random2 == 6) {
                         for (int i = 0; i < 2; ++i) {
-                            TaillessDruidEntity druid = new TaillessDruidEntity(ModEntityType.TAILLESS_DRUID.get(), world);
-                            druid.setPosition(d0, d1, d2);
+                            TaillessDruidEntity druid = new TaillessDruidEntity(ModEntityType.TAILLESS_DRUID.get(), level);
+                            druid.setPos(d0, d1, d2);
                             druid.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(druid));
-                            world.addEntity(druid);
+                            level.addFreshEntity(druid);
                         }
                     }
                     if (random2 == 8) {
-                        TankEntity tank = new TankEntity(ModEntityType.TANK.get(), world);
-                        tank.setPosition(d0, d1, d2);
+                        TankEntity tank = new TankEntity(ModEntityType.TANK.get(), level);
+                        tank.setPos(d0, d1, d2);
                         tank.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(tank));
-                        world.addEntity(tank);
+                        level.addFreshEntity(tank);
                     }
                     if (random2 == 10) {
-                        int random3 = world.rand.nextInt(120);
+                        int random3 = level.random.nextInt(120);
                         if (random3 == 2) {
-                            MinotaurEntity minotaur = new MinotaurEntity(ModEntityType.MINOTAUR.get(), world);
-                            minotaur.setPosition(d0, d1, d2);
-                            minotaur.setHeldItem(Hand.MAIN_HAND, new ItemStack(RegistryHandler.DIAMOND_MACE.get()));
+                            MinotaurEntity minotaur = new MinotaurEntity(ModEntityType.MINOTAUR.get(), level);
+                            minotaur.setPos(d0, d1, d2);
+                            minotaur.setItemInHand(Hand.MAIN_HAND, new ItemStack(RegistryHandler.DIAMOND_MACE.get()));
                             minotaur.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(minotaur));
-                            world.addEntity(minotaur);
+                            level.addFreshEntity(minotaur);
                         }
                         if (random3 == 4) {
-                            TaillessProphetEntity prophet = new TaillessProphetEntity(ModEntityType.TAILLESS_PROPHET.get(), world);
-                            prophet.setPosition(d0, d1, d2);
+                            TaillessProphetEntity prophet = new TaillessProphetEntity(ModEntityType.TAILLESS_PROPHET.get(), level);
+                            prophet.setPos(d0, d1, d2);
                             prophet.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(prophet));
-                            world.addEntity(prophet);
+                            level.addFreshEntity(prophet);
                         }
                         if (random3 == 6) {
-                            TaillessAnathemaEntity anathema = new TaillessAnathemaEntity(ModEntityType.ANATHEMA.get(), world);
-                            anathema.setPosition(d0, d1, d2);
+                            TaillessAnathemaEntity anathema = new TaillessAnathemaEntity(ModEntityType.ANATHEMA.get(), level);
+                            anathema.setPos(d0, d1, d2);
                             anathema.goalSelector.addGoal(1, new MoveTowardsTargetGoal<>(anathema));
-                            world.addEntity(anathema);
+                            level.addFreshEntity(anathema);
                         }
                     }
                 }

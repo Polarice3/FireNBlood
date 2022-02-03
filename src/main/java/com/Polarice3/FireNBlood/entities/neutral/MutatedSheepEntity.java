@@ -33,43 +33,43 @@ public class MutatedSheepEntity extends MutatedEntity {
         this.eatGrassGoal = new EatGrassGoal(this);
         this.goalSelector.addGoal(0, new SwimGoal(this));
         this.goalSelector.addGoal(1, new PanicGoal(this, 1.0D));
-        this.goalSelector.addGoal(3, new TemptGoal(this, 1.25D, Ingredient.fromItems(Items.WHEAT), false));
+        this.goalSelector.addGoal(3, new TemptGoal(this, 1.25D, Ingredient.of(Items.WHEAT), false));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
         this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 6.0F));
         this.goalSelector.addGoal(7, new LookRandomlyGoal(this));
     }
 
-    protected void updateAITasks() {
-        this.sheepTimer = this.eatGrassGoal.getEatingGrassTimer();
-        super.updateAITasks();
+    protected void customServerAiStep() {
+        this.sheepTimer = this.eatGrassGoal.getEatAnimationTick();
+        super.customServerAiStep();
     }
 
-    public void livingTick() {
-        if (this.world.isRemote) {
+    public void aiStep() {
+        if (this.level.isClientSide) {
             this.sheepTimer = Math.max(0, this.sheepTimer - 1);
         }
 
-        super.livingTick();
+        super.aiStep();
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 16.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.3D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 16.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.3D);
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void handleStatusUpdate(byte id) {
+    public void handleEntityEvent(byte id) {
         if (id == 10) {
             this.sheepTimer = 40;
         } else {
-            super.handleStatusUpdate(id);
+            super.handleEntityEvent(id);
         }
 
     }
 
     @OnlyIn(Dist.CLIENT)
-    public float getHeadRotationPointY(float p_70894_1_) {
+    public float getHeady(float p_70894_1_) {
         if (this.sheepTimer <= 0) {
             return 0.0F;
         } else if (this.sheepTimer >= 4 && this.sheepTimer <= 36) {
@@ -85,24 +85,24 @@ public class MutatedSheepEntity extends MutatedEntity {
             float f = ((float)(this.sheepTimer - 4) - p_70890_1_) / 32.0F;
             return ((float)Math.PI / 5F) + 0.21991149F * MathHelper.sin(f * 28.7F);
         } else {
-            return this.sheepTimer > 0 ? ((float)Math.PI / 5F) : this.rotationPitch * ((float)Math.PI / 180F);
+            return this.sheepTimer > 0 ? ((float)Math.PI / 5F) : this.xRot * ((float)Math.PI / 180F);
         }
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_SHEEP_AMBIENT;
+        return SoundEvents.SHEEP_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_SHEEP_HURT;
+        return SoundEvents.SHEEP_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_SHEEP_DEATH;
+        return SoundEvents.SHEEP_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_SHEEP_STEP, 0.15F, 1.0F);
+        this.playSound(SoundEvents.SHEEP_STEP, 0.15F, 1.0F);
     }
 
     protected float getSoundVolume() {
@@ -113,21 +113,16 @@ public class MutatedSheepEntity extends MutatedEntity {
         return 1.3F;
     }
 
-    protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
-        super.dropSpecialItems(source, looting, recentlyHitIn);
-        int random = this.world.rand.nextInt(4);
+    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
+        super.dropCustomDeathLoot(source, looting, recentlyHitIn);
+        int random = this.level.random.nextInt(4);
         if (random == 1 || looting > 2) {
-            this.entityDropItem(RegistryHandler.MUTATED_MUTTON_UNCOOKED.get());
+            this.spawnAtLocation(RegistryHandler.MUTATED_MUTTON_UNCOOKED.get());
         } else {
-            for (int i = 0; i < 4 + this.world.rand.nextInt(8); ++i) {
-                this.entityDropItem(Items.ROTTEN_FLESH);
+            for (int i = 0; i < 4 + this.level.random.nextInt(8); ++i) {
+                this.spawnAtLocation(Items.ROTTEN_FLESH);
             }
         }
     }
 
-    @Nullable
-    @Override
-    public AgeableEntity createChild(ServerWorld world, AgeableEntity mate) {
-        return null;
-    }
 }

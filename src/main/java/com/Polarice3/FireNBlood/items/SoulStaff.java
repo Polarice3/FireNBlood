@@ -17,7 +17,7 @@ public class SoulStaff extends SoulWand{
         ItemStack foundStack = ItemStack.EMPTY;
         PlayerEntity playerEntity = (PlayerEntity) entityLiving;
         for (int i = 0; i <= 9; i++) {
-            ItemStack itemStack = playerEntity.inventory.getStackInSlot(i);
+            ItemStack itemStack = playerEntity.inventory.getItem(i);
             if (!itemStack.isEmpty() && itemStack.getItem() == RegistryHandler.GOLDTOTEM.get()) {
                 foundStack = itemStack;
                 break;
@@ -27,10 +27,10 @@ public class SoulStaff extends SoulWand{
             GoldTotemItem.decreaseSouls(foundStack, SoulUse(entityLiving, stack));
             this.getSpell(stack).StaffResult(worldIn, entityLiving);
         } else {
-            worldIn.playSound(null, entityLiving.getPosX(), entityLiving.getPosY(), entityLiving.getPosZ(), SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-            for(int i = 0; i < entityLiving.world.rand.nextInt(35) + 10; ++i) {
-                double d = worldIn.rand.nextGaussian() * 0.2D;
-                entityLiving.world.addParticle(ParticleTypes.CLOUD, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), d, d, d);
+            worldIn.playSound(null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+            for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
+                double d = worldIn.random.nextGaussian() * 0.2D;
+                entityLiving.level.addParticle(ParticleTypes.CLOUD, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), d, d, d);
             }
         }
     }

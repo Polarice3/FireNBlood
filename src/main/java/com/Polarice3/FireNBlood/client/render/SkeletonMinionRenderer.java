@@ -18,7 +18,7 @@ public class SkeletonMinionRenderer extends BipedRenderer<SkeletonMinionEntity, 
         this.addLayer(new SkeletonMinionClothingLayer<>(this));
     }
 
-    public ResourceLocation getEntityTexture(SkeletonMinionEntity entity) {
+    public ResourceLocation getTextureLocation(SkeletonMinionEntity entity) {
         return TEXTURES;
     }
 

@@ -51,6 +51,6 @@ public class FocusBagItemCapability implements ICapabilitySerializable<INBT> {
         if (nbt.size() < 1)
             return;
         CompoundNBT compound = nbt.getCompound(0);
-        getHandler().insertItem(0, ItemStack.read(compound), false);
+        getHandler().insertItem(0, ItemStack.of(compound), false);
     }
 }

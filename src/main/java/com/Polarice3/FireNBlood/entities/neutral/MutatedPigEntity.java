@@ -24,7 +24,7 @@ import net.minecraft.world.server.ServerWorld;
 import javax.annotation.Nullable;
 
 public class MutatedPigEntity extends MutatedEntity {
-    private static final Ingredient TEMPTATION_ITEMS = Ingredient.fromItems(Items.CARROT, Items.POTATO, Items.BEETROOT);
+    private static final Ingredient TEMPTATION_ITEMS = Ingredient.of(Items.CARROT, Items.POTATO, Items.BEETROOT);
 
     public MutatedPigEntity(EntityType<? extends MutatedPigEntity> p_i50250_1_, World p_i50250_2_) {
         super(p_i50250_1_, p_i50250_2_);
@@ -40,65 +40,58 @@ public class MutatedPigEntity extends MutatedEntity {
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 20.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.2D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 20.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.2D);
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_PIG_AMBIENT;
+        return SoundEvents.PIG_AMBIENT;
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_PIG_HURT;
+        return SoundEvents.PIG_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_PIG_DEATH;
+        return SoundEvents.PIG_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_PIG_STEP, 0.15F, 1.0F);
+        this.playSound(SoundEvents.PIG_STEP, 0.15F, 1.0F);
     }
 
-    public void causeLightningStrike(ServerWorld world, LightningBoltEntity lightning) {
+    public void thunderHit(ServerWorld world, LightningBoltEntity lightning) {
         if (world.getDifficulty() != Difficulty.PEACEFUL && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.ZOMBIFIED_PIGLIN, (timer) -> {})) {
             ZoglinEntity zombifiedpiglinentity = EntityType.ZOGLIN.create(world);
-            zombifiedpiglinentity.setLocationAndAngles(this.getPosX(), this.getPosY(), this.getPosZ(), this.rotationYaw, this.rotationPitch);
-            zombifiedpiglinentity.setNoAI(this.isAIDisabled());
-            zombifiedpiglinentity.setChild(this.isChild());
+            zombifiedpiglinentity.moveTo(this.getX(), this.getY(), this.getZ(), this.yRot, this.xRot);
+            zombifiedpiglinentity.setNoAi(this.isNoAi());
             if (this.hasCustomName()) {
                 zombifiedpiglinentity.setCustomName(this.getCustomName());
                 zombifiedpiglinentity.setCustomNameVisible(this.isCustomNameVisible());
             }
 
-            zombifiedpiglinentity.enablePersistence();
+            zombifiedpiglinentity.setPersistenceRequired();
             net.minecraftforge.event.ForgeEventFactory.onLivingConvert(this, zombifiedpiglinentity);
-            world.addEntity(zombifiedpiglinentity);
+            level.addFreshEntity(zombifiedpiglinentity);
             this.remove();
         } else {
-            super.causeLightningStrike(world, lightning);
+            super.thunderHit(world, lightning);
         }
 
     }
 
-    protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
-        super.dropSpecialItems(source, looting, recentlyHitIn);
-        int random = this.world.rand.nextInt(4);
+    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
+        super.dropCustomDeathLoot(source, looting, recentlyHitIn);
+        int random = this.level.random.nextInt(4);
         if (random == 1 || looting > 2) {
-            this.entityDropItem(RegistryHandler.MUTATED_PORKCHOP_UNCOOKED.get());
+            this.spawnAtLocation(RegistryHandler.MUTATED_PORKCHOP_UNCOOKED.get());
         } else {
-            for (int i = 0; i < 4 + this.world.rand.nextInt(8); ++i) {
-                this.entityDropItem(Items.ROTTEN_FLESH);
+            for (int i = 0; i < 4 + this.level.random.nextInt(8); ++i) {
+                this.spawnAtLocation(Items.ROTTEN_FLESH);
             }
         }
 
     }
 
-
-    @Nullable
-    @Override
-    public AgeableEntity createChild(ServerWorld world, AgeableEntity mate) {
-        return null;
-    }
 }

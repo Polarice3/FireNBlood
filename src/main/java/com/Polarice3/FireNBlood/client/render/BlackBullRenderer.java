@@ -16,7 +16,7 @@ public class BlackBullRenderer extends MobRenderer<BlackBullEntity, BlackBullMod
     }
 
     @Override
-    public ResourceLocation getEntityTexture(BlackBullEntity entity) {
+    public ResourceLocation getTextureLocation(BlackBullEntity entity) {
         return TEXTURE;
     }
 

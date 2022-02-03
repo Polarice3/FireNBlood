@@ -19,15 +19,15 @@ public class BrewerRenderer extends MobRenderer<BrewerEntity, BrewerModel<Brewer
     }
 
     public void render(BrewerEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        this.entityModel.func_205074_a(!entityIn.getHeldItemMainhand().isEmpty());
+        this.model.setHoldingItem(!entityIn.getMainHandItem().isEmpty());
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
-    public ResourceLocation getEntityTexture(BrewerEntity entity) {
+    public ResourceLocation getTextureLocation(BrewerEntity entity) {
         return TEXTURE;
     }
 
-    protected void preRenderCallback(BrewerEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(BrewerEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         float f = 0.9375F;
         matrixStackIn.scale(0.9375F, 0.9375F, 0.9375F);
     }

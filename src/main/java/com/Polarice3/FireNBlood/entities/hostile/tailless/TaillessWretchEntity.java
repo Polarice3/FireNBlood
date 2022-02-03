@@ -13,14 +13,12 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.AbstractIllagerEntity;
 import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
@@ -45,16 +43,16 @@ public class TaillessWretchEntity extends ServantTaillessEntity {
 
     public TaillessWretchEntity(EntityType<? extends ServantTaillessEntity> type, World worldIn) {
         super(type, worldIn);
-        this.stepHeight = 1.0F;
-        this.setRandom(10);
+        this.maxUpStep = 1.0F;
+        this.setrandom(10);
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.FOLLOW_RANGE, 32.0D)
-                .createMutableAttribute(Attributes.MAX_HEALTH, 48.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.35D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 5.5D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .add(Attributes.MAX_HEALTH, 48.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.35D)
+                .add(Attributes.ATTACK_DAMAGE, 5.5D);
     }
 
     @Override
@@ -69,8 +67,8 @@ public class TaillessWretchEntity extends ServantTaillessEntity {
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, true));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, AbstractIllagerEntity.class, true));
-        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractTaillessEntity.class)).setCallsForHelp());
-        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractPiglinEntity.class)).setCallsForHelp());
+        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractTaillessEntity.class)).setAlertOthers());
+        this.targetSelector.addGoal(2, (new HurtByTargetGoal(this, AbstractPiglinEntity.class)).setAlertOthers());
     }
 
     public AbstractTaillessEntity.ArmPose getArmPose() {
@@ -82,53 +80,53 @@ public class TaillessWretchEntity extends ServantTaillessEntity {
     }
 
     @Override
-    protected int getExperiencePoints(PlayerEntity player){
-        return 5 + this.world.rand.nextInt(5);
+    protected int getExperienceReward(PlayerEntity player){
+        return 5 + this.level.random.nextInt(5);
     }
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_ZOMBIE_HORSE_AMBIENT;
+        return SoundEvents.ZOMBIE_HORSE_AMBIENT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_SKELETON_HORSE_DEATH;
+        return SoundEvents.SKELETON_HORSE_DEATH;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_POLAR_BEAR_HURT;
+        return SoundEvents.POLAR_BEAR_HURT;
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_COW_STEP, 0.25F, 1.0F);
+        this.playSound(SoundEvents.COW_STEP, 0.25F, 1.0F);
     }
 
-    public boolean isOnSameTeam(Entity entityIn) {
-        if (super.isOnSameTeam(entityIn)) {
+    public boolean isAlliedTo(Entity entityIn) {
+        if (super.isAlliedTo(entityIn)) {
             return true;
         } else if (entityIn instanceof AbstractTaillessEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;
         } else if (entityIn instanceof AbstractCultistEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;
         } else if (entityIn instanceof AbstractPiglinEntity){
-            return this.isOnSameTeam(entityIn);
+            return this.isAlliedTo(entityIn);
         }  else {
             return false;
         }
     }
 
     @Nullable
-    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-        this.setEquipmentBasedOnDifficulty(difficultyIn);
-        this.setEnchantmentBasedOnDifficulty(difficultyIn);
-        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+        this.populateDefaultEquipmentSlots(difficultyIn);
+        this.populateDefaultEquipmentEnchantments(difficultyIn);
+        return super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
-    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-        this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
+    protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+        this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
     }
 
     static class PotionGoal extends Goal{
@@ -139,12 +137,12 @@ public class TaillessWretchEntity extends ServantTaillessEntity {
 
         public PotionGoal(TaillessWretchEntity wretch){
             this.wretch = wretch;
-            this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
         }
 
         @Override
-        public boolean shouldExecute() {
-            LivingEntity livingentity = this.wretch.getAttackTarget();
+        public boolean canUse() {
+            LivingEntity livingentity = this.wretch.getTarget();
             if (this.wretch.Executed == 0) {
                 if (this.wretch.getHealth() <= this.wretch.getMaxHealth() / 1.2F && livingentity != null) {
                     return true;
@@ -157,58 +155,58 @@ public class TaillessWretchEntity extends ServantTaillessEntity {
         }
 
         public void tick() {
-            LivingEntity livingentity = this.wretch.getAttackTarget();
+            LivingEntity livingentity = this.wretch.getTarget();
             if (livingentity != null) {
-                double avoid = this.wretch.getDistance(livingentity);
+                double avoid = this.wretch.distanceTo(livingentity);
                 if (avoid < 8.0D) {
                     ++this.runTime;
                     this.wretch.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(MODIFIER);
-                    Vector3d vector3d = livingentity.getLook(1.0F);
+                    Vector3d vector3d = livingentity.getViewVector( 1.0F);
                     if (vector3d.x > 0){
-                        this.wretch.moveController.setMoveTo(vector3d.x + 128.0D, vector3d.y, vector3d.z + 128.0D, 1.5F);
+                        this.wretch.moveControl.setWantedPosition(vector3d.x + 128.0D, vector3d.y, vector3d.z + 128.0D, 1.5F);
                     } else {
-                        this.wretch.moveController.setMoveTo(vector3d.x - 128.0D, vector3d.y, vector3d.z - 128.0D, 1.5F);
+                        this.wretch.moveControl.setWantedPosition(vector3d.x - 128.0D, vector3d.y, vector3d.z - 128.0D, 1.5F);
                     }
                     if (this.runTime >= 30){
-                        SlowBombEntity slowbomb = new SlowBombEntity(this.wretch.world, this.wretch.getPosX(),this.wretch.getPosY(),this.wretch.getPosZ(),this.wretch);
+                        SlowBombEntity slowbomb = new SlowBombEntity(this.wretch.level, this.wretch.getX(),this.wretch.getY(),this.wretch.getZ(),this.wretch);
                         if (!this.wretch.isSilent()) {
-                            this.wretch.world.playSound((PlayerEntity) null, this.wretch.getPosX(), this.wretch.getPosY(), this.wretch.getPosZ(), SoundEvents.ENTITY_TNT_PRIMED, this.wretch.getSoundCategory(), 1.0F, 0.8F + this.wretch.rand.nextFloat() * 0.4F);
+                            this.wretch.level.playSound((PlayerEntity) null, this.wretch.getX(), this.wretch.getY(), this.wretch.getZ(), SoundEvents.TNT_PRIMED, this.wretch.getSoundSource(), 1.0F, 0.8F + this.wretch.random.nextFloat() * 0.4F);
                         }
-                        this.wretch.world.addEntity(slowbomb);
+                        this.wretch.level.addFreshEntity(slowbomb);
                         this.runTime = 0;
                     }
                 } else {
                     ++this.seeTime;
                     if (seeTime >= 30) {
-                        Vector3d vector3d = livingentity.getMotion();
-                        double d0 = livingentity.getPosX() + vector3d.x - this.wretch.getPosX();
-                        double d1 = livingentity.getPosYEye() - (double) 1.1F - this.wretch.getPosY();
-                        double d2 = livingentity.getPosZ() + vector3d.z - this.wretch.getPosZ();
+                        Vector3d vector3d = livingentity.getDeltaMovement();
+                        double d0 = livingentity.getX() + vector3d.x - this.wretch.getX();
+                        double d1 = livingentity.getEyeY() - (double) 1.1F - this.wretch.getY();
+                        double d2 = livingentity.getZ() + vector3d.z - this.wretch.getZ();
                         float f = MathHelper.sqrt(d0 * d0 + d2 * d2);
-                        int random = this.wretch.world.rand.nextInt(2);
+                        int random = this.wretch.level.random.nextInt(2);
                         if (random == 1) {
                             this.potiontype = Potions.HARMING;
                         } else {
                             this.potiontype = ModPotions.MINING_FATIGUE.get();
                         }
                         Potion potion = this.potiontype;
-                        PotionEntity potionentity = new PotionEntity(this.wretch.world, this.wretch);
-                        potionentity.setItem(PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), potion));
-                        potionentity.rotationPitch -= -20.0F;
+                        PotionEntity potionentity = new PotionEntity(this.wretch.level, this.wretch);
+                        potionentity.setItem(PotionUtils.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
+                        potionentity.xRot -= -20.0F;
                         potionentity.shoot(d0, d1 + (double) (f * 0.2F), d2, 0.75F, 8.0F);
                         if (!this.wretch.isSilent()) {
-                            this.wretch.world.playSound((PlayerEntity) null, this.wretch.getPosX(), this.wretch.getPosY(), this.wretch.getPosZ(), SoundEvents.ENTITY_WITCH_THROW, this.wretch.getSoundCategory(), 1.0F, 0.8F + this.wretch.rand.nextFloat() * 0.4F);
+                            this.wretch.level.playSound((PlayerEntity) null, this.wretch.getX(), this.wretch.getY(), this.wretch.getZ(), SoundEvents.WITCH_THROW, this.wretch.getSoundSource(), 1.0F, 0.8F + this.wretch.random.nextFloat() * 0.4F);
                         }
-                        this.wretch.world.addEntity(potionentity);
+                        this.wretch.level.addFreshEntity(potionentity);
                         this.seeTime = 0;
                         this.wretch.Executed = 1;
-                        this.wretch.getLookController().setLookPosition(livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ(), this.wretch.getHorizontalFaceSpeed(), this.wretch.getVerticalFaceSpeed());
+                        this.wretch.getLookControl().setLookAt(livingentity.getX(), livingentity.getY(), livingentity.getZ(), this.wretch.getMaxHeadYRot(), this.wretch.getMaxHeadXRot());
                         this.wretch.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(MODIFIER);
                     } else {
                         ModifiableAttributeInstance modifiableattributeinstance = this.wretch.getAttribute(Attributes.MOVEMENT_SPEED);
                         modifiableattributeinstance.removeModifier(MODIFIER);
-                        modifiableattributeinstance.applyNonPersistentModifier(MODIFIER);
-                        this.wretch.getLookController().setLookPosition(livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ(), this.wretch.getHorizontalFaceSpeed(), this.wretch.getVerticalFaceSpeed());
+                        modifiableattributeinstance.addTransientModifier(MODIFIER);
+                        this.wretch.getLookControl().setLookAt(livingentity.getX(), livingentity.getY(), livingentity.getZ(), this.wretch.getMaxHeadYRot(), this.wretch.getMaxHeadXRot());
                     }
                 }
             }

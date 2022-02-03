@@ -17,7 +17,7 @@ public class SpiderlingMinionRenderer <T extends SpiderlingMinionEntity> extends
         this.addLayer(new SpiderEyesLayer<>(this));
     }
 
-    protected void preRenderCallback(SpiderlingMinionEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(SpiderlingMinionEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         matrixStackIn.scale(0.4F, 0.4F, 0.4F);
     }
 
@@ -25,7 +25,7 @@ public class SpiderlingMinionRenderer <T extends SpiderlingMinionEntity> extends
         return 180.0F;
     }
 
-    public ResourceLocation getEntityTexture(T entity) {
+    public ResourceLocation getTextureLocation(T entity) {
         return TEXTURE;
     }
 }

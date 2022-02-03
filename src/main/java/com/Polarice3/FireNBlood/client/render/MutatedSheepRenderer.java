@@ -19,7 +19,7 @@ public class MutatedSheepRenderer extends MobRenderer<MutatedSheepEntity, Mutate
         super(renderManagerIn, new MutatedSheepModel<>(), 1.0F);
     }
 
-    protected void preRenderCallback(MutatedSheepEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(MutatedSheepEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         float f = entitylivingbaseIn.getMutatedFlashIntensity(partialTickTime);
         float f1 = 1.0F + MathHelper.sin(f * 100.0F) * f * 0.01F;
         f = MathHelper.clamp(f, 0.0F, 1.0F);
@@ -30,13 +30,13 @@ public class MutatedSheepRenderer extends MobRenderer<MutatedSheepEntity, Mutate
         matrixStackIn.scale(f2, f3, f2);
     }
 
-    protected float getOverlayProgress(MutatedSheepEntity livingEntityIn, float partialTicks) {
+    protected float getWhiteOverlayProgress(MutatedSheepEntity livingEntityIn, float partialTicks) {
         float f = livingEntityIn.getMutatedFlashIntensity(partialTicks);
         return (int)(f * 10.0F) % 2 == 0 ? 0.0F : MathHelper.clamp(f, 0.5F, 1.0F);
     }
 
     @Override
-    public ResourceLocation getEntityTexture(MutatedSheepEntity entity) {
+    public ResourceLocation getTextureLocation(MutatedSheepEntity entity) {
         return TEXTURE;
     }
 }

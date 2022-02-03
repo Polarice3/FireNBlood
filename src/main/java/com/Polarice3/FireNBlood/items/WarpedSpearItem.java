@@ -27,18 +27,18 @@ public class WarpedSpearItem extends Item implements IVanishable {
     private final Multimap<Attribute, AttributeModifier> warpedspearattributes;
 
     public WarpedSpearItem() {
-        super(new Properties().maxDamage(250).group(FireNBlood.TAB));
+        super(new Properties().durability(250).tab(FireNBlood.TAB));
         ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Tool modifier", 9.0D, AttributeModifier.Operation.ADDITION));
-        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(ATTACK_SPEED_MODIFIER, "Tool modifier", (double)-2.9F, AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Tool modifier", 9.0D, AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Tool modifier", (double)-2.9F, AttributeModifier.Operation.ADDITION));
         this.warpedspearattributes = builder.build();
     }
 
-    public boolean canPlayerBreakBlockWhileHolding(BlockState state, World worldIn, BlockPos pos, PlayerEntity player) {
+    public boolean canAttackBlock(BlockState state, World worldIn, BlockPos pos, PlayerEntity player) {
         return !player.isCreative();
     }
 
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAction getUseAnimation(ItemStack stack) {
         return UseAction.SPEAR;
     }
 
@@ -51,54 +51,54 @@ public class WarpedSpearItem extends Item implements IVanishable {
             PlayerEntity playerentity = (PlayerEntity)entityLiving;
             int i = this.getUseDuration(stack) - timeLeft;
             if (i >= 10) {
-                stack.damageItem(1, playerentity, (player) -> {
-                    player.sendBreakAnimation(entityLiving.getActiveHand());
+                stack.hurtAndBreak(1, playerentity, (player) -> {
+                    player.broadcastBreakEvent(entityLiving.getUsedItemHand());
                 });
                 WarpedSpearEntity warpedSpearEntity = new WarpedSpearEntity(worldIn, playerentity, stack);
-                warpedSpearEntity.setDirectionAndMovement(playerentity, playerentity.rotationPitch, playerentity.rotationYaw, 0.0F, 2.5F + (float)3 * 0.5F, 1.0F);
-                if (playerentity.abilities.isCreativeMode) {
-                    warpedSpearEntity.pickupStatus = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
+                warpedSpearEntity.shootFromRotation(playerentity, playerentity.xRot, playerentity.yRot, 0.0F, 2.5F + (float)3 * 0.5F, 1.0F);
+                if (playerentity.abilities.instabuild) {
+                    warpedSpearEntity.pickup = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
                 }
 
-                worldIn.addEntity(warpedSpearEntity);
-                worldIn.playMovingSound((PlayerEntity)null, warpedSpearEntity, SoundEvents.ITEM_TRIDENT_THROW, SoundCategory.PLAYERS, 1.0F, 1.0F);
-                if (!playerentity.abilities.isCreativeMode) {
-                    playerentity.inventory.deleteStack(stack);
+                worldIn.addFreshEntity(warpedSpearEntity);
+                worldIn.playSound((PlayerEntity)null, warpedSpearEntity, SoundEvents.TRIDENT_THROW, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                if (!playerentity.abilities.instabuild) {
+                    playerentity.inventory.removeItem(stack);
                 }
             }
         }
     }
 
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
-        if (itemstack.getDamage() >= itemstack.getMaxDamage() - 1) {
-            return ActionResult.resultFail(itemstack);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
+        if (itemstack.getDamageValue() >= itemstack.getMaxDamage() - 1) {
+            return ActionResult.fail(itemstack);
         } else {
-            playerIn.setActiveHand(handIn);
-            return ActionResult.resultConsume(itemstack);
+            playerIn.startUsingItem(handIn);
+            return ActionResult.consume(itemstack);
         }
     }
 
-    public boolean hitEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        stack.damageItem(1, attacker, (entity) -> {
-            entity.sendBreakAnimation(EquipmentSlotType.MAINHAND);
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        stack.hurtAndBreak(1, attacker, (entity) -> {
+            entity.broadcastBreakEvent(EquipmentSlotType.MAINHAND);
         });
-        target.setFire(30);
+        target.setSecondsOnFire(30);
         return true;
     }
 
-    public boolean onBlockDestroyed(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
-        if ((double)state.getBlockHardness(worldIn, pos) != 0.0D) {
-            stack.damageItem(2, entityLiving, (entity) -> {
-                entity.sendBreakAnimation(EquipmentSlotType.MAINHAND);
+    public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
+        if ((double)state.getDestroySpeed(worldIn, pos) != 0.0D) {
+            stack.hurtAndBreak(2, entityLiving, (entity) -> {
+                entity.broadcastBreakEvent(EquipmentSlotType.MAINHAND);
             });
         }
 
         return true;
     }
 
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType equipmentSlot) {
-        return equipmentSlot == EquipmentSlotType.MAINHAND ? this.warpedspearattributes : super.getAttributeModifiers(equipmentSlot);
+    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlotType equipmentSlot) {
+        return equipmentSlot == EquipmentSlotType.MAINHAND ? this.warpedspearattributes : super.getDefaultAttributeModifiers(equipmentSlot);
     }
 
     public int getItemEnchantability() {

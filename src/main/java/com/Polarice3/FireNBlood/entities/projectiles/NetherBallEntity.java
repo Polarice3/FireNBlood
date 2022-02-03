@@ -32,47 +32,47 @@ public class NetherBallEntity extends DamagingProjectileEntity {
 
     public void tick() {
         super.tick();
-        this.world.createExplosion(this, this.getPosX() + this.rand.nextDouble(), this.getPosY(), this.getPosZ() + this.rand.nextDouble(), 0.5F, Explosion.Mode.NONE);
+        this.level.explode(this, this.getX() + this.random.nextDouble(), this.getY(), this.getZ() + this.random.nextDouble(), 0.5F, Explosion.Mode.NONE);
     }
 
-    protected void onImpact(RayTraceResult result) {
-        super.onImpact(result);
+    protected void onHit(RayTraceResult result) {
+        super.onHit(result);
         if (result.getType() != RayTraceResult.Type.ENTITY) {
-            if (!this.world.isRemote) {
-                if (this.world.getDifficulty() == Difficulty.HARD) {
+            if (!this.level.isClientSide) {
+                if (this.level.getDifficulty() == Difficulty.HARD) {
                     for (int i = 0; i < 3; ++i) {
-                        ScorchEntity scorchEntity = new ScorchEntity(ModEntityType.SCORCH.get(), this.world);
-                        BlockPos blockpos = this.getPosition().add(-2 + this.rand.nextInt(5), 1, -2 + this.rand.nextInt(5));
-                        scorchEntity.moveToBlockPosAndAngles(blockpos, 0.0F, 0.0F);
-                        scorchEntity.onInitialSpawn((IServerWorld) this.world, this.world.getDifficultyForLocation(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
+                        ScorchEntity scorchEntity = new ScorchEntity(ModEntityType.SCORCH.get(), this.level);
+                        BlockPos blockpos = this.blockPosition().offset(-2 + this.random.nextInt(5), 1, -2 + this.random.nextInt(5));
+                        scorchEntity.moveTo(blockpos, 0.0F, 0.0F);
+                        scorchEntity.finalizeSpawn((IServerWorld) this.level, this.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
                         scorchEntity.setBoundOrigin(blockpos);
-                        scorchEntity.setLimitedLife(20 * (30 + this.rand.nextInt(90)));
-                        this.world.addEntity(scorchEntity);
+                        scorchEntity.setLimitedLife(20 * (30 + this.random.nextInt(90)));
+                        this.level.addFreshEntity(scorchEntity);
                     }
                 }
-                NethernalEntity nethernalEntity = new NethernalEntity(ModEntityType.NETHERNAL.get(), this.world);
-                BlockPos blockPos = this.getPosition();
-                nethernalEntity.moveToBlockPosAndAngles(blockPos, 0.0F, 0.0F);
+                NethernalEntity nethernalEntity = new NethernalEntity(ModEntityType.NETHERNAL.get(), this.level);
+                BlockPos blockPos = this.blockPosition();
+                nethernalEntity.moveTo(blockPos, 0.0F, 0.0F);
                 nethernalEntity.setLimitedLife(3600);
-                this.world.addEntity(nethernalEntity);
-                this.world.createExplosion(this, this.getPosX(), this.getPosY(), this.getPosZ(), 5.0F, Explosion.Mode.NONE);
+                this.level.addFreshEntity(nethernalEntity);
+                this.level.explode(this, this.getX(), this.getY(), this.getZ(), 5.0F, Explosion.Mode.NONE);
                 this.remove();
             }
 
         }
     }
 
-    public boolean isBurning() {
+    public boolean isOnFire() {
         return false;
     }
 
-    public boolean isImmuneToExplosions(){return true;}
+    public boolean ignoreExplosion(){return true;}
 
     public boolean canBeCollidedWith() {
         return false;
     }
 
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         return false;
     }
 
@@ -80,12 +80,12 @@ public class NetherBallEntity extends DamagingProjectileEntity {
         return ParticleTypes.FLAME;
     }
 
-    protected boolean isFireballFiery() {
+    protected boolean shouldBurn() {
         return false;
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

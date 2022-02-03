@@ -62,6 +62,8 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> TotemUndying;
     public static final ForgeConfigSpec.ConfigValue<Boolean> StarterTotem;
 
+    public static final ForgeConfigSpec.ConfigValue<Boolean> VizierMinion;
+
     static {
         BUILDER.push("General");
         MaxSouls = BUILDER.comment("Totem Maximum Soul Count, Default: 10000")
@@ -156,6 +158,10 @@ public class FNBConfig {
                 .define("hexerspawn", true);
         CultistsSpawn = BUILDER.comment("Cultists Spawning, Default: true")
                 .define("cultistsspawn", true);
+        BUILDER.pop();
+        BUILDER.push("Misc");
+        VizierMinion = BUILDER.comment("Viziers spawn Vexes instead of Irks, Default: false")
+                .define("vizierminion", false);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }

@@ -15,40 +15,40 @@ public class BigRuneModel<T extends LightningTrapEntity> extends EntityModel<T> 
 	private final ModelRenderer sides;
 
 	public BigRuneModel() {
-		textureWidth = 64;
-		textureHeight = 64;
+		texWidth = 64;
+		texHeight = 64;
 
 		bigrune = new ModelRenderer(this);
-		bigrune.setRotationPoint(0.0F, 24.0F, 0.0F);
+		bigrune.setPos(0.0F, 24.0F, 0.0F);
 		
 
 		base = new ModelRenderer(this);
-		base.setRotationPoint(0.0F, 0.0F, 0.0F);
+		base.setPos(0.0F, 0.0F, 0.0F);
 		bigrune.addChild(base);
-		base.setTextureOffset(0, 0).addBox(-7.0F, 0.0F, -7.0F, 14.0F, 0.0F, 14.0F, 0.0F, false);
+		base.texOffs(0, 0).addBox(-7.0F, 0.0F, -7.0F, 14.0F, 0.0F, 14.0F, 0.0F, false);
 
 		sides = new ModelRenderer(this);
-		sides.setRotationPoint(0.0F, 0.0F, 0.0F);
+		sides.setPos(0.0F, 0.0F, 0.0F);
 		bigrune.addChild(sides);
-		sides.setTextureOffset(28, 14).addBox(-7.0F, -5.0F, 7.0F, 14.0F, 5.0F, 0.0F, 0.0F, false);
-		sides.setTextureOffset(0, 24).addBox(-7.0F, -5.0F, -7.0F, 14.0F, 5.0F, 0.0F, 0.0F, false);
-		sides.setTextureOffset(0, 5).addBox(7.0F, -5.0F, -7.0F, 0.0F, 5.0F, 14.0F, 0.0F, false);
-		sides.setTextureOffset(0, 0).addBox(-7.0F, -5.0F, -7.0F, 0.0F, 5.0F, 14.0F, 0.0F, false);
+		sides.texOffs(28, 14).addBox(-7.0F, -5.0F, 7.0F, 14.0F, 5.0F, 0.0F, 0.0F, false);
+		sides.texOffs(0, 24).addBox(-7.0F, -5.0F, -7.0F, 14.0F, 5.0F, 0.0F, 0.0F, false);
+		sides.texOffs(0, 5).addBox(7.0F, -5.0F, -7.0F, 0.0F, 5.0F, 14.0F, 0.0F, false);
+		sides.texOffs(0, 0).addBox(-7.0F, -5.0F, -7.0F, 0.0F, 5.0F, 14.0F, 0.0F, false);
 	}
 
 	@Override
-	public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void setupAnim(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 
 	}
 
 	public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-		modelRenderer.rotateAngleX = x;
-		modelRenderer.rotateAngleY = y;
-		modelRenderer.rotateAngleZ = z;
+		modelRenderer.xRot = x;
+		modelRenderer.yRot = y;
+		modelRenderer.zRot = z;
 	}
 
 	@Override
-	public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+	public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
 
 	}
 }

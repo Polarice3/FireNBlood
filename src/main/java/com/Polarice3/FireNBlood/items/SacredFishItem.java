@@ -12,20 +12,20 @@ import net.minecraft.world.World;
 
 public class SacredFishItem extends Item {
     public SacredFishItem() {
-        super(new Item.Properties().group(FireNBlood.TAB)
-                .maxStackSize(1)
+        super(new Item.Properties().tab(FireNBlood.TAB)
+                .stacksTo(1)
                 .food(new Food.Builder()
-                        .hunger(5)
-                        .saturation(0.6F)
-                        .setAlwaysEdible()
+                        .nutrition(5)
+                        .saturationMod(0.6F)
+                        .alwaysEat()
                         .build())
         );
     }
 
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        super.onItemUseFinish(stack, worldIn, entityLiving);
+    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
+        super.finishUsingItem(stack, worldIn, entityLiving);
         if (entityLiving instanceof PlayerEntity) {
-            ((PlayerEntity)entityLiving).getCooldownTracker().setCooldown(this, 120);
+            ((PlayerEntity)entityLiving).getCooldowns().addCooldown(this, 120);
         }
         return new ItemStack(this);
     }
@@ -34,11 +34,11 @@ public class SacredFishItem extends Item {
         return 32;
     }
 
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAction getUseAnimation(ItemStack stack) {
         return UseAction.EAT;
     }
 
     public SoundEvent getEatSound() {
-        return SoundEvents.ENTITY_GENERIC_EAT;
+        return SoundEvents.GENERIC_EAT;
     }
 }

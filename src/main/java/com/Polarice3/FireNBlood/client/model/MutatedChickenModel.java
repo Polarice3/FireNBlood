@@ -21,54 +21,54 @@ public class MutatedChickenModel<T extends MutatedChickenEntity> extends EntityM
     private final ModelRenderer wingleft;
 
     public MutatedChickenModel() {
-        textureWidth = 64;
-        textureHeight = 32;
+        texWidth = 64;
+        texHeight = 32;
 
         body = new ModelRenderer(this);
-        body.setRotationPoint(0.0F, 16.0F, 0.0F);
-        body.setTextureOffset(0, 13).addBox(-3.0F, -4.0F, -3.0F, 6.0F, 8.0F, 6.0F, 0.0F, false);
+        body.setPos(0.0F, 16.0F, 0.0F);
+        body.texOffs(0, 13).addBox(-3.0F, -4.0F, -3.0F, 6.0F, 8.0F, 6.0F, 0.0F, false);
 
         head = new ModelRenderer(this);
-        head.setRotationPoint(0.0F, 15.0F, -4.0F);
-        head.setTextureOffset(0, 0).addBox(-2.0F, -8.0F, -2.0F, 4.0F, 8.0F, 3.0F, 0.0F, false);
+        head.setPos(0.0F, 15.0F, -4.0F);
+        head.texOffs(0, 0).addBox(-2.0F, -8.0F, -2.0F, 4.0F, 8.0F, 3.0F, 0.0F, false);
 
         comb = new ModelRenderer(this);
-        comb.setRotationPoint(0.0F, 0.0F, 0.0F);
+        comb.setPos(0.0F, 0.0F, 0.0F);
         head.addChild(comb);
-        comb.setTextureOffset(14, 5).addBox(-1.0F, -2.0F, -3.0F, 2.0F, 6.0F, 2.0F, 0.0F, false);
+        comb.texOffs(14, 5).addBox(-1.0F, -2.0F, -3.0F, 2.0F, 6.0F, 2.0F, 0.0F, false);
 
         beak = new ModelRenderer(this);
-        beak.setRotationPoint(0.0F, 0.0F, 0.0F);
+        beak.setPos(0.0F, 0.0F, 0.0F);
         head.addChild(beak);
-        beak.setTextureOffset(14, 0).addBox(-2.0F, -4.0F, -4.0F, 4.0F, 2.0F, 2.0F, 0.0F, false);
+        beak.texOffs(14, 0).addBox(-2.0F, -4.0F, -4.0F, 4.0F, 2.0F, 2.0F, 0.0F, false);
 
         legfrontright = new ModelRenderer(this);
-        legfrontright.setRotationPoint(-4.0F, 19.0F, -3.0F);
-        legfrontright.setTextureOffset(26, 0).addBox(0.0F, 0.0F, -3.0F, 3.0F, 5.0F, 3.0F, 0.0F, false);
+        legfrontright.setPos(-4.0F, 19.0F, -3.0F);
+        legfrontright.texOffs(26, 0).addBox(0.0F, 0.0F, -3.0F, 3.0F, 5.0F, 3.0F, 0.0F, false);
 
         legfrontleft = new ModelRenderer(this);
-        legfrontleft.setRotationPoint(2.0F, 19.0F, -3.0F);
-        legfrontleft.setTextureOffset(26, 0).addBox(-1.0F, 0.0F, -3.0F, 3.0F, 5.0F, 3.0F, 0.0F, false);
+        legfrontleft.setPos(2.0F, 19.0F, -3.0F);
+        legfrontleft.texOffs(26, 0).addBox(-1.0F, 0.0F, -3.0F, 3.0F, 5.0F, 3.0F, 0.0F, false);
 
         legbackright = new ModelRenderer(this);
-        legbackright.setRotationPoint(-7.0F, 19.0F, -2.0F);
-        legbackright.setTextureOffset(26, 0).addBox(2.0F, 0.0F, 3.0F, 3.0F, 5.0F, 3.0F, 0.0F, false);
+        legbackright.setPos(-7.0F, 19.0F, -2.0F);
+        legbackright.texOffs(26, 0).addBox(2.0F, 0.0F, 3.0F, 3.0F, 5.0F, 3.0F, 0.0F, false);
 
         legbackleft = new ModelRenderer(this);
-        legbackleft.setRotationPoint(-7.0F, 19.0F, -2.0F);
-        legbackleft.setTextureOffset(26, 0).addBox(5.0F, 0.0F, 3.0F, 3.0F, 5.0F, 3.0F, 0.0F, false);
+        legbackleft.setPos(-7.0F, 19.0F, -2.0F);
+        legbackleft.texOffs(26, 0).addBox(5.0F, 0.0F, 3.0F, 3.0F, 5.0F, 3.0F, 0.0F, false);
 
         wingright = new ModelRenderer(this);
-        wingright.setRotationPoint(-3.0F, 17.0F, 0.0F);
-        wingright.setTextureOffset(38, 9).addBox(-1.0F, -4.0F, -3.0F, 1.0F, 8.0F, 6.0F, 0.0F, false);
+        wingright.setPos(-3.0F, 17.0F, 0.0F);
+        wingright.texOffs(38, 9).addBox(-1.0F, -4.0F, -3.0F, 1.0F, 8.0F, 6.0F, 0.0F, false);
 
         wingleft = new ModelRenderer(this);
-        wingleft.setRotationPoint(3.0F, 13.0F, 0.0F);
-        wingleft.setTextureOffset(24, 13).addBox(0.0F, 0.0F, -3.0F, 1.0F, 4.0F, 6.0F, 0.0F, false);
+        wingleft.setPos(3.0F, 13.0F, 0.0F);
+        wingleft.texOffs(24, 13).addBox(0.0F, 0.0F, -3.0F, 1.0F, 4.0F, 6.0F, 0.0F, false);
     }
 
     @Override
-    public void render(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
+    public void renderToBuffer(MatrixStack matrixStack, IVertexBuilder buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha){
         body.render(matrixStack, buffer, packedLight, packedOverlay);
         head.render(matrixStack, buffer, packedLight, packedOverlay);
         legbackright.render(matrixStack, buffer, packedLight, packedOverlay);
@@ -79,13 +79,13 @@ public class MutatedChickenModel<T extends MutatedChickenEntity> extends EntityM
         wingleft.render(matrixStack, buffer, packedLight, packedOverlay);
     }
 
-    public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        this.head.rotateAngleX = headPitch * ((float)Math.PI / 180F);
-        this.head.rotateAngleY = netHeadYaw * ((float)Math.PI / 180F);
-        this.body.rotateAngleX = ((float)Math.PI / 2F);
-        this.legbackright.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
-        this.legbackleft.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
-        this.legfrontright.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
-        this.legfrontleft.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
+    public void setupAnim(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        this.head.xRot = headPitch * ((float)Math.PI / 180F);
+        this.head.yRot = netHeadYaw * ((float)Math.PI / 180F);
+        this.body.xRot = ((float)Math.PI / 2F);
+        this.legbackright.xRot = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
+        this.legbackleft.xRot = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+        this.legfrontright.xRot = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+        this.legfrontleft.xRot = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
     }
 }

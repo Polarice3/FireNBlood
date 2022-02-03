@@ -19,7 +19,7 @@ public class MutatedChickenRenderer extends MobRenderer<MutatedChickenEntity, Mu
         super(renderManagerIn, new MutatedChickenModel<>(), 0.5F);
     }
 
-    protected void preRenderCallback(MutatedChickenEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(MutatedChickenEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         float f = entitylivingbaseIn.getMutatedFlashIntensity(partialTickTime);
         float f1 = 1.0F + MathHelper.sin(f * 100.0F) * f * 0.01F;
         f = MathHelper.clamp(f, 0.0F, 1.0F);
@@ -30,13 +30,13 @@ public class MutatedChickenRenderer extends MobRenderer<MutatedChickenEntity, Mu
         matrixStackIn.scale(f2, f3, f2);
     }
 
-    protected float getOverlayProgress(MutatedChickenEntity livingEntityIn, float partialTicks) {
+    protected float getWhiteOverlayProgress(MutatedChickenEntity livingEntityIn, float partialTicks) {
         float f = livingEntityIn.getMutatedFlashIntensity(partialTicks);
         return (int)(f * 10.0F) % 2 == 0 ? 0.0F : MathHelper.clamp(f, 0.5F, 1.0F);
     }
 
     @Override
-    public ResourceLocation getEntityTexture(MutatedChickenEntity entity) {
+    public ResourceLocation getTextureLocation(MutatedChickenEntity entity) {
         return TEXTURE;
     }
 }

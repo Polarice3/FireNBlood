@@ -18,7 +18,7 @@ public class SavagerRenderer extends MobRenderer<SavagerEntity, SavagerModel>  {
     }
 
     @Override
-    public ResourceLocation getEntityTexture(SavagerEntity entity) {
+    public ResourceLocation getTextureLocation(SavagerEntity entity) {
         return TEXTURE;
     }
 

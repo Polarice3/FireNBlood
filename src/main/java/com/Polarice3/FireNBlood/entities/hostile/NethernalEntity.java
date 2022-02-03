@@ -32,13 +32,13 @@ public class NethernalEntity extends MonsterEntity {
     private static final Predicate<LivingEntity> TARGETS = (enemy) -> !(enemy instanceof WitchEntity)
             && !(enemy instanceof ChannellerEntity) && !(enemy instanceof AbstractTaillessEntity)
             && !(enemy instanceof AbstractPiglinEntity) && !(enemy instanceof HoglinEntity)
-            && !(enemy.isImmuneToFire());
+            && !(enemy.fireImmune());
     private boolean limitedLifespan;
     private int limitedLifeTicks;
 
     public NethernalEntity(EntityType<? extends MonsterEntity> type, World worldIn) {
         super(type, worldIn);
-        this.stepHeight = 1.0F;
+        this.maxUpStep = 1.0F;
     }
 
     protected void registerGoals() {
@@ -52,48 +52,48 @@ public class NethernalEntity extends MonsterEntity {
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
-        return MobEntity.func_233666_p_()
-                .createMutableAttribute(Attributes.MAX_HEALTH, 150.0D)
-                .createMutableAttribute(Attributes.ARMOR, 6.0D)
-                .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25D)
-                .createMutableAttribute(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
-                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 17.0D);
+        return MobEntity.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 150.0D)
+                .add(Attributes.ARMOR, 6.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.25D)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
+                .add(Attributes.ATTACK_DAMAGE, 17.0D);
     }
 
     protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-        return SoundEvents.ENTITY_IRON_GOLEM_HURT;
+        return SoundEvents.IRON_GOLEM_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_IRON_GOLEM_DEATH;
+        return SoundEvents.IRON_GOLEM_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, BlockState blockIn) {
-        this.playSound(SoundEvents.ENTITY_IRON_GOLEM_STEP, 1.0F, 1.0F);
+        this.playSound(SoundEvents.IRON_GOLEM_STEP, 1.0F, 1.0F);
     }
 
-    protected void collideWithEntity(Entity entityIn) {
-        if (entityIn instanceof IMob && this.getRNG().nextInt(20) == 0) {
-            this.setAttackTarget((LivingEntity)entityIn);
+    protected void doPush(Entity entityIn) {
+        if (entityIn instanceof IMob && this.getRandom().nextInt(20) == 0) {
+            this.setTarget((LivingEntity)entityIn);
         }
 
-        super.collideWithEntity(entityIn);
+        super.doPush(entityIn);
     }
 
-    protected void registerData() {
-        super.registerData();
+    protected void defineSynchedData() {
+        super.defineSynchedData();
     }
 
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if (compound.contains("LifeTicks")) {
             this.setLimitedLife(compound.getInt("LifeTicks"));
         }
 
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
 
         if (this.limitedLifespan) {
             compound.putInt("LifeTicks", this.limitedLifeTicks);
@@ -106,52 +106,52 @@ public class NethernalEntity extends MonsterEntity {
         this.limitedLifeTicks = limitedLifeTicksIn;
     }
 
-    public void livingTick() {
-        super.livingTick();
+    public void aiStep() {
+        super.aiStep();
         if (this.limitedLifespan && --this.limitedLifeTicks <= 0) {
-            this.attackEntityFrom(DamageSource.STARVE, this.getMaxHealth());
+            this.hurt(DamageSource.STARVE, this.getMaxHealth());
         }
-        if (this.ticksExisted % 20 == 0) {
+        if (this.tickCount % 20 == 0) {
             this.heal(1.0F);
         }
         if (this.attackTimer > 0) {
             --this.attackTimer;
         }
 
-        if (this.world.isRemote) {
+        if (this.level.isClientSide) {
             for(int i = 0; i < 2; ++i) {
-                this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.getPosXRandom(0.5D), this.getPosYRandom(), this.getPosZRandom(0.5D), 0.0D, 0.0D, 0.0D);
+                this.level.addParticle(ParticleTypes.LARGE_SMOKE, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), 0.0D, 0.0D, 0.0D);
             }
         }
 
-        if (this.collidedHorizontally && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this)) {
+        if (this.horizontalCollision && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level, this)) {
             boolean flag = false;
-            AxisAlignedBB axisalignedbb = this.getBoundingBox().grow(0.2D);
+            AxisAlignedBB axisalignedbb = this.getBoundingBox().inflate(0.2D);
 
-            for(BlockPos blockpos : BlockPos.getAllInBoxMutable(MathHelper.floor(axisalignedbb.minX), MathHelper.floor(axisalignedbb.minY), MathHelper.floor(axisalignedbb.minZ), MathHelper.floor(axisalignedbb.maxX), MathHelper.floor(axisalignedbb.maxY), MathHelper.floor(axisalignedbb.maxZ))) {
-                BlockState blockstate = this.world.getBlockState(blockpos);
+            for(BlockPos blockpos : BlockPos.betweenClosed(MathHelper.floor(axisalignedbb.minX), MathHelper.floor(axisalignedbb.minY), MathHelper.floor(axisalignedbb.minZ), MathHelper.floor(axisalignedbb.maxX), MathHelper.floor(axisalignedbb.maxY), MathHelper.floor(axisalignedbb.maxZ))) {
+                BlockState blockstate = this.level.getBlockState(blockpos);
                 Block block = blockstate.getBlock();
                 if (block instanceof LeavesBlock || (block instanceof RotatedPillarBlock && block != Blocks.BASALT && block != Blocks.POLISHED_BASALT && block != Blocks.QUARTZ_PILLAR)) {
-                    flag = this.world.destroyBlock(blockpos, true, this) || flag;
+                    flag = this.level.destroyBlock(blockpos, true, this) || flag;
                 }
             }
 
             if (!flag && this.onGround) {
-                this.jump();
+                this.jumpFromGround();
             }
         }
 
-        for(Entity entity : this.world.getEntitiesWithinAABB(LivingEntity.class, this.getBoundingBox().grow(4.0D), field_213690_b)) {
+        for(Entity entity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0D), field_213690_b)) {
             if (!(entity instanceof WitchEntity)
                     && !(entity instanceof ChannellerEntity) && !(entity instanceof AbstractTaillessEntity)
                     && !(entity instanceof AbstractPiglinEntity) && !(entity instanceof HoglinEntity)
-                    && !(entity.isImmuneToFire())){
+                    && !(entity.fireImmune())){
                 if (entity instanceof PlayerEntity){
                     if (!((PlayerEntity) entity).isCreative()){
-                        entity.setFire(30);
+                        entity.setSecondsOnFire(30);
                     }
                 } else {
-                    entity.setFire(30);
+                    entity.setSecondsOnFire(30);
                 }
             }
         }
@@ -161,22 +161,22 @@ public class NethernalEntity extends MonsterEntity {
         return (float)this.getAttributeValue(Attributes.ATTACK_DAMAGE);
     }
 
-    public boolean isWaterSensitive() {
+    public boolean isSensitiveToWater() {
         return true;
     }
 
-    public boolean attackEntityAsMob(Entity entityIn) {
+    public boolean doHurtTarget(Entity entityIn) {
         this.attackTimer = 10;
-        this.world.setEntityState(this, (byte)4);
+        this.level.broadcastEntityEvent(this, (byte)4);
         float f = this.func_226511_et_();
-        float f1 = (int)f > 0 ? f / 2.0F + (float)this.rand.nextInt((int)f) : f;
-        boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), f1);
+        float f1 = (int)f > 0 ? f / 2.0F + (float)this.random.nextInt((int)f) : f;
+        boolean flag = entityIn.hurt(DamageSource.mobAttack(this), f1);
         if (flag) {
-            entityIn.setMotion(entityIn.getMotion().add(0.0D, (double)0.4F, 0.0D));
-            this.applyEnchantments(this, entityIn);
+            entityIn.setDeltaMovement(entityIn.getDeltaMovement().add(0.0D, (double)0.4F, 0.0D));
+            this.doEnchantDamageEffects(this, entityIn);
         }
 
-        this.playSound(SoundEvents.ENTITY_IRON_GOLEM_ATTACK, 1.0F, 1.0F);
+        this.playSound(SoundEvents.IRON_GOLEM_ATTACK, 1.0F, 1.0F);
         return flag;
     }
 
@@ -184,25 +184,25 @@ public class NethernalEntity extends MonsterEntity {
         return 1.0F;
     }
 
-    public boolean onLivingFall(float distance, float damageMultiplier) {
+    public boolean causeFallDamage(float distance, float damageMultiplier) {
         return false;
     }
 
-    public boolean attackEntityFrom(@Nonnull DamageSource source, float amount) {
+    public boolean hurt(@Nonnull DamageSource source, float amount) {
         if (source == DamageSource.MAGIC){
             return false;
         } else {
-            int r = this.world.getDifficulty() == Difficulty.HARD ? 64: 128;
-            int random = this.world.rand.nextInt(r);
+            int r = this.level.getDifficulty() == Difficulty.HARD ? 64: 128;
+            int random = this.level.random.nextInt(r);
             if (random == 1) {
-                BlockPos blockpos = this.getPosition().add(0, 1, 0);
-                ScorchEntity scorchEntity = new ScorchEntity(ModEntityType.SCORCH.get(), this.world);
-                scorchEntity.onInitialSpawn((IServerWorld) this.world, this.world.getDifficultyForLocation(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData)null, (CompoundNBT)null);
-                scorchEntity.setPosition(this.getPosX(), this.getPosY(), this.getPosZ());
-                scorchEntity.setLimitedLife(20 * (30 + this.rand.nextInt(90)));
-                this.world.addEntity(scorchEntity);
+                BlockPos blockpos = this.blockPosition().offset(0, 1, 0);
+                ScorchEntity scorchEntity = new ScorchEntity(ModEntityType.SCORCH.get(), this.level);
+                scorchEntity.finalizeSpawn((IServerWorld) this.level, this.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData)null, (CompoundNBT)null);
+                scorchEntity.setPos(this.getX(), this.getY(), this.getZ());
+                scorchEntity.setLimitedLife(20 * (30 + this.random.nextInt(90)));
+                this.level.addFreshEntity(scorchEntity);
             }
-            return super.attackEntityFrom(source, amount);
+            return super.hurt(source, amount);
         }
     }
 
@@ -210,8 +210,8 @@ public class NethernalEntity extends MonsterEntity {
         return this.attackTimer;
     }
 
-    public void onDeath(DamageSource cause) {
-        super.onDeath(cause);
+    public void die(DamageSource cause) {
+        super.die(cause);
     }
 
 

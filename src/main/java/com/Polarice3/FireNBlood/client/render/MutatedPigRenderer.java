@@ -19,7 +19,7 @@ public class MutatedPigRenderer extends MobRenderer<MutatedPigEntity, MutatedPig
         super(renderManagerIn, new MutatedPigModel<>(), 1.0F);
     }
 
-    protected void preRenderCallback(MutatedPigEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+    protected void scale(MutatedPigEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
         float f = entitylivingbaseIn.getMutatedFlashIntensity(partialTickTime);
         float f1 = 1.0F + MathHelper.sin(f * 100.0F) * f * 0.01F;
         f = MathHelper.clamp(f, 0.0F, 1.0F);
@@ -30,13 +30,13 @@ public class MutatedPigRenderer extends MobRenderer<MutatedPigEntity, MutatedPig
         matrixStackIn.scale(f2, f3, f2);
     }
 
-    protected float getOverlayProgress(MutatedPigEntity livingEntityIn, float partialTicks) {
+    protected float getWhiteOverlayProgress(MutatedPigEntity livingEntityIn, float partialTicks) {
         float f = livingEntityIn.getMutatedFlashIntensity(partialTicks);
         return (int)(f * 10.0F) % 2 == 0 ? 0.0F : MathHelper.clamp(f, 0.5F, 1.0F);
     }
 
     @Override
-    public ResourceLocation getEntityTexture(MutatedPigEntity entity) {
+    public ResourceLocation getTextureLocation(MutatedPigEntity entity) {
         return TEXTURE;
     }
 }

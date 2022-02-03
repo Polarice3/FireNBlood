@@ -18,15 +18,15 @@ import net.minecraft.world.World;
 
 public class MockingEffigyItem extends Item {
     public MockingEffigyItem() {
-        super(new Item.Properties().group(FireNBlood.TAB).maxStackSize(1));
+        super(new Item.Properties().tab(FireNBlood.TAB).stacksTo(1));
     }
 
-    public ItemStack onItemUseFinish(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        super.onItemUseFinish(stack, worldIn, entityLiving);
-        worldIn.playSound((PlayerEntity) null, entityLiving.getPosX(), entityLiving.getPosY(), entityLiving.getPosZ(), SoundEvents.ENTITY_WITHER_DEATH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-        entityLiving.addPotionEffect(new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, 4));
-        entityLiving.world.createExplosion(entityLiving, entityLiving.getPosX(), entityLiving.getPosY(), entityLiving.getPosZ(), 3.0F, Explosion.Mode.NONE);
-        entityLiving.world.addParticle(ParticleTypes.FLAME, entityLiving.getPosX(), entityLiving.getPosYEye(), entityLiving.getPosZ(), 0.0F, 0.0F, 0.0F);
+    public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
+        super.finishUsingItem(stack, worldIn, entityLiving);
+        worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.WITHER_DEATH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+        entityLiving.addEffect(new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, 4));
+        entityLiving.level.explode(entityLiving, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), 3.0F, Explosion.Mode.NONE);
+        entityLiving.level.addParticle(ParticleTypes.FLAME, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         stack.setCount(0);
         return stack;
     }
@@ -35,13 +35,13 @@ public class MockingEffigyItem extends Item {
         return 25;
     }
 
-    public UseAction getUseAction(ItemStack stack) {
+    public UseAction getUseAnimation(ItemStack stack) {
         return UseAction.BOW;
     }
 
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack itemstack = playerIn.getHeldItem(handIn);
-        playerIn.setActiveHand(handIn);
-        return ActionResult.resultConsume(itemstack);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack itemstack = playerIn.getItemInHand(handIn);
+        playerIn.startUsingItem(handIn);
+        return ActionResult.consume(itemstack);
     }
 }

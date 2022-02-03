@@ -36,7 +36,7 @@ public class WarpedSpearEntity extends AbstractArrowEntity {
     private static final Predicate<Entity> field_213690_b = (p_213685_0_) -> {
         return p_213685_0_.isAlive() && !(p_213685_0_ instanceof WarpedSpearEntity);
     };
-    private static final DataParameter<Boolean> field_226571_aq_ = EntityDataManager.createKey(WarpedSpearEntity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> field_226571_aq_ = EntityDataManager.defineId(WarpedSpearEntity.class, DataSerializers.BOOLEAN);
     private ItemStack thrownStack = new ItemStack(RegistryHandler.WARPED_SPEAR.get());
     private boolean dealtDamage;
     public int returningTicks;
@@ -48,7 +48,7 @@ public class WarpedSpearEntity extends AbstractArrowEntity {
     public WarpedSpearEntity(World worldIn, LivingEntity thrower, ItemStack thrownStackIn) {
         super(ModEntityType.WARPED_SPEAR.get(), thrower, worldIn);
         this.thrownStack = thrownStackIn.copy();
-        this.dataManager.set(field_226571_aq_, thrownStackIn.hasEffect());
+        this.entityData.set(field_226571_aq_, thrownStackIn.hasFoil());
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -56,37 +56,37 @@ public class WarpedSpearEntity extends AbstractArrowEntity {
         super(ModEntityType.WARPED_SPEAR.get(), x, y, z, worldIn);
     }
 
-    protected void registerData() {
-        super.registerData();
-        this.dataManager.register(field_226571_aq_, false);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(field_226571_aq_, false);
     }
 
     public void tick() {
-        if (this.timeInGround > 4) {
+        if (this.inGroundTime > 4) {
             this.dealtDamage = true;
         }
 
-        Entity entity = this.getShooter();
-        if ((this.dealtDamage || this.getNoClip()) && entity != null) {
+        Entity entity = this.getOwner();
+        if ((this.dealtDamage || this.isNoPhysics()) && entity != null) {
             int i = 3;
             if (!this.shouldReturnToThrower()) {
-                if (!this.world.isRemote && this.pickupStatus == AbstractArrowEntity.PickupStatus.ALLOWED) {
-                    this.entityDropItem(this.getArrowStack(), 0.1F);
+                if (!this.level.isClientSide && this.pickup == AbstractArrowEntity.PickupStatus.ALLOWED) {
+                    this.spawnAtLocation(this.getPickupItem(), 0.1F);
                 }
 
                 this.remove();
             } else {
-                this.setNoClip(true);
-                Vector3d vector3d = new Vector3d(entity.getPosX() - this.getPosX(), entity.getPosYEye() - this.getPosY(), entity.getPosZ() - this.getPosZ());
-                this.setRawPosition(this.getPosX(), this.getPosY() + vector3d.y * 0.015D * (double)i, this.getPosZ());
-                if (this.world.isRemote) {
-                    this.lastTickPosY = this.getPosY();
+                this.setNoPhysics(true);
+                Vector3d vector3d = new Vector3d(entity.getX() - this.getX(), entity.getEyeY() - this.getY(), entity.getZ() - this.getZ());
+                this.setPosRaw(this.getX(), this.getY() + vector3d.y * 0.015D * (double)i, this.getZ());
+                if (this.level.isClientSide) {
+                    this.yOld = this.getY();
                 }
 
                 double d0 = 0.05D * (double)i;
-                this.setMotion(this.getMotion().scale(0.95D).add(vector3d.normalize().scale(d0)));
+                this.setDeltaMovement(this.getDeltaMovement().scale(0.95D).add(vector3d.normalize().scale(d0)));
                 if (this.returningTicks == 0) {
-                    this.playSound(SoundEvents.ITEM_TRIDENT_RETURN, 10.0F, 1.0F);
+                    this.playSound(SoundEvents.TRIDENT_RETURN, 10.0F, 1.0F);
                 }
 
                 ++this.returningTicks;
@@ -97,7 +97,7 @@ public class WarpedSpearEntity extends AbstractArrowEntity {
     }
 
     private boolean shouldReturnToThrower() {
-        Entity entity = this.getShooter();
+        Entity entity = this.getOwner();
         if (entity != null && entity.isAlive()) {
             return !(entity instanceof ServerPlayerEntity) || !entity.isSpectator();
         } else {
@@ -105,33 +105,33 @@ public class WarpedSpearEntity extends AbstractArrowEntity {
         }
     }
 
-    protected ItemStack getArrowStack() {
+    protected ItemStack getPickupItem() {
         return this.thrownStack.copy();
     }
 
     @OnlyIn(Dist.CLIENT)
     public boolean func_226572_w_() {
-        return this.dataManager.get(field_226571_aq_);
+        return this.entityData.get(field_226571_aq_);
     }
 
     @Nullable
-    protected EntityRayTraceResult rayTraceEntities(Vector3d startVec, Vector3d endVec) {
-        return this.dealtDamage ? null : super.rayTraceEntities(startVec, endVec);
+    protected EntityRayTraceResult findHitEntity(Vector3d startVec, Vector3d endVec) {
+        return this.dealtDamage ? null : super.findHitEntity(startVec, endVec);
     }
 
-    protected void onEntityHit(EntityRayTraceResult p_213868_1_) {
+    protected void onHitEntity(EntityRayTraceResult p_213868_1_) {
         Entity entity = p_213868_1_.getEntity();
         float f = 8.0F;
         if (entity instanceof LivingEntity) {
             LivingEntity livingentity = (LivingEntity)entity;
-            f += EnchantmentHelper.getModifierForCreature(this.thrownStack, livingentity.getCreatureAttribute());
+            f += EnchantmentHelper.getDamageBonus(this.thrownStack, livingentity.getMobType());
         }
 
-        Entity entity1 = this.getShooter();
-        DamageSource damagesource = DamageSource.causeTridentDamage(this, (Entity)(entity1 == null ? this : entity1));
+        Entity entity1 = this.getOwner();
+        DamageSource damagesource = DamageSource.trident(this, (Entity)(entity1 == null ? this : entity1));
         this.dealtDamage = true;
-        SoundEvent soundevent = SoundEvents.ITEM_TRIDENT_HIT;
-        if (entity.attackEntityFrom(damagesource, f)) {
+        SoundEvent soundevent = SoundEvents.TRIDENT_HIT;
+        if (entity.hurt(damagesource, f)) {
             if (entity.getType() == EntityType.ENDERMAN) {
                 return;
             }
@@ -139,18 +139,18 @@ public class WarpedSpearEntity extends AbstractArrowEntity {
             if (entity instanceof LivingEntity) {
                 LivingEntity livingentity1 = (LivingEntity)entity;
                 if (entity1 instanceof LivingEntity) {
-                    EnchantmentHelper.applyThornEnchantments(livingentity1, entity1);
-                    EnchantmentHelper.applyArthropodEnchantments((LivingEntity)entity1, livingentity1);
-                    livingentity1.setFire(30);
-                    livingentity1.addPotionEffect(new EffectInstance(Effects.SLOWNESS, 200));
+                    EnchantmentHelper.doPostHurtEffects(livingentity1, entity1);
+                    EnchantmentHelper.doPostDamageEffects((LivingEntity)entity1, livingentity1);
+                    livingentity1.setSecondsOnFire(30);
+                    livingentity1.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 200));
                 }
-                this.arrowHit(livingentity1);
+                this.doPostHurtEffects(livingentity1);
             }
         }
 
-        this.setMotion(this.getMotion().mul(-0.01D, -0.1D, -0.01D));
+        this.setDeltaMovement(this.getDeltaMovement().multiply(-0.01D, -0.1D, -0.01D));
         float f1 = 1.0F;
-        if (this.world instanceof ServerWorld) {
+        if (this.level instanceof ServerWorld) {
             this.shockwave();
         }
 
@@ -158,74 +158,74 @@ public class WarpedSpearEntity extends AbstractArrowEntity {
     }
 
     private void shockwave() {
-        for(Entity entity : this.world.getEntitiesWithinAABB(LivingEntity.class, this.getBoundingBox().grow(4.0D), field_213690_b)) {
-            entity.attackEntityFrom(DamageSource.causeTridentDamage(this, entity), 6.0F);
+        for(Entity entity : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0D), field_213690_b)) {
+            entity.hurt(DamageSource.trident(this, entity), 6.0F);
             this.launch(entity);
         }
-        this.playSound(SoundEvents.ENTITY_DRAGON_FIREBALL_EXPLODE, 1.0F, 1.0F);
+        this.playSound(SoundEvents.DRAGON_FIREBALL_EXPLODE, 1.0F, 1.0F);
 
         Vector3d vector3d = this.getBoundingBox().getCenter();
 
         for(int i = 0; i < 40; ++i) {
-            double d0 = this.rand.nextGaussian() * 0.2D;
-            double d1 = this.rand.nextGaussian() * 0.2D;
-            double d2 = this.rand.nextGaussian() * 0.2D;
-            this.world.addParticle(ParticleTypes.FLAME, vector3d.x, vector3d.y, vector3d.z, d0, d1, d2);
+            double d0 = this.random.nextGaussian() * 0.2D;
+            double d1 = this.random.nextGaussian() * 0.2D;
+            double d2 = this.random.nextGaussian() * 0.2D;
+            this.level.addParticle(ParticleTypes.FLAME, vector3d.x, vector3d.y, vector3d.z, d0, d1, d2);
         }
 
     }
 
     private void launch(Entity p_213688_1_) {
-        double d0 = p_213688_1_.getPosX() - this.getPosX();
-        double d1 = p_213688_1_.getPosZ() - this.getPosZ();
+        double d0 = p_213688_1_.getX() - this.getX();
+        double d1 = p_213688_1_.getZ() - this.getZ();
         double d2 = Math.max(d0 * d0 + d1 * d1, 0.001D);
-        p_213688_1_.addVelocity(d0 / d2 * 4.0D, 0.2D, d1 / d2 * 4.0D);
+        p_213688_1_.push(d0 / d2 * 4.0D, 0.2D, d1 / d2 * 4.0D);
     }
 
-    protected SoundEvent getHitEntitySound() {
-        return SoundEvents.ITEM_TRIDENT_HIT_GROUND;
+    protected SoundEvent getDefaultHitGroundSoundEvent() {
+        return SoundEvents.TRIDENT_HIT_GROUND;
     }
 
-    public void onCollideWithPlayer(PlayerEntity entityIn) {
-        Entity entity = this.getShooter();
-        if (entity == null || entity.getUniqueID() == entityIn.getUniqueID()) {
-            super.onCollideWithPlayer(entityIn);
+    public void playerTouch(PlayerEntity entityIn) {
+        Entity entity = this.getOwner();
+        if (entity == null || entity.getUUID() == entityIn.getUUID()) {
+            super.playerTouch(entityIn);
         }
     }
 
-    public void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
         if (compound.contains("WarpedSpear", 10)) {
-            this.thrownStack = ItemStack.read(compound.getCompound("WarpedSpear"));
+            this.thrownStack = ItemStack.of(compound.getCompound("WarpedSpear"));
         }
 
         this.dealtDamage = compound.getBoolean("DealtDamage");
     }
 
-    public void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
-        compound.put("WarpedSpear", this.thrownStack.write(new CompoundNBT()));
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
+        compound.put("WarpedSpear", this.thrownStack.save(new CompoundNBT()));
         compound.putBoolean("DealtDamage", this.dealtDamage);
     }
 
-    public void func_225516_i_() {
-        if (this.pickupStatus != AbstractArrowEntity.PickupStatus.ALLOWED) {
-            super.func_225516_i_();
+    public void tickDespawn() {
+        if (this.pickup != AbstractArrowEntity.PickupStatus.ALLOWED) {
+            super.tickDespawn();
         }
 
     }
 
-    protected float getWaterDrag() {
+    protected float getWaterInertia() {
         return 0.01F;
     }
 
     @OnlyIn(Dist.CLIENT)
-    public boolean isInRangeToRender3d(double x, double y, double z) {
+    public boolean shouldRender(double x, double y, double z) {
         return true;
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 }

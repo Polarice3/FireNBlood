@@ -66,7 +66,7 @@ public class SoulUsingItemHandler extends ItemStackHandler {
             CompoundNBT itemTags = tagList.getCompound(i);
             if (nbt.contains("slot")) {
                 slot = nbt.getInt("slot");
-                stacks.set(slot, ItemStack.read(itemTags));
+                stacks.set(slot, ItemStack.of(itemTags));
             }
         }
         onLoad();

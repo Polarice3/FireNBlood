@@ -12,22 +12,22 @@ import java.util.List;
 
 public class MoveTowardsTargetGoal<T extends AbstractTaillessEntity> extends Goal {
     private final T tailless;
-    private final EntityPredicate target = (new EntityPredicate().setDistance(128.0D));
+    private final EntityPredicate target = (new EntityPredicate().range(128.0D));
 
 
     public MoveTowardsTargetGoal(T tailless){
         this.tailless = tailless;
-        this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE));
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE));
     }
 
     @Override
-    public boolean shouldExecute() {
-        List<PlayerEntity> list = this.tailless.world.getTargettableEntitiesWithinAABB(PlayerEntity.class, this.target, this.tailless, this.tailless.getBoundingBox().grow(128.0D, 32.0D, 128.0D));
+    public boolean canUse() {
+        List<PlayerEntity> list = this.tailless.level.getNearbyEntities(PlayerEntity.class, this.target, this.tailless, this.tailless.getBoundingBox().inflate(128.0D, 32.0D, 128.0D));
         if (!list.isEmpty()){
-            this.tailless.setTarget(list.get(this.tailless.world.rand.nextInt(list.size())));
+            this.tailless.setTarget(list.get(this.tailless.level.random.nextInt(list.size())));
             LivingEntity livingEntity = this.tailless.getTarget();
             if (livingEntity != null) {
-                return this.tailless.getDistance(livingEntity) > 32.0D;
+                return this.tailless.distanceTo(livingEntity) > 32.0D;
             } else {
                 return false;
             }
@@ -38,9 +38,9 @@ public class MoveTowardsTargetGoal<T extends AbstractTaillessEntity> extends Goa
 
     public void tick(){
         LivingEntity livingentity = this.tailless.getTarget();
-            if (!this.tailless.hasPath() && livingentity != null) {
-                Vector3d vector3d = livingentity.getPositionVec();
-                this.tailless.getNavigator().tryMoveToXYZ(vector3d.x, vector3d.y, vector3d.z, 1.0D);
+            if (!this.tailless.isPathFinding() && livingentity != null) {
+                Vector3d vector3d = livingentity.position();
+                this.tailless.getNavigation().moveTo(vector3d.x, vector3d.y, vector3d.z, 1.0D);
             }
         }
 }
