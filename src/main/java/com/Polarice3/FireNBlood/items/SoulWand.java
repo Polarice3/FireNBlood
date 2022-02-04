@@ -111,7 +111,7 @@ public class SoulWand extends Item{
         }
     }
 
-    public void onUse(World worldIn, LivingEntity livingEntityIn, ItemStack stack, int count) {
+    public void onUseTick(World worldIn, LivingEntity livingEntityIn, ItemStack stack, int count) {
         if (!worldIn.isClientSide) {
             SoundEvent soundevent = this.CastingSound(stack);
             int CastTime = stack.getUseDuration() - count;
