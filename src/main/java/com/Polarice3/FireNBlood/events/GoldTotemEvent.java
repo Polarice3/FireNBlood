@@ -42,8 +42,8 @@ public class GoldTotemEvent {
                 event.getEntityLiving().addEffect(new EffectInstance(Effects.REGENERATION, 900, 1));
                 event.getEntityLiving().addEffect(new EffectInstance(Effects.ABSORPTION, 100, 1));
                 event.getEntityLiving().addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 800, 0));
-                event.getEntityLiving().addEffect(new EffectInstance(RegistryHandler.SOULDRAIN.get(), 100));
                 event.getEntityLiving().level.broadcastEntityEvent(event.getEntityLiving(), (byte)35);
+                GoldTotemItem.EmptySoulTotem((PlayerEntity) event.getEntityLiving());
                 event.setCanceled(true);
             }
         }

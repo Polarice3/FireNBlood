@@ -52,6 +52,7 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> DyingTimer;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> CraftingSouls;
+    public static final ForgeConfigSpec.ConfigValue<Integer> CultistSpawnFreq;
 
     public static final ForgeConfigSpec.ConfigValue<Float> HealAmount;
 
@@ -158,6 +159,8 @@ public class FNBConfig {
                 .define("hexerspawn", true);
         CultistsSpawn = BUILDER.comment("Cultists Spawning, Default: true")
                 .define("cultistsspawn", true);
+        CultistSpawnFreq = BUILDER.comment("Spawn Frequency for Cultists, Default: 12000")
+                .defineInRange("cultistsspawnfreq", 12000, 0, 72000);
         BUILDER.pop();
         BUILDER.push("Misc");
         VizierMinion = BUILDER.comment("Viziers spawn Vexes instead of Irks, Default: false")

@@ -97,12 +97,6 @@ public class ModEntityType {
                     .clientTrackingRange(4)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "soulfireball").toString()));
 
-    public static final RegistryObject<EntityType<EtherealPunchEntity>> ETHEREAL_PUNCH = ENTITY_TYPES.register("etherealpunch",
-            () -> EntityType.Builder.<EtherealPunchEntity>of(EtherealPunchEntity::new, EntityClassification.MISC)
-                    .sized(1.0f,1.0f)
-                    .clientTrackingRange(4)
-                    .build(new ResourceLocation(FireNBlood.MOD_ID, "etherealpunch").toString()));
-
     public static final RegistryObject<EntityType<WarpedSpearEntity>> WARPED_SPEAR = ENTITY_TYPES.register("warped_spear",
             () -> EntityType.Builder.<WarpedSpearEntity>of(WarpedSpearEntity::new, EntityClassification.MISC)
                     .sized(0.5F, 0.5F)
@@ -227,6 +221,12 @@ public class ModEntityType {
             () -> EntityType.Builder.of(MutatedPigEntity::new, EntityClassification.MONSTER)
                     .sized(0.9F, 1.55F)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "mutatedpig").toString()));
+
+    public static final RegistryObject<EntityType<SacredFishEntity>> SACRED_FISH = ENTITY_TYPES.register("sacredfish",
+            () -> EntityType.Builder.of(SacredFishEntity::new, EntityClassification.MISC)
+                    .sized(0.7F, 0.4F)
+                    .clientTrackingRange(4)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "sacredfish").toString()));
 
     public static final RegistryObject<EntityType<ParasiteEntity>> PARASITE = ENTITY_TYPES.register("parasite",
             () -> EntityType.Builder.of(ParasiteEntity::new, EntityClassification.MONSTER)

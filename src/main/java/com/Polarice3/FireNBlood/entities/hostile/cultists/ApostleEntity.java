@@ -90,6 +90,8 @@ public class ApostleEntity extends SpellcastingCultistEntity {
         this.setDropChance(EquipmentSlotType.MAINHAND, 0.0F);
         this.setItemSlot(EquipmentSlotType.HEAD, new ItemStack(RegistryHandler.APOSTLEHELM.get()));
         this.setItemSlot(EquipmentSlotType.CHEST, new ItemStack(RegistryHandler.APOSTLEROBE.get()));
+        this.setDropChance(EquipmentSlotType.HEAD, 0.0F);
+        this.setDropChance(EquipmentSlotType.CHEST, 0.0F);
         switch (random){
             case 0:
                 break;

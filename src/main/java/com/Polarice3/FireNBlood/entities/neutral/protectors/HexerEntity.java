@@ -97,10 +97,10 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
         this.targetSelector.addGoal(2, new AbstractProtectorEntity.OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, AbstractProtectorEntity.class)).setAlertOthers());
         this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, AbstractVillagerEntity.class)).setAlertOthers());
-        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractTaillessEntity.class, true));
-        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractRaiderEntity.class, true));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractTaillessEntity.class, true, !this.isSleeping()));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractRaiderEntity.class, true, !this.isSleeping()));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, false, false, (p_234199_0_) -> {
-            return p_234199_0_ instanceof IMob && !(p_234199_0_ instanceof CreeperEntity) && !(p_234199_0_ instanceof SummonedEntity);
+            return p_234199_0_ instanceof IMob && !(p_234199_0_ instanceof CreeperEntity) && !(p_234199_0_ instanceof SummonedEntity) && !this.isSleeping();
         }));
     }
 
@@ -482,10 +482,10 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
                     if (!p_230254_1_.abilities.instabuild) {
                         itemstack.shrink(1);
                     }
-                    this.shield = ShieldDurability();
+                    this.shield = item.getDamage(itemstack);
                     this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
                     this.setShield(true);
-                    this.setItemSlot(EquipmentSlotType.OFFHAND, new ItemStack(Items.SHIELD));
+                    this.setItemSlot(EquipmentSlotType.OFFHAND, itemstack.copy());
                     for (int i = 0; i < 7; ++i) {
                         double d0 = this.random.nextGaussian() * 0.02D;
                         double d1 = this.random.nextGaussian() * 0.02D;
@@ -494,44 +494,12 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
                     }
                     return ActionResultType.SUCCESS;
                 }
-                if (item == Items.IRON_SWORD && this.getMainHandItem().getItem() != Items.IRON_SWORD){
+                if (item instanceof SwordItem){
                     if (!p_230254_1_.abilities.instabuild) {
                         itemstack.shrink(1);
                     }
                     this.playSound(SoundEvents.ANVIL_USE, 1.0F, 1.0F);
-                    this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.IRON_SWORD));
-
-                    this.spawnAtLocation(itemstack2);
-                    for (int i = 0; i < 7; ++i) {
-                        double d0 = this.random.nextGaussian() * 0.02D;
-                        double d1 = this.random.nextGaussian() * 0.02D;
-                        double d2 = this.random.nextGaussian() * 0.02D;
-                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
-                    }
-                    return ActionResultType.SUCCESS;
-                }
-                if (item == Items.DIAMOND_SWORD && this.getMainHandItem().getItem() != Items.DIAMOND_SWORD){
-                    if (!p_230254_1_.abilities.instabuild) {
-                        itemstack.shrink(1);
-                    }
-                    this.playSound(SoundEvents.ANVIL_USE, 1.0F, 1.0F);
-                    this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.DIAMOND_SWORD));
-
-                    this.spawnAtLocation(itemstack2);
-                    for (int i = 0; i < 7; ++i) {
-                        double d0 = this.random.nextGaussian() * 0.02D;
-                        double d1 = this.random.nextGaussian() * 0.02D;
-                        double d2 = this.random.nextGaussian() * 0.02D;
-                        this.level.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
-                    }
-                    return ActionResultType.SUCCESS;
-                }
-                if (item == Items.NETHERITE_SWORD && this.getMainHandItem().getItem() != Items.NETHERITE_SWORD){
-                    if (!p_230254_1_.abilities.instabuild) {
-                        itemstack.shrink(1);
-                    }
-                    this.playSound(SoundEvents.ANVIL_USE, 1.0F, 1.0F);
-                    this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.NETHERITE_SWORD));
+                    this.setItemSlot(EquipmentSlotType.MAINHAND, itemstack.copy());
                     this.spawnAtLocation(itemstack2);
                     for (int i = 0; i < 7; ++i) {
                         double d0 = this.random.nextGaussian() * 0.02D;
@@ -546,7 +514,7 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
                         itemstack.shrink(1);
                     }
                     this.playSound(SoundEvents.ANVIL_USE, 1.0F, 1.0F);
-                    this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.CROSSBOW));
+                    this.setItemSlot(EquipmentSlotType.MAINHAND, itemstack.copy());
                     this.spawnAtLocation(itemstack2);
                     for (int i = 0; i < 7; ++i) {
                         double d0 = this.random.nextGaussian() * 0.02D;
@@ -566,19 +534,19 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
                     }
                     this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
                     if (((ArmorItem) item).getSlot() == EquipmentSlotType.HEAD){
-                        this.setItemSlot(EquipmentSlotType.HEAD, new ItemStack(item));
+                        this.setItemSlot(EquipmentSlotType.HEAD, itemstack.copy());
                         this.spawnAtLocation(helmet);
                     }
                     if (((ArmorItem) item).getSlot() == EquipmentSlotType.CHEST){
-                        this.setItemSlot(EquipmentSlotType.CHEST, new ItemStack(item));
+                        this.setItemSlot(EquipmentSlotType.CHEST, itemstack.copy());
                         this.spawnAtLocation(chestplate);
                     }
                     if (((ArmorItem) item).getSlot() == EquipmentSlotType.LEGS){
-                        this.setItemSlot(EquipmentSlotType.LEGS, new ItemStack(item));
+                        this.setItemSlot(EquipmentSlotType.LEGS, itemstack.copy());
                         this.spawnAtLocation(legging);
                     }
                     if (((ArmorItem) item).getSlot() == EquipmentSlotType.FEET){
-                        this.setItemSlot(EquipmentSlotType.FEET, new ItemStack(item));
+                        this.setItemSlot(EquipmentSlotType.FEET, itemstack.copy());
                         this.spawnAtLocation(boots);
                     }
                     for (int i = 0; i < 7; ++i) {

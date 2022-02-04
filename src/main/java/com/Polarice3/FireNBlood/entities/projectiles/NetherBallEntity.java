@@ -76,7 +76,7 @@ public class NetherBallEntity extends DamagingProjectileEntity {
         return false;
     }
 
-    protected IParticleData getParticle() {
+    protected IParticleData getTrailParticle() {
         return ParticleTypes.FLAME;
     }
 

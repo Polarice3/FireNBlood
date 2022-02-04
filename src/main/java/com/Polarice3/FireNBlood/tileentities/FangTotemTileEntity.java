@@ -81,6 +81,7 @@ public class FangTotemTileEntity extends TileEntity implements ITickableTileEnti
         int i = this.worldPosition.getX();
         int j = this.worldPosition.getY();
         int k = this.worldPosition.getZ();
+        assert this.level != null;
         List<LivingEntity> list = this.level.getEntitiesOfClass(LivingEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(10.0D, 10.0D, 10.0D));
         if (list.size() > 0) {
             LivingEntity livingEntity = list.get(0);

@@ -74,10 +74,10 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
         this.targetSelector.addGoal(2, new AbstractProtectorEntity.OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, AbstractProtectorEntity.class)).setAlertOthers());
         this.targetSelector.addGoal(3, (new HurtByTargetGoal(this, AbstractVillagerEntity.class)).setAlertOthers());
-        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractTaillessEntity.class, true));
-        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractRaiderEntity.class, true));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractTaillessEntity.class, true, !this.isSleeping()));
+        this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, AbstractRaiderEntity.class, true, !this.isSleeping()));
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, false, false, (p_234199_0_) -> {
-            return p_234199_0_ instanceof IMob && !(p_234199_0_ instanceof CreeperEntity)  && !(p_234199_0_ instanceof SummonedEntity);
+            return p_234199_0_ instanceof IMob && !(p_234199_0_ instanceof CreeperEntity) && !(p_234199_0_ instanceof SummonedEntity) && !this.isSleeping();
         }));
     }
 
@@ -396,7 +396,7 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
                     if (!p_230254_1_.abilities.instabuild) {
                         itemstack.shrink(1);
                     }
-                    this.shield = ShieldDurability();
+                    this.shield = item.getDamage(itemstack);
                     this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
                     this.setShield(true);
                     for (int i = 0; i < 7; ++i) {
@@ -417,19 +417,19 @@ public class ProtectorEntity extends AbstractProtectorEntity implements ICrossbo
                     }
                     this.playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1.0F, 1.0F);
                     if (((ArmorItem) item).getSlot() == EquipmentSlotType.HEAD){
-                        this.setItemSlot(EquipmentSlotType.HEAD, new ItemStack(item));
+                        this.setItemSlot(EquipmentSlotType.HEAD, itemstack.copy());
                         this.spawnAtLocation(helmet);
                     }
                     if (((ArmorItem) item).getSlot() == EquipmentSlotType.CHEST){
-                        this.setItemSlot(EquipmentSlotType.CHEST, new ItemStack(item));
+                        this.setItemSlot(EquipmentSlotType.CHEST, itemstack.copy());
                         this.spawnAtLocation(chestplate);
                     }
                     if (((ArmorItem) item).getSlot() == EquipmentSlotType.LEGS){
-                        this.setItemSlot(EquipmentSlotType.LEGS, new ItemStack(item));
+                        this.setItemSlot(EquipmentSlotType.LEGS, itemstack.copy());
                         this.spawnAtLocation(legging);
                     }
                     if (((ArmorItem) item).getSlot() == EquipmentSlotType.FEET){
-                        this.setItemSlot(EquipmentSlotType.FEET, new ItemStack(item));
+                        this.setItemSlot(EquipmentSlotType.FEET, itemstack.copy());
                         this.spawnAtLocation(boots);
                     }
                     for (int i = 0; i < 7; ++i) {

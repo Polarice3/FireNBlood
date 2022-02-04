@@ -8,6 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.UseAction;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -16,16 +17,18 @@ public class DarkSteak extends Item {
         super(new Item.Properties()
                 .tab(FireNBlood.TAB)
                 .food(new Food.Builder()
-                        .nutrition(4)
+                        .nutrition(8)
                         .saturationMod(0.8F)
                         .alwaysEat()
+                        .meat()
                         .build())
         );
     }
 
     public ItemStack finishUsingItem(ItemStack stack, World worldIn, LivingEntity entityLiving) {
         super.finishUsingItem(stack, worldIn, entityLiving);
-        int random = worldIn.random.nextInt(15);
+        int random = worldIn.random.nextInt(8);
+        entityLiving.addEffect(new EffectInstance(Effects.REGENERATION, 100));
         if (random == 0) {
             EffectInstance effectinstance1 = entityLiving.getEffect(RegistryHandler.EVIL_EYE.get());
             if (effectinstance1 == null) {

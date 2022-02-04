@@ -75,7 +75,7 @@ public class SoulFireballEntity extends DamagingProjectileEntity {
         return false;
     }
 
-    protected IParticleData getParticle() {
+    protected IParticleData getTrailParticle() {
         return ParticleTypes.SOUL_FIRE_FLAME;
     }
 

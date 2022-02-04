@@ -53,9 +53,9 @@ public class MagicFocusItem extends Item{
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         if (soulcost != 0) {
-            tooltip.add(new TranslationTextComponent("info.firenblood.soulitems.cost", soulcost));
+            tooltip.add(new TranslationTextComponent("info.firenblood.soulitems.focuscost", soulcost));
         } else {
-            tooltip.add(new TranslationTextComponent("info.firenblood.soulitems.cost", 0));
+            tooltip.add(new TranslationTextComponent("info.firenblood.soulitems.focuscost", 0));
         }
     }
 

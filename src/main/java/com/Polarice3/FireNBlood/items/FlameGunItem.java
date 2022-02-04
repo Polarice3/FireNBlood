@@ -53,7 +53,7 @@ public class FlameGunItem extends Item {
         compoundnbt.putBoolean("Charged", chargedIn);
     }
 
-    public void onPlayerStoppedUsing(ItemStack stack, World worldIn, LivingEntity entityLiving, int timeLeft){
+    public void releaseUsing(ItemStack stack, World worldIn, LivingEntity entityLiving, int timeLeft){
         if (entityLiving instanceof PlayerEntity) {
             PlayerEntity playerentity = (PlayerEntity) entityLiving;
             int i = this.getUseDuration(stack) - timeLeft;

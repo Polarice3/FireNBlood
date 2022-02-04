@@ -202,14 +202,10 @@ public class RegistryHandler {
     //Effects
     public static final RegistryObject<Effect> EVIL_EYE = EFFECTS.register("evileye",
             EvilEyeEffect::new);
-    public static final RegistryObject<Effect> CURSED = EFFECTS.register("cursed",
-            CursedEffect::new);
     public static final RegistryObject<Effect> MINOR_HARM = EFFECTS.register("minorharm",
             MinorHarmEffect::new);
     public static final RegistryObject<Effect> DEATHPROTECT = EFFECTS.register("deathprotect",
             DeathProtectEffect::new);
-    public static final RegistryObject<Effect> SOULDRAIN = EFFECTS.register("souldrain",
-            SoulDrainEffect::new);
     public static final RegistryObject<Effect> GOLDTOUCHED = EFFECTS.register("goldtouched",
             GoldTouchEffect::new);
     public static final RegistryObject<Effect> HOSTED = EFFECTS.register("hosted",

@@ -11,9 +11,13 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -197,7 +201,8 @@ public class NethernalEntity extends MonsterEntity {
             if (random == 1) {
                 BlockPos blockpos = this.blockPosition().offset(0, 1, 0);
                 ScorchEntity scorchEntity = new ScorchEntity(ModEntityType.SCORCH.get(), this.level);
-                scorchEntity.finalizeSpawn((IServerWorld) this.level, this.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData)null, (CompoundNBT)null);
+                scorchEntity.setItemInHand(Hand.MAIN_HAND, new ItemStack(Items.GOLDEN_SWORD));
+                scorchEntity.setDropChance(EquipmentSlotType.MAINHAND, 0.0F);
                 scorchEntity.setPos(this.getX(), this.getY(), this.getZ());
                 scorchEntity.setLimitedLife(20 * (30 + this.random.nextInt(90)));
                 this.level.addFreshEntity(scorchEntity);

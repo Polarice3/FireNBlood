@@ -46,7 +46,7 @@ public class WarpedSpearItem extends Item implements IVanishable {
         return 72000;
     }
 
-    public void onPlayerStoppedUsing(ItemStack stack, World worldIn, LivingEntity entityLiving, int timeLeft) {
+    public void releaseUsing(ItemStack stack, World worldIn, LivingEntity entityLiving, int timeLeft) {
         if (entityLiving instanceof PlayerEntity) {
             PlayerEntity playerentity = (PlayerEntity)entityLiving;
             int i = this.getUseDuration(stack) - timeLeft;
@@ -101,7 +101,7 @@ public class WarpedSpearItem extends Item implements IVanishable {
         return equipmentSlot == EquipmentSlotType.MAINHAND ? this.warpedspearattributes : super.getDefaultAttributeModifiers(equipmentSlot);
     }
 
-    public int getItemEnchantability() {
+    public int getEnchantmentValue() {
         return 1;
     }
 }

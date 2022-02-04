@@ -388,6 +388,11 @@ public class AbstractProtectorEntity extends CreatureEntity {
                     double d2 = this.random.nextGaussian() * 0.02D;
                     this.level.addParticle(ParticleTypes.CRIT, this.getRandomX(1.0D), this.getRandomY() - 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                 }
+                if (!this.riding() && this.tickCount % 2 == 0){
+                    FakeSeatEntity fakeseat = new FakeSeatEntity(ModEntityType.FAKESEAT.get(), level);
+                    fakeseat.moveTo(this.getX(), this.getY(), this.getZ(), this.yRot, this.xRot);
+                    level.addFreshEntity(fakeseat);
+                }
                 --this.dyingTimer;
                 if (this.dyingTimer == 0){
                     this.remove();
@@ -462,17 +467,10 @@ public class AbstractProtectorEntity extends CreatureEntity {
             this.setFlags(EnumSet.of(Goal.Flag.JUMP, Goal.Flag.MOVE));
         }
 
-        /**
-         * Returns whether an in-progress EntityAIBase should continue executing
-         */
         public boolean canContinueToUse() {
             return this.hireable.riding();
         }
 
-        /**
-         * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
-         * method as well.
-         */
         public boolean canUse() {
             if (!this.hireable.isHired()) {
                 return false;
@@ -490,9 +488,6 @@ public class AbstractProtectorEntity extends CreatureEntity {
             }
         }
 
-        /**
-         * Execute a one shot task or start executing a continuous task
-         */
         public void start() {
             if (this.hireable instanceof SavagerEntity) {
                 this.hireable.getNavigation().stop();
@@ -502,14 +497,16 @@ public class AbstractProtectorEntity extends CreatureEntity {
                 fakeseat.moveTo(this.hireable.getX(), this.hireable.getY(), this.hireable.getZ(), this.hireable.yRot, this.hireable.xRot);
                 level.addFreshEntity(fakeseat);
                 this.hireable.startRiding(fakeseat);
+                this.hireable.getNavigation().stop();
+                this.hireable.setSleeping(true);
+                if (this.hireable instanceof HexerEntity){
+                    if (((HexerEntity) this.hireable).isSpellcasting()){
+                        ((HexerEntity) this.hireable).spellTicks = 0;
+                    }
+                }
             }
-            this.hireable.getNavigation().stop();
-            this.hireable.setSleeping(true);
         }
 
-        /**
-         * Reset the task's internal state. Called when this task is interrupted by another one
-         */
         public void stop() {
             if (this.hireable instanceof SavagerEntity) {
                 this.hireable.setSleeping(false);

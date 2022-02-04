@@ -38,7 +38,7 @@ public class SacredFishItem extends Item {
         return UseAction.EAT;
     }
 
-    public SoundEvent getEatSound() {
+    public SoundEvent getEatingSound() {
         return SoundEvents.GENERIC_EAT;
     }
 }

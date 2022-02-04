@@ -73,6 +73,9 @@ public class ModItems {
     public static final RegistryObject<ModSpawnEggItem> VIZIER_SPAWN_EGG = ITEMS.register("vizier_spawn_egg",
             () -> new ModSpawnEggItem(ModEntityType.VIZIER, 0x1e1c1a, 0x440a67, new Item.Properties().tab(FireNBlood.TAB)));
 
+    public static final RegistryObject<ModSpawnEggItem> SACRED_FISH_SPAWN_EGG = ITEMS.register("sacredfish_spawn_egg",
+            () -> new ModSpawnEggItem(ModEntityType.SACRED_FISH, 0xfacb32, 0xfff34d, new Item.Properties().tab(FireNBlood.TAB)));
+
     public static final RegistryObject<ModSpawnEggItem> PARASITE_SPAWN_EGG = ITEMS.register("parasite_spawn_egg",
             () -> new ModSpawnEggItem(ModEntityType.PARASITE, 0xffc975, 0xffb541, new Item.Properties().tab(FireNBlood.TAB)));
 

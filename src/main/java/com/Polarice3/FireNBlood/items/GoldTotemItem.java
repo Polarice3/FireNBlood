@@ -3,6 +3,8 @@ package com.Polarice3.FireNBlood.items;
 import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.enchantments.ModEnchantmentsType;
+import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
+import com.Polarice3.FireNBlood.entities.ally.SummonedEntity;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
 import com.Polarice3.FireNBlood.entities.hostile.NeophyteEntity;
 import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEntity;
@@ -80,12 +82,12 @@ public class GoldTotemItem extends Item {
         if (stack.getTag().getInt(SOULSAMOUNT) < 0){
             stack.getTag().putInt(SOULSAMOUNT, 0);
         }
-        if (entityIn instanceof LivingEntity){
+        if (entityIn instanceof PlayerEntity){
             if (stack.getTag().getInt(SOULSAMOUNT) == MAXSOULS){
-                ((LivingEntity) entityIn).addEffect(new EffectInstance(RegistryHandler.DEATHPROTECT.get(), 100));
-            }
-            if (((LivingEntity) entityIn).hasEffect(RegistryHandler.SOULDRAIN.get())){
-                stack.getTag().putInt(SOULSAMOUNT, 0);
+                ItemStack foundStack = FindTotem((PlayerEntity) entityIn);
+                if (!foundStack.isEmpty()) {
+                    ((LivingEntity) entityIn).addEffect(new EffectInstance(RegistryHandler.DEATHPROTECT.get(), 20));
+                }
             }
         }
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
@@ -116,7 +118,7 @@ public class GoldTotemItem extends Item {
         return itemStack.getTag().getInt(SOULSAMOUNT);
     }
 
-    public static void handleKill(PlayerEntity playerEntity, LivingEntity victim) {
+    public static ItemStack FindTotem(PlayerEntity playerEntity){
         ItemStack foundStack = ItemStack.EMPTY;
 
         for (int i = 0; i <= 9; i++) {
@@ -127,34 +129,41 @@ public class GoldTotemItem extends Item {
             }
         }
 
+        return foundStack;
+    }
+
+    public static void handleKill(PlayerEntity playerEntity, LivingEntity victim) {
+        ItemStack foundStack = FindTotem(playerEntity);
+
         if (!foundStack.isEmpty()) {
-            if (victim.getMobType() == CreatureAttribute.UNDEAD){
-                increaseSouls(foundStack, FNBConfig.UndeadSouls.get() * SoulMultiply(playerEntity));
-            } else
-            if (victim.getMobType() == CreatureAttribute.ARTHROPOD){
-                increaseSouls(foundStack, FNBConfig.AnthropodSouls.get() * SoulMultiply(playerEntity));
-            } else
-            if (victim instanceof AbstractRaiderEntity || victim instanceof AbstractProtectorEntity){
-                increaseSouls(foundStack, FNBConfig.IllagerSouls.get() * SoulMultiply(playerEntity));
-            } else
-            if (victim instanceof VillagerEntity && !victim.isBaby()){
-                increaseSouls(foundStack, FNBConfig.VillagerSouls.get() * SoulMultiply(playerEntity));
-            } else
-            if (victim instanceof NeophyteEntity || victim instanceof AcolyteEntity || victim instanceof AbstractTaillessEntity){
-                increaseSouls(foundStack, FNBConfig.TaillessSouls.get() * SoulMultiply(playerEntity));
-            } else
-            if (victim instanceof AbstractPiglinEntity || victim instanceof TameableEntity || victim instanceof MutatedEntity){
-                increaseSouls(foundStack, FNBConfig.PiglinSouls.get() * SoulMultiply(playerEntity));
-            } else
-            if (victim instanceof EnderDragonEntity){
-                increaseSouls(foundStack, FNBConfig.EnderDragonSouls.get() * SoulMultiply(playerEntity));
-            } else
-            if (victim instanceof PlayerEntity){
-                increaseSouls(foundStack, FNBConfig.PlayerSouls.get() * SoulMultiply(playerEntity));
-            } else {
-                increaseSouls(foundStack, FNBConfig.DefaultSouls.get() * SoulMultiply(playerEntity));
+            if (!(victim instanceof SummonedEntity || victim instanceof FriendlyVexEntity)) {
+                if (victim.getMobType() == CreatureAttribute.UNDEAD) {
+                    increaseSouls(foundStack, FNBConfig.UndeadSouls.get() * SoulMultiply(playerEntity));
+                } else if (victim.getMobType() == CreatureAttribute.ARTHROPOD) {
+                    increaseSouls(foundStack, FNBConfig.AnthropodSouls.get() * SoulMultiply(playerEntity));
+                } else if (victim instanceof AbstractRaiderEntity || victim instanceof AbstractProtectorEntity) {
+                    increaseSouls(foundStack, FNBConfig.IllagerSouls.get() * SoulMultiply(playerEntity));
+                } else if (victim instanceof VillagerEntity && !victim.isBaby()) {
+                    increaseSouls(foundStack, FNBConfig.VillagerSouls.get() * SoulMultiply(playerEntity));
+                } else if (victim instanceof NeophyteEntity || victim instanceof AcolyteEntity || victim instanceof AbstractTaillessEntity) {
+                    increaseSouls(foundStack, FNBConfig.TaillessSouls.get() * SoulMultiply(playerEntity));
+                } else if (victim instanceof AbstractPiglinEntity || victim instanceof TameableEntity || victim instanceof MutatedEntity) {
+                    increaseSouls(foundStack, FNBConfig.PiglinSouls.get() * SoulMultiply(playerEntity));
+                } else if (victim instanceof EnderDragonEntity) {
+                    increaseSouls(foundStack, FNBConfig.EnderDragonSouls.get() * SoulMultiply(playerEntity));
+                } else if (victim instanceof PlayerEntity) {
+                    increaseSouls(foundStack, FNBConfig.PlayerSouls.get() * SoulMultiply(playerEntity));
+                } else {
+                    increaseSouls(foundStack, FNBConfig.DefaultSouls.get() * SoulMultiply(playerEntity));
+                }
             }
         }
+    }
+
+    public static void EmptySoulTotem(PlayerEntity playerEntity){
+        ItemStack foundStack = FindTotem(playerEntity);
+        foundStack.setCount(0);
+        playerEntity.addItem(new ItemStack(RegistryHandler.SPENTTOTEM.get()));
     }
 
     public static int SoulMultiply(PlayerEntity playerEntity){

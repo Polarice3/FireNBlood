@@ -86,6 +86,7 @@ public class MutateTotemTileEntity extends TileEntity implements ITickableTileEn
         int i = this.worldPosition.getX();
         int j = this.worldPosition.getY();
         int k = this.worldPosition.getZ();
+        assert this.level != null;
         List<AnimalEntity> list = this.level.getEntitiesOfClass(AnimalEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(10.0D, 10.0D, 10.0D));
         if (list.size() > 0) {
             AnimalEntity animal = list.get(this.level.random.nextInt(list.size()));

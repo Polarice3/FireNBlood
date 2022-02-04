@@ -284,9 +284,6 @@ public class MinotaurEntity extends ServantTaillessEntity {
                     ModifiableAttributeInstance modifiableattributeinstance = MinotaurEntity.this.getAttribute(Attributes.MOVEMENT_SPEED);
                     modifiableattributeinstance.removeModifier(MODIFIER);
                     modifiableattributeinstance.addTransientModifier(MODIFIER);
-                    ModifiableAttributeInstance modifiableattributeinstance2 = MinotaurEntity.this.getAttribute(Attributes.ATTACK_SPEED);
-                    modifiableattributeinstance2.removeModifier(MODIFIER);
-                    modifiableattributeinstance2.addTransientModifier(MODIFIER);
                 }
                 if(this.roar >= 20) {
                     this.roaring();
@@ -297,7 +294,6 @@ public class MinotaurEntity extends ServantTaillessEntity {
                     this.roar = 0;
                     this.warmup = 0;
                     MinotaurEntity.this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(MODIFIER);
-                    MinotaurEntity.this.getAttribute(Attributes.ATTACK_SPEED).removeModifier(MODIFIER);
                 }
             }
         }
@@ -377,7 +373,6 @@ public class MinotaurEntity extends ServantTaillessEntity {
             this.warmup = 0;
             MinotaurEntity.this.chargeTick = 0;
             MinotaurEntity.this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(MODIFIER);
-            MinotaurEntity.this.getAttribute(Attributes.ATTACK_SPEED).removeModifier(MODIFIER);
             MinotaurEntity.this.setWarning(false);
         }
 
@@ -401,7 +396,6 @@ public class MinotaurEntity extends ServantTaillessEntity {
                     this.warmup = 0;
                     MinotaurEntity.this.chargeTick = 0;
                     MinotaurEntity.this.getAttribute(Attributes.MOVEMENT_SPEED).removeModifier(MODIFIER);
-                    MinotaurEntity.this.getAttribute(Attributes.ATTACK_SPEED).removeModifier(MODIFIER);
                 }
             }
         }
@@ -410,9 +404,6 @@ public class MinotaurEntity extends ServantTaillessEntity {
             ModifiableAttributeInstance modifiableattributeinstance = MinotaurEntity.this.getAttribute(Attributes.MOVEMENT_SPEED);
             modifiableattributeinstance.removeModifier(MODIFIER);
             modifiableattributeinstance.addTransientModifier(MODIFIER);
-            ModifiableAttributeInstance modifiableattributeinstance2 = MinotaurEntity.this.getAttribute(Attributes.ATTACK_SPEED);
-            modifiableattributeinstance2.removeModifier(MODIFIER);
-            modifiableattributeinstance2.addTransientModifier(MODIFIER);
             MinotaurEntity.this.playSound(SoundEvents.ENDER_DRAGON_GROWL, 1.0F, 1.0F);
             MinotaurEntity.this.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 60));
         }

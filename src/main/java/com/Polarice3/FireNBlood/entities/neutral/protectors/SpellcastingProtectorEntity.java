@@ -108,33 +108,20 @@ public abstract class SpellcastingProtectorEntity extends AbstractProtectorEntit
             this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
         }
 
-        /**
-         * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
-         * method as well.
-         */
         public boolean canUse() {
-            return SpellcastingProtectorEntity.this.getSpellTicks() > 0;
+            return SpellcastingProtectorEntity.this.getSpellTicks() > 0 && !SpellcastingProtectorEntity.this.isSleeping() && !SpellcastingProtectorEntity.this.isDying();
         }
 
-        /**
-         * Execute a one shot task or start executing a continuous task
-         */
         public void start() {
             super.start();
             SpellcastingProtectorEntity.this.navigation.stop();
         }
 
-        /**
-         * Reset the task's internal state. Called when this task is interrupted by another one
-         */
         public void stop() {
             super.stop();
             SpellcastingProtectorEntity.this.setSpellType(SpellcastingProtectorEntity.SpellType.NONE);
         }
 
-        /**
-         * Keep ticking a continuous task that has already been started
-         */
         public void tick() {
             if (SpellcastingProtectorEntity.this.getTarget() != null) {
                 SpellcastingProtectorEntity.this.getLookControl().setLookAt(SpellcastingProtectorEntity.this.getTarget(), (float)SpellcastingProtectorEntity.this.getMaxHeadYRot(), (float)SpellcastingProtectorEntity.this.getMaxHeadXRot());
@@ -176,13 +163,9 @@ public abstract class SpellcastingProtectorEntity extends AbstractProtectorEntit
         protected UseSpellGoal() {
         }
 
-        /**
-         * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
-         * method as well.
-         */
         public boolean canUse() {
             LivingEntity livingentity = SpellcastingProtectorEntity.this.getTarget();
-            if (livingentity != null && livingentity.isAlive() && !SpellcastingProtectorEntity.this.isDying()) {
+            if (livingentity != null && livingentity.isAlive() && !SpellcastingProtectorEntity.this.isSleeping() && !SpellcastingProtectorEntity.this.isDying()) {
                 if (SpellcastingProtectorEntity.this.isSpellcasting()) {
                     return false;
                 } else {
@@ -193,17 +176,11 @@ public abstract class SpellcastingProtectorEntity extends AbstractProtectorEntit
             }
         }
 
-        /**
-         * Returns whether an in-progress EntityAIBase should continue executing
-         */
         public boolean canContinueToUse() {
             LivingEntity livingentity = SpellcastingProtectorEntity.this.getTarget();
-            return livingentity != null && !SpellcastingProtectorEntity.this.isDying() && livingentity.isAlive() && this.spellWarmup > 0;
+            return livingentity != null && !SpellcastingProtectorEntity.this.isDying() && !SpellcastingProtectorEntity.this.isSleeping() && livingentity.isAlive() && this.spellWarmup > 0;
         }
 
-        /**
-         * Execute a one shot task or start executing a continuous task
-         */
         public void start() {
             this.spellWarmup = this.getCastWarmupTime();
             SpellcastingProtectorEntity.this.spellTicks = this.getCastingTime();
@@ -216,9 +193,12 @@ public abstract class SpellcastingProtectorEntity extends AbstractProtectorEntit
             SpellcastingProtectorEntity.this.setSpellType(this.getSpellType());
         }
 
-        /**
-         * Keep ticking a continuous task that has already been started
-         */
+        public void stop() {
+            super.stop();
+            SpellcastingProtectorEntity.this.setSpellType(SpellcastingProtectorEntity.SpellType.NONE);
+        }
+
+
         public void tick() {
             --this.spellWarmup;
             if (this.spellWarmup == 0) {

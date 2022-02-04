@@ -30,7 +30,7 @@ public class CultistsSpawner {
             if (this.ticksUntilSpawn > 0) {
                 return 0;
             } else {
-                this.ticksUntilSpawn += 1200 + random.nextInt(1200);
+                this.ticksUntilSpawn += FNBConfig.CultistSpawnFreq.get();
                 if (!world.isDay()) {
                     int j = world.players().size();
                     if (j < 1) {
