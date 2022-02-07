@@ -37,10 +37,22 @@ public class FangSpell extends Spells{
         double d0 = Math.min(vector3d.y, entityLiving.getY());
         double d1 = Math.max(vector3d.y, entityLiving.getY()) + 1.0D;
         float f = (float) MathHelper.atan2(vector3d.z - entityLiving.getZ(), vector3d.x - entityLiving.getX());
-        for(int l = 0; l < 16; ++l) {
-            double d2 = 1.25D * (double)(l + 1);
-            int j = l;
-            this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(f) * d2, entityLiving.getZ() + (double)MathHelper.sin(f) * d2, d0, d1, f, j);
+        if (!playerEntity.isCrouching()) {
+            for (int l = 0; l < 16; ++l) {
+                double d2 = 1.25D * (double) (l + 1);
+                int j = l;
+                this.spawnFangs(entityLiving, entityLiving.getX() + (double) MathHelper.cos(f) * d2, entityLiving.getZ() + (double) MathHelper.sin(f) * d2, d0, d1, f, j);
+            }
+        } else {
+            for(int i = 0; i < 5; ++i) {
+                float f1 = f + (float)i * (float)Math.PI * 0.4F;
+                this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(f1) * 1.5D, entityLiving.getZ() + (double)MathHelper.sin(f1) * 1.5D, d0, d1, f1, 0);
+            }
+
+            for(int k = 0; k < 8; ++k) {
+                float f2 = f + (float)k * (float)Math.PI * 2.0F / 8.0F + 1.2566371F;
+                this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(f2) * 2.5D, entityLiving.getZ() + (double)MathHelper.sin(f2) * 2.5D, d0, d1, f2, 3);
+            }
         }
         worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.EVOKER_CAST_SPELL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
         for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
@@ -56,22 +68,35 @@ public class FangSpell extends Spells{
         double d0 = Math.min(vector3d.y, entityLiving.getY());
         double d1 = Math.max(vector3d.y, entityLiving.getY()) + 1.0D;
         float f = (float) MathHelper.atan2(vector3d.z - entityLiving.getZ(), vector3d.x - entityLiving.getX());
-        for(int l = 0; l < 16; ++l) {
-            double d2 = 1.25D * (double)(l + 1);
-            float fleft = f + 0.4F;
-            float fright = f - 0.4F;
-            this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(f) * d2, entityLiving.getZ() + (double)MathHelper.sin(f) * d2, d0, d1, f, l);
-            this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(fleft) * d2, entityLiving.getZ() + (double)MathHelper.sin(fleft) * d2, d0, d1, fleft, l);
-            this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(fright) * d2, entityLiving.getZ() + (double)MathHelper.sin(fright) * d2, d0, d1, fright, l);
-        }
-        for(int i = 0; i < 5; ++i) {
-            float f1 = f + (float)i * (float)Math.PI * 0.4F;
-            this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(f1) * 1.5D, entityLiving.getZ() + (double)MathHelper.sin(f1) * 1.5D, d0, d1, f1, 0);
-        }
+        if (!playerEntity.isCrouching()) {
+            for(int l = 0; l < 16; ++l) {
+                double d2 = 1.25D * (double)(l + 1);
+                float fleft = f + 0.4F;
+                float fright = f - 0.4F;
+                this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(f) * d2, entityLiving.getZ() + (double)MathHelper.sin(f) * d2, d0, d1, f, l);
+                this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(fleft) * d2, entityLiving.getZ() + (double)MathHelper.sin(fleft) * d2, d0, d1, fleft, l);
+                this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(fright) * d2, entityLiving.getZ() + (double)MathHelper.sin(fright) * d2, d0, d1, fright, l);
+            }
+        } else {
+            for(int i = 0; i < 5; ++i) {
+                float f1 = f + (float)i * (float)Math.PI * 0.4F;
+                this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(f1) * 1.5D, entityLiving.getZ() + (double)MathHelper.sin(f1) * 1.5D, d0, d1, f1, 0);
+            }
 
-        for(int k = 0; k < 8; ++k) {
-            float f2 = f + (float)k * (float)Math.PI * 2.0F / 8.0F + 1.2566371F;
-            this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(f2) * 2.5D, entityLiving.getZ() + (double)MathHelper.sin(f2) * 2.5D, d0, d1, f2, 3);
+            for(int k = 0; k < 8; ++k) {
+                float f2 = f + (float)k * (float)Math.PI * 2.0F / 8.0F + 1.2566371F;
+                this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(f2) * 2.5D, entityLiving.getZ() + (double)MathHelper.sin(f2) * 2.5D, d0, d1, f2, 3);
+            }
+
+            for(int k = 0; k < 11; ++k) {
+                float f2 = f + (float)k * (float)Math.PI * 4.0F / 16.0F + 2.5133462F;
+                this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(f2) * 3.5D, entityLiving.getZ() + (double)MathHelper.sin(f2) * 3.5D, d0, d1, f2, 6);
+            }
+
+            for(int k = 0; k < 14; ++k) {
+                float f2 = f + (float)k * (float)Math.PI * 8.0F / 32.0F + 5.0266924F;
+                this.spawnFangs(entityLiving,entityLiving.getX() + (double)MathHelper.cos(f2) * 4.5D, entityLiving.getZ() + (double)MathHelper.sin(f2) * 4.5D, d0, d1, f2, 9);
+            }
         }
         worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.EVOKER_CAST_SPELL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
         for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {

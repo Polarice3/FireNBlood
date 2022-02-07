@@ -5,8 +5,10 @@ import com.Polarice3.FireNBlood.blocks.MutateTotemBlock;
 import com.Polarice3.FireNBlood.entities.hostile.ScorchEntity;
 import com.Polarice3.FireNBlood.entities.neutral.*;
 import com.Polarice3.FireNBlood.init.ModEntityType;
+import com.Polarice3.FireNBlood.particles.ModParticleTypes;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -90,22 +92,13 @@ public class MutateTotemTileEntity extends TileEntity implements ITickableTileEn
         List<AnimalEntity> list = this.level.getEntitiesOfClass(AnimalEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(10.0D, 10.0D, 10.0D));
         if (list.size() > 0) {
             AnimalEntity animal = list.get(this.level.random.nextInt(list.size()));
-            if (animal instanceof PigEntity || animal instanceof SheepEntity || animal instanceof CowEntity || animal instanceof ChickenEntity){
+            if (animal instanceof PigEntity || animal instanceof SheepEntity || animal instanceof CowEntity || animal instanceof ChickenEntity || animal instanceof RabbitEntity){
                 return animal;
             } else {
                 return null;
             }
         } else {
             return null;
-        }
-    }
-
-    public double ParticleSpeed(){
-        long t = this.level.getGameTime();
-        if (t % 40L == 0L && this.target != null){
-            return 0.7D;
-        } else {
-            return 0.45D;
         }
     }
 
@@ -172,12 +165,26 @@ public class MutateTotemTileEntity extends TileEntity implements ITickableTileEn
     }
 
     private void SpawnParticles(){
-        double d0 = worldPosition.getX() + 0.5;
-        double d1 = worldPosition.getY();
-        double d2 = worldPosition.getZ() + 0.5;
+        BlockPos blockpos = this.getBlockPos();
+        Minecraft MINECRAFT = Minecraft.getInstance();
 
-        for (int p = 0; p < 4; ++p) {
-            this.level.addParticle(ParticleTypes.FLAME, d0, d1, d2, this.ParticleSpeed(), this.ParticleSpeed(), this.ParticleSpeed());
+        if (MINECRAFT.level != null) {
+            long t = MINECRAFT.level.getGameTime();
+            double d0 = (double)blockpos.getX() + MINECRAFT.level.random.nextDouble();
+            double d1 = (double)blockpos.getY() + MINECRAFT.level.random.nextDouble();
+            double d2 = (double)blockpos.getZ() + MINECRAFT.level.random.nextDouble();
+            if (this.activated != 0) {
+                for (int p = 0; p < 4; ++p) {
+                    MINECRAFT.level.addParticle(ModParticleTypes.TOTEM_EFFECT.get(), d0, d1, d2, 0.7, 0.7, 0.7);
+                    MINECRAFT.level.addParticle(ParticleTypes.FLAME, d0, d1, d2, 0, 0, 0);
+                }
+            } else {
+                if (t % 40L == 0L) {
+                    for (int p = 0; p < 4; ++p) {
+                        MINECRAFT.level.addParticle(ModParticleTypes.TOTEM_EFFECT.get(), d0, d1, d2, 0.45, 0.45, 0.45);
+                    }
+                }
+            }
         }
     }
 
@@ -226,6 +233,23 @@ public class MutateTotemTileEntity extends TileEntity implements ITickableTileEn
             }
             mutatedPigEntity.setPersistenceRequired();
             this.level.addFreshEntity(mutatedPigEntity);
+            target.remove();
+        } else if (this.target instanceof RabbitEntity){
+            RabbitEntity rabbit = (RabbitEntity) this.target;
+            MutatedRabbitEntity mutatedRabbitEntity = new MutatedRabbitEntity(ModEntityType.MUTATED_RABBIT.get(), this.level);
+            mutatedRabbitEntity.moveTo(target.getX(), target.getY(), target.getZ(), target.yRot, target.xRot);
+            mutatedRabbitEntity.finalizeSpawn((IServerWorld) this.level, this.level.getCurrentDifficultyAt(mutatedRabbitEntity.blockPosition()), SpawnReason.CONVERSION, (ILivingEntityData)null, (CompoundNBT)null);
+            if (target.hasCustomName()) {
+                mutatedRabbitEntity.setCustomName(target.getCustomName());
+                mutatedRabbitEntity.setCustomNameVisible(target.isCustomNameVisible());
+            }
+            if (rabbit.getRabbitType() != 99) {
+                mutatedRabbitEntity.setRabbitType(rabbit.getRabbitType());
+            } else {
+                mutatedRabbitEntity.setRabbitType(1);
+            }
+            mutatedRabbitEntity.setPersistenceRequired();
+            this.level.addFreshEntity(mutatedRabbitEntity);
             target.remove();
         }
     }

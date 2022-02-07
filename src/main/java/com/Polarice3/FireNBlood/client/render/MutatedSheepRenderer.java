@@ -1,10 +1,8 @@
 package com.Polarice3.FireNBlood.client.render;
 
 import com.Polarice3.FireNBlood.FireNBlood;
-import com.Polarice3.FireNBlood.client.model.MutatedCowModel;
 import com.Polarice3.FireNBlood.client.model.MutatedSheepModel;
-import com.Polarice3.FireNBlood.entities.neutral.MutatedChickenEntity;
-import com.Polarice3.FireNBlood.entities.neutral.MutatedCowEntity;
+import com.Polarice3.FireNBlood.client.render.layers.MutatedSheepWoolLayer;
 import com.Polarice3.FireNBlood.entities.neutral.MutatedSheepEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -16,7 +14,8 @@ public class MutatedSheepRenderer extends MobRenderer<MutatedSheepEntity, Mutate
     protected static final ResourceLocation TEXTURE = new ResourceLocation(FireNBlood.MOD_ID, "textures/entity/mutatedsheep.png");
 
     public MutatedSheepRenderer(EntityRendererManager renderManagerIn) {
-        super(renderManagerIn, new MutatedSheepModel<>(), 1.0F);
+        super(renderManagerIn, new MutatedSheepModel<>(), 0.5F);
+        this.addLayer(new MutatedSheepWoolLayer(this));
     }
 
     protected void scale(MutatedSheepEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {

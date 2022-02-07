@@ -1,9 +1,7 @@
 package com.Polarice3.FireNBlood.utils;
 
 import com.Polarice3.FireNBlood.FireNBlood;
-import com.Polarice3.FireNBlood.world.structures.ProfanedShrineStructure;
-import com.Polarice3.FireNBlood.world.structures.ProfanedTowerStructure;
-import com.Polarice3.FireNBlood.world.structures.TavernStructure;
+import com.Polarice3.FireNBlood.world.structures.*;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.registry.WorldGenRegistries;
@@ -24,7 +22,8 @@ public class RegistryStructures {
     public static final RegistryObject<Structure<NoFeatureConfig>> TAVERN = STRUCTURES.register("tavern", () -> (new TavernStructure(NoFeatureConfig.CODEC)));
     public static final RegistryObject<Structure<NoFeatureConfig>> PROFANEDTOWER = STRUCTURES.register("profanedtower", () -> (new ProfanedTowerStructure(NoFeatureConfig.CODEC)));
     public static final RegistryObject<Structure<NoFeatureConfig>> PROFANEDSHRINE = STRUCTURES.register("profanedshrine", () -> (new ProfanedShrineStructure(NoFeatureConfig.CODEC)));
-
+    public static final RegistryObject<Structure<NoFeatureConfig>> DARKMANOR = STRUCTURES.register("darkmanor", () -> (new DarkManorStructure(NoFeatureConfig.CODEC)));
+    public static final RegistryObject<Structure<NoFeatureConfig>> PORTAL_OUTPOST = STRUCTURES.register("portal_outpost", () -> (new PortalOutpostStructure(NoFeatureConfig.CODEC)));
 
     public static void init(){
         STRUCTURES.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -45,9 +44,21 @@ public class RegistryStructures {
                 true);
         setupMapSpacingAndLand(
                 PROFANEDSHRINE.get(),
-                new StructureSeparationSettings(60,
-                        40,
+                new StructureSeparationSettings(80,
+                        60,
                         1432143214),
+                true);
+        setupMapSpacingAndLand(
+                DARKMANOR.get(),
+                new StructureSeparationSettings(60,
+                        20,
+                        1543212345),
+                true);
+        setupMapSpacingAndLand(
+                PORTAL_OUTPOST.get(),
+                new StructureSeparationSettings(40,
+                        20,
+                        1654323456),
                 true);
 
     }

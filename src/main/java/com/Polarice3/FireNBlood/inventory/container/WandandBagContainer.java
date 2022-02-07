@@ -13,24 +13,21 @@ import net.minecraftforge.items.SlotItemHandler;
 
 public class WandandBagContainer extends Container {
     private final ItemStack stack;
-    private final Hand hand;
 
     public static WandandBagContainer createContainerClientSide(int id, PlayerInventory inventory, PacketBuffer buffer) {
-        Hand hand = buffer.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
-        return new WandandBagContainer(id, new SoulUsingItemHandler(ItemStack.EMPTY), new FocusBagItemHandler(ItemStack.EMPTY), ItemStack.EMPTY, hand);
+        return new WandandBagContainer(id, new SoulUsingItemHandler(ItemStack.EMPTY), new FocusBagItemHandler(ItemStack.EMPTY), ItemStack.EMPTY);
     }
 
-    public WandandBagContainer(int id, SoulUsingItemHandler soulUsingItemHandler, FocusBagItemHandler bagItemHandler, ItemStack stack, Hand hand) {
-        super(ModContainerType.WAND.get(), id);
+    public WandandBagContainer(int id, SoulUsingItemHandler soulUsingItemHandler, FocusBagItemHandler bagItemHandler, ItemStack stack) {
+        super(ModContainerType.WANDANDBAG.get(), id);
         this.stack = stack;
-        this.hand = hand;
         this.addSlot(new SlotItemHandler(soulUsingItemHandler, 0, 80, 35));
 
         for (int i = 0; i < 5; i++) {
-            addSlot(new SlotItemHandler(bagItemHandler, i, 62 - 18 + i * 18, 104));
+            addSlot(new SlotItemHandler(bagItemHandler, i + 1, 62 - 18 + i * 18, 104));
         }
         for (int i = 0; i < 5; i++) {
-            addSlot(new SlotItemHandler(bagItemHandler,5 + i, 62 - 18 + i * 18, 122));
+            addSlot(new SlotItemHandler(bagItemHandler,6 + i, 62 - 18 + i * 18, 122));
         }
     }
 
@@ -39,29 +36,17 @@ public class WandandBagContainer extends Container {
         return (player.getMainHandItem() == stack || player.getOffhandItem() == stack) && !stack.isEmpty();
     }
 
-    public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
+    public ItemStack quickMoveStack(PlayerEntity pPlayer, int pIndex) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(index);
+        Slot slot = this.slots.get(pIndex);
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
-            if (index == 0) {
-                if (!this.moveItemStackTo(itemstack1, 1, 37, true)) {
+            if (pIndex == 0) {
+                if (!this.moveItemStackTo(itemstack1, 0, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-
-                slot.onQuickCraft(itemstack1, itemstack);
-            } else if (this.moveItemStackTo(itemstack1, 0, 1, false)) {
-                return ItemStack.EMPTY;
-            } else if (index >= 1 && index < 28) {
-                if (!this.moveItemStackTo(itemstack1, 28, 37, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (index >= 28 && index < 37) {
-                if (!this.moveItemStackTo(itemstack1, 1, 28, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (!this.moveItemStackTo(itemstack1, 1, 37, false)) {
+            } else if (!this.moveItemStackTo(itemstack1, 0, 1, false)) {
                 return ItemStack.EMPTY;
             }
 
@@ -70,12 +55,6 @@ public class WandandBagContainer extends Container {
             } else {
                 slot.setChanged();
             }
-
-            if (itemstack1.getCount() == itemstack.getCount()) {
-                return ItemStack.EMPTY;
-            }
-
-            slot.onTake(playerIn, itemstack1);
         }
 
         return itemstack;

@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.world.structures;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.google.common.collect.ImmutableList;
@@ -29,8 +30,6 @@ import org.apache.logging.log4j.Level;
 import java.util.List;
 
 public class ProfanedTowerStructure extends Structure<NoFeatureConfig> {
-    private static final List<MobSpawnInfo.Spawners> PROFANEDTOWER_ENEMIES = ImmutableList.of(new MobSpawnInfo.Spawners(ModEntityType.BLACK_BULL.get(), 1, 1, 1));
-
     public ProfanedTowerStructure(Codec<NoFeatureConfig> codec) {
         super(codec);
     }
@@ -45,17 +44,13 @@ public class ProfanedTowerStructure extends Structure<NoFeatureConfig> {
         return GenerationStage.Decoration.SURFACE_STRUCTURES;
     }
 
-    public List<MobSpawnInfo.Spawners> getDefaultSpawnList() {
-        return PROFANEDTOWER_ENEMIES;
-    }
-
     @Override
     protected boolean isFeatureChunk(ChunkGenerator chunkGenerator, BiomeProvider biomeSource, long seed, SharedSeedRandom chunkrandom, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos, NoFeatureConfig featureConfig) {
         BlockPos centerOfChunk = new BlockPos(chunkX * 16, 0, chunkZ * 16);
         int landHeight = chunkGenerator.getFirstOccupiedHeight(centerOfChunk.getX(), centerOfChunk.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
         IBlockReader columnOfBlocks = chunkGenerator.getBaseColumn(centerOfChunk.getX(), centerOfChunk.getZ());
         BlockState topBlock = columnOfBlocks.getBlockState(centerOfChunk.above(landHeight));
-        return topBlock.getFluidState().isEmpty();
+        return FNBConfig.ProfanedTowerGen.get() && topBlock.getFluidState().isEmpty();
     }
 
     public static class Start extends StructureStart<NoFeatureConfig> {

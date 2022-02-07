@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "firenblood:mutatedrabbit_uncooked"
+  },
+  "result": "firenblood:mutatedrabbit",
+  "experience": 0.35,
+  "cookingtime": 200
+}

@@ -41,19 +41,6 @@ public class FangTotemBlock extends ContainerBlock implements IForgeBlock {
         builder.add(POWERED);
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public void animateTick(BlockState stateIn, World worldIn, BlockPos pos, Random random) {
-        if (stateIn.getValue(POWERED)) {
-            double d0 = pos.getX() + 0.5;
-            double d1 = pos.getY();
-            double d2 = pos.getZ() + 0.5;
-
-            for (int p = 0; p < 4; ++p) {
-                worldIn.addParticle(ParticleTypes.ENTITY_EFFECT, d0, d1, d2, 0.7D, 0.7D, 0.7D);
-            }
-        }
-    }
-
     @Nullable
     @Override
     public TileEntity newBlockEntity(IBlockReader worldIn) {

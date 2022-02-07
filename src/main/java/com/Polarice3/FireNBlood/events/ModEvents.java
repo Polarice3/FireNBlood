@@ -3,9 +3,14 @@ package com.Polarice3.FireNBlood.events;
 import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.gui.overlay.SoulEnergyGui;
+import com.Polarice3.FireNBlood.entities.hostile.cultists.AbstractCultistEntity;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
 import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
+import com.Polarice3.FireNBlood.items.FocusBagItem;
+import com.Polarice3.FireNBlood.items.SoulWand;
+import com.Polarice3.FireNBlood.utils.FocusBagFinder;
+import com.Polarice3.FireNBlood.utils.KeyPressed;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.CreatureEntity;
@@ -24,6 +29,7 @@ import net.minecraft.potion.Effects;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.MobSpawnInfo;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -43,6 +49,12 @@ import java.util.Objects;
 
 @Mod.EventBusSubscriber(modid = FireNBlood.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ModEvents {
+
+    @SubscribeEvent
+    public static void openBagandWand(InputEvent.KeyInputEvent event){
+        KeyPressed.setWand(RegistryHandler.keyBindings[0].isDown());
+        KeyPressed.setWandandbag(RegistryHandler.keyBindings[1].isDown());
+    }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void spawnEntities(BiomeLoadingEvent event){
@@ -176,6 +188,12 @@ public class ModEvents {
     @SubscribeEvent
     public static void onPlayerEquipment(TickEvent.PlayerTickEvent event){
         PlayerEntity player = event.player;
+        if (KeyPressed.openWandandBag()){
+            SoulWand.BagonKeyPressed(player.getMainHandItem(), player);
+        }
+        if (KeyPressed.openWand()){
+            SoulWand.onKeyPressed(player.getMainHandItem(), player);
+        }
         if (player.getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.FURRED_HELMET.get()
                 && player.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.FURRED_CHESTPLATE.get()
                 && player.getItemBySlot(EquipmentSlotType.LEGS).getItem() == RegistryHandler.FURRED_LEGGINGS.get()

@@ -60,6 +60,8 @@ public class AbstractCultistEntity extends AbstractRaiderEntity {
             return true;
         } else if (entityIn instanceof AbstractTaillessEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;
+        } else if (entityIn instanceof WitchEntity) {
+            return this.getTeam() == null && entityIn.getTeam() == null;
         } else if (entityIn instanceof AbstractCultistEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;
         } else if (entityIn instanceof AbstractPiglinEntity){

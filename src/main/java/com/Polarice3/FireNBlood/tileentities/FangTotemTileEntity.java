@@ -1,9 +1,11 @@
 package com.Polarice3.FireNBlood.tileentities;
 
 import com.Polarice3.FireNBlood.blocks.FangTotemBlock;
+import com.Polarice3.FireNBlood.particles.ModParticleTypes;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.AbstractFurnaceBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.MonsterEntity;
@@ -103,15 +105,6 @@ public class FangTotemTileEntity extends TileEntity implements ITickableTileEnti
         }
     }
 
-    public double ParticleSpeed(){
-        long t = this.level.getGameTime();
-        if (t % 40L == 0L && this.target != null){
-            return 0.7D;
-        } else {
-            return 0.45D;
-        }
-    }
-
     @Override
     public void tick() {
         assert this.level != null;
@@ -175,12 +168,26 @@ public class FangTotemTileEntity extends TileEntity implements ITickableTileEnti
     }
 
     private void SpawnParticles(){
-        double d0 = worldPosition.getX() + 0.5;
-        double d1 = worldPosition.getY();
-        double d2 = worldPosition.getZ() + 0.5;
+        BlockPos blockpos = this.getBlockPos();
+        Minecraft MINECRAFT = Minecraft.getInstance();
 
-        for (int p = 0; p < 4; ++p) {
-            this.level.addParticle(ParticleTypes.FLAME, d0, d1, d2, this.ParticleSpeed(), this.ParticleSpeed(), this.ParticleSpeed());
+        if (MINECRAFT.level != null) {
+            long t = MINECRAFT.level.getGameTime();
+            double d0 = (double)blockpos.getX() + MINECRAFT.level.random.nextDouble();
+            double d1 = (double)blockpos.getY() + MINECRAFT.level.random.nextDouble();
+            double d2 = (double)blockpos.getZ() + MINECRAFT.level.random.nextDouble();
+            if (this.activated != 0) {
+                for (int p = 0; p < 4; ++p) {
+                    MINECRAFT.level.addParticle(ModParticleTypes.TOTEM_EFFECT.get(), d0, d1, d2, 0.7, 0.7, 0.7);
+                    MINECRAFT.level.addParticle(ParticleTypes.FLAME, d0, d1, d2, 0, 0, 0);
+                }
+            } else {
+                if (t % 40L == 0L) {
+                    for (int p = 0; p < 4; ++p) {
+                        MINECRAFT.level.addParticle(ModParticleTypes.TOTEM_EFFECT.get(), d0, d1, d2, 0.45, 0.45, 0.45);
+                    }
+                }
+            }
         }
     }
 

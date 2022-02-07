@@ -42,7 +42,7 @@ public class NecroRobeArmor extends ArmorItem {
             }
             if (!foundStack.isEmpty() && GoldTotemItem.currentSouls(foundStack) > 0 && stack.isDamaged()) {
                 stack.getTag().putInt(COOL, stack.getTag().getInt(COOL) + 1);
-                if (stack.getTag().getInt(COOL) > 60) {
+                if (stack.getTag().getInt(COOL) > 20) {
                     stack.getTag().putInt(COOL, 0);
                     GoldTotemItem.decreaseSouls(foundStack, 1);
                     stack.setDamageValue(stack.getDamageValue() - 1);

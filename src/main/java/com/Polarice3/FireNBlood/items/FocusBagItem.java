@@ -2,6 +2,7 @@ package com.Polarice3.FireNBlood.items;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.inventory.container.FocusBagContainer;
+import com.Polarice3.FireNBlood.inventory.container.SoulItemContainer;
 import com.Polarice3.FireNBlood.items.capability.FocusBagItemCapability;
 import com.Polarice3.FireNBlood.items.handler.FocusBagItemHandler;
 import com.Polarice3.FireNBlood.items.handler.SoulUsingItemHandler;

@@ -121,7 +121,7 @@ public class MutatedEntity extends AnimalEntity {
             this.dead = true;
             this.level.explode(this, this.getX(), this.getY(), this.getZ(), 1.0F, Explosion.Mode.NONE);
             this.remove();
-            for (int i = 0; i < 4 + this.level.random.nextInt(4); ++i) {
+            for (int i = 0; i < 8 + this.level.random.nextInt(8); ++i) {
                 ParasiteEntity parasiteEntity = new ParasiteEntity(ModEntityType.PARASITE.get(), level);
                 parasiteEntity.setPos(this.getX(), this.getY(), this.getZ());
                 parasiteEntity.setAttackAll(true);
@@ -133,13 +133,20 @@ public class MutatedEntity extends AnimalEntity {
 
 
     public void die(DamageSource cause) {
-        int random = this.level.random.nextInt(8);
-        if (random == 0){
-            for (int i = 0; i < 2 + this.level.random.nextInt(2); ++i) {
-                ParasiteEntity parasiteEntity = new ParasiteEntity(ModEntityType.PARASITE.get(), level);
-                parasiteEntity.setPos(this.getX(), this.getY(), this.getZ());
-                parasiteEntity.setAttackAll(true);
-                level.addFreshEntity(parasiteEntity);
+        if (cause.getEntity() instanceof MutatedRabbitEntity) {
+            ParasiteEntity parasiteEntity = new ParasiteEntity(ModEntityType.PARASITE.get(), level);
+            parasiteEntity.setPos(this.getX(), this.getY(), this.getZ());
+            parasiteEntity.setAttackAll(true);
+            level.addFreshEntity(parasiteEntity);
+        } else {
+            int random = this.level.random.nextInt(8);
+            if (random == 0) {
+                for (int i = 0; i < 4 + this.level.random.nextInt(4); ++i) {
+                    ParasiteEntity parasiteEntity = new ParasiteEntity(ModEntityType.PARASITE.get(), level);
+                    parasiteEntity.setPos(this.getX(), this.getY(), this.getZ());
+                    parasiteEntity.setAttackAll(true);
+                    level.addFreshEntity(parasiteEntity);
+                }
             }
         }
         super.die(cause);

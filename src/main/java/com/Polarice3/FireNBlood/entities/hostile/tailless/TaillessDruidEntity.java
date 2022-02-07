@@ -285,6 +285,10 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         return this.prayingTicks == 0;
     }
 
+    public boolean isPushable() {
+        return !this.isPraying();
+    }
+
     class CastingSpellGoal extends SpellcastingTaillessEntity.CastingASpellGoal{
         private CastingSpellGoal() {
         }

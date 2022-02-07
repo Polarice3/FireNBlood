@@ -16,6 +16,7 @@ import com.Polarice3.FireNBlood.entities.utilities.FakeSeatEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.init.ModItems;
 import com.Polarice3.FireNBlood.inventory.container.ModContainerType;
+import com.Polarice3.FireNBlood.particles.ModParticleTypes;
 import com.Polarice3.FireNBlood.potions.ModPotions;
 import com.Polarice3.FireNBlood.tileentities.ModTileEntityType;
 import com.Polarice3.FireNBlood.utils.RegistryFeatures;
@@ -95,6 +96,8 @@ public class FireNBlood
         ModContainerType.CONTAINER_TYPE.register(FMLJavaModLoadingContext.get().getModEventBus());
 
         ModEnchantmentsType.ENCHANTMENT_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
+
+        ModParticleTypes.PARTICLE_TYPES.register(FMLJavaModLoadingContext.get().getModEventBus());
 
         MinecraftForge.EVENT_BUS.register(this);
 
@@ -215,6 +218,10 @@ public class FireNBlood
         });
 
         DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.SKELETON_VILLAGER_MINION.get(), SkeletonMinionEntity.setCustomAttributes().build());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_COW.get(), MutatedCowEntity.setCustomAttributes().build());
         });
 
@@ -228,6 +235,10 @@ public class FireNBlood
 
         DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_PIG.get(), MutatedPigEntity.setCustomAttributes().build());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_RABBIT.get(), MutatedRabbitEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
@@ -291,26 +302,49 @@ public class FireNBlood
 
     public void biomeModification(final BiomeLoadingEvent event) {
 
-        if (event.getCategory() == Biome.Category.TAIGA
-        || event.getCategory() == Biome.Category.PLAINS
-        || event.getCategory() == Biome.Category.SAVANNA) {
-            event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_TAVERN);
+        if (FNBConfig.TavernGen.get()) {
+            if (event.getCategory() == Biome.Category.TAIGA
+                    || event.getCategory() == Biome.Category.PLAINS
+                    || event.getCategory() == Biome.Category.SAVANNA
+                    || event.getCategory() == Biome.Category.ICY) {
+                event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_TAVERN);
+            }
         }
-        if (event.getCategory() == Biome.Category.PLAINS
-        || event.getCategory() == Biome.Category.FOREST
-        || event.getCategory() == Biome.Category.SAVANNA
-        || event.getCategory() == Biome.Category.TAIGA
-        || event.getCategory() == Biome.Category.DESERT) {
-            event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_PROFANEDSHRINE);
+        if (FNBConfig.ProfanedShrineGen.get()) {
+            if (event.getCategory() == Biome.Category.PLAINS
+                    || event.getCategory() == Biome.Category.FOREST
+                    || event.getCategory() == Biome.Category.SAVANNA
+                    || event.getCategory() == Biome.Category.TAIGA
+                    || event.getCategory() == Biome.Category.DESERT) {
+                event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_PROFANEDSHRINE);
+            }
         }
-        if (event.getCategory() != Biome.Category.THEEND
-                && event.getCategory() != Biome.Category.MUSHROOM
-                && event.getCategory() != Biome.Category.NETHER
-                && event.getCategory() != Biome.Category.OCEAN
-                && event.getCategory() != Biome.Category.RIVER){
-            event.getGeneration().getFeatures(GenerationStage.Decoration.SURFACE_STRUCTURES).add(() -> ConfiguredFeatures.CONFIGURED_CURSEDTOTEM);
+        if (FNBConfig.ProfanedTowerGen.get()) {
+            if (event.getCategory() == Biome.Category.PLAINS
+                    || event.getCategory() == Biome.Category.FOREST
+                    || event.getCategory() == Biome.Category.SAVANNA
+                    || event.getCategory() == Biome.Category.TAIGA) {
+                event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_PROFANEDTOWER);
+            }
         }
-        event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_PROFANEDTOWER);
+        if (FNBConfig.DarkManorGen.get()) {
+            if (event.getCategory() == Biome.Category.FOREST
+                    || event.getCategory() == Biome.Category.ICY
+                    || event.getCategory() == Biome.Category.TAIGA) {
+                event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_DARKMANOR);
+            }
+        }
+        if (FNBConfig.TotemGen.get()) {
+            if (event.getCategory() != Biome.Category.THEEND
+                    && event.getCategory() != Biome.Category.MUSHROOM
+                    && event.getCategory() != Biome.Category.NETHER
+                    && event.getCategory() != Biome.Category.OCEAN
+                    && event.getCategory() != Biome.Category.RIVER) {
+                event.getGeneration().getFeatures(GenerationStage.Decoration.SURFACE_STRUCTURES).add(() -> ConfiguredFeatures.CONFIGURED_CURSEDTOTEM);
+            }
+        }
+        event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_PORTAL_OUTPOST);
+
     }
 
     private static Method GETCODEC_METHOD;
@@ -336,6 +370,9 @@ public class FireNBlood
             tempMap.putIfAbsent(RegistryStructures.TAVERN.get(), DimensionStructuresSettings.DEFAULTS.get(RegistryStructures.TAVERN.get()));
             tempMap.putIfAbsent(RegistryStructures.PROFANEDTOWER.get(), DimensionStructuresSettings.DEFAULTS.get(RegistryStructures.PROFANEDTOWER.get()));
             tempMap.putIfAbsent(RegistryStructures.PROFANEDSHRINE.get(), DimensionStructuresSettings.DEFAULTS.get(RegistryStructures.PROFANEDSHRINE.get()));
+            tempMap.putIfAbsent(RegistryStructures.DARKMANOR.get(), DimensionStructuresSettings.DEFAULTS.get(RegistryStructures.DARKMANOR.get()));
+            tempMap.putIfAbsent(RegistryStructures.PORTAL_OUTPOST.get(), DimensionStructuresSettings.DEFAULTS.get(RegistryStructures.PORTAL_OUTPOST.get()));
+
             serverWorld.getChunkSource().generator.getSettings().structureConfig = tempMap;
         }
     }

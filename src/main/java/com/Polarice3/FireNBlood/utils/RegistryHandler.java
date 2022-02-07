@@ -27,20 +27,21 @@ public class RegistryHandler {
     public static DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, FireNBlood.MOD_ID);
     public static DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, FireNBlood.MOD_ID);
     public static final DeferredRegister<Effect> EFFECTS = DeferredRegister.create(ForgeRegistries.POTIONS, FireNBlood.MOD_ID);
-//    public static KeyBinding[] keyBindings;
+    public static KeyBinding[] keyBindings;
 
     public static void init(){
         ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
         EFFECTS.register(FMLJavaModLoadingContext.get().getModEventBus());
-/*        keyBindings = new KeyBinding[1];
+        keyBindings = new KeyBinding[2];
 
-        keyBindings[0] = new KeyBinding("key.firenblood.magic", 67, "key.firenblood.category");
+        keyBindings[0] = new KeyBinding("key.firenblood.wand", 90, "key.firenblood.category");
+        keyBindings[1] = new KeyBinding("key.firenblood.wandandbag", 88, "key.firenblood.category");
 
         for (int i = 0; i < keyBindings.length; ++i)
         {
             ClientRegistry.registerKeyBinding(keyBindings[i]);
-        }*/
+        }
     }
 
     //Items
@@ -73,6 +74,8 @@ public class RegistryHandler {
     public static final RegistryObject<MutatedMuttonItem> MUTATED_MUTTON = ITEMS.register("mutatedmutton", MutatedMuttonItem::new);
     public static final RegistryObject<UncookedMutatedItem> MUTATED_PORKCHOP_UNCOOKED = ITEMS.register("mutatedporkchop_uncooked", UncookedMutatedItem::new);
     public static final RegistryObject<MutatedPorkchopItem> MUTATED_PORKCHOP = ITEMS.register("mutatedporkchop", MutatedPorkchopItem::new);
+    public static final RegistryObject<UncookedMutatedItem> MUTATED_RABBIT_UNCOOKED = ITEMS.register("mutatedrabbit_uncooked", UncookedMutatedItem::new);
+    public static final RegistryObject<MutatedRabbitItem> MUTATED_RABBIT = ITEMS.register("mutatedrabbit", MutatedRabbitItem::new);
     //Focuses
     public static final RegistryObject<Item> FOCUSBAG = ITEMS.register("focusbag", FocusBagItem::new);
     public static final RegistryObject<Item> VEXINGFOCUS = ITEMS.register("vexingfocus", () -> new MagicFocusItem(FNBConfig.VexCost.get()));

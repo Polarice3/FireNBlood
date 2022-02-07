@@ -11,6 +11,7 @@ import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.AbstractIllagerEntity;
+import net.minecraft.entity.monster.WitchEntity;
 import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -108,6 +109,8 @@ public class TaillessWretchEntity extends ServantTaillessEntity {
         if (super.isAlliedTo(entityIn)) {
             return true;
         } else if (entityIn instanceof AbstractTaillessEntity) {
+            return this.getTeam() == null && entityIn.getTeam() == null;
+        } else if (entityIn instanceof WitchEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;
         } else if (entityIn instanceof AbstractCultistEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;

@@ -114,6 +114,7 @@ public class ZealotEntity extends AbstractCultistEntity implements ICrossbowUser
                 this.setItemSlot(EquipmentSlotType.CHEST, new ItemStack(Items.CHAINMAIL_CHESTPLATE));
         }
         this.setItemSlot(EquipmentSlotType.HEAD, new ItemStack(RegistryHandler.APOSTLEHELM.get()));
+        this.setDropChance(EquipmentSlotType.HEAD, 0.0F);
     }
 
     protected void defineSynchedData() {

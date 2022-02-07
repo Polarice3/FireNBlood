@@ -1,7 +1,6 @@
 package com.Polarice3.FireNBlood.client.gui.screen.inventory;
 
 import com.Polarice3.FireNBlood.FireNBlood;
-import com.Polarice3.FireNBlood.inventory.container.SoulItemContainer;
 import com.Polarice3.FireNBlood.inventory.container.WandandBagContainer;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -14,7 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class WandandBagScreen extends ContainerScreen<WandandBagContainer> {
-    private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(FireNBlood.MOD_ID, "textures/gui/container/wandandbag.png");
+    private static final ResourceLocation GUI_TEXTURES = new ResourceLocation(FireNBlood.MOD_ID, "textures/gui/container/wandandfocusbag.png");
 
     public WandandBagScreen(WandandBagContainer p_i51097_1_, PlayerInventory p_i51097_2_, ITextComponent p_i51097_3_) {
         super(p_i51097_1_, p_i51097_2_, p_i51097_3_);

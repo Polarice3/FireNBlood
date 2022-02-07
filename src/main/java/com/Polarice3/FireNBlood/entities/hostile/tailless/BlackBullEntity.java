@@ -9,6 +9,7 @@ import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.AbstractIllagerEntity;
+import net.minecraft.entity.monster.WitchEntity;
 import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,8 +31,8 @@ public class BlackBullEntity extends ServantTaillessEntity {
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
         return MobEntity.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
-                .add(Attributes.MAX_HEALTH, 30.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.45D)
+                .add(Attributes.MAX_HEALTH, 24.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.4D)
                 .add(Attributes.ATTACK_DAMAGE, 4.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.6D)
                 .add(Attributes.ATTACK_KNOCKBACK, 1.0D);
@@ -76,6 +77,8 @@ public class BlackBullEntity extends ServantTaillessEntity {
         if (super.isAlliedTo(entityIn)) {
             return true;
         } else if (entityIn instanceof AbstractTaillessEntity) {
+            return this.getTeam() == null && entityIn.getTeam() == null;
+        } else if (entityIn instanceof WitchEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;
         } else if (entityIn instanceof AbstractCultistEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;

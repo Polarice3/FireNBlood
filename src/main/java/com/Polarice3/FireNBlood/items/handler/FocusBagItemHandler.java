@@ -18,7 +18,7 @@ public class FocusBagItemHandler extends ItemStackHandler {
     private int slot;
 
     public FocusBagItemHandler(ItemStack itemStack) {
-        super(10);
+        super(11);
         this.itemStack = itemStack;
     }
 
@@ -42,7 +42,7 @@ public class FocusBagItemHandler extends ItemStackHandler {
 
     @Override
     public int getSlotLimit(int slot) {
-        return 10;
+        return 11;
     }
 
     public NonNullList<ItemStack> getContents(){

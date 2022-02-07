@@ -53,6 +53,7 @@ public class FNBConfig {
 
     public static final ForgeConfigSpec.ConfigValue<Integer> CraftingSouls;
     public static final ForgeConfigSpec.ConfigValue<Integer> CultistSpawnFreq;
+    public static final ForgeConfigSpec.ConfigValue<Integer> MRabbitMax;
 
     public static final ForgeConfigSpec.ConfigValue<Float> HealAmount;
 
@@ -62,6 +63,13 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> SoulRepair;
     public static final ForgeConfigSpec.ConfigValue<Boolean> TotemUndying;
     public static final ForgeConfigSpec.ConfigValue<Boolean> StarterTotem;
+
+    public static final ForgeConfigSpec.ConfigValue<Boolean> ProfanedTowerGen;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> ProfanedShrineGen;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> TavernGen;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> DarkManorGen;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> PortalOutpostGen;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> TotemGen;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> VizierMinion;
 
@@ -161,6 +169,22 @@ public class FNBConfig {
                 .define("cultistsspawn", true);
         CultistSpawnFreq = BUILDER.comment("Spawn Frequency for Cultists, Default: 12000")
                 .defineInRange("cultistsspawnfreq", 12000, 0, 72000);
+        MRabbitMax = BUILDER.comment("Maximum amount of Mutant Rabbits can spawn, Default: 16")
+                .defineInRange("mrabbitmax", 16, 0, 100);
+        BUILDER.pop();
+        BUILDER.push("Structure Generation");
+        TavernGen = BUILDER.comment("Tavern Generates in the World, Default: true")
+                .define("taverngen", true);
+        ProfanedTowerGen = BUILDER.comment("Profaned Tower Generates in the World, Default: true")
+                .define("profanedtowergen", true);
+        ProfanedShrineGen = BUILDER.comment("Profaned Shrine Generates in the World, Default: true")
+                .define("profanedshrinegen", true);
+        DarkManorGen = BUILDER.comment("Dark Manor Generates in the World, Default: true")
+                .define("darkmanorgen", true);
+        PortalOutpostGen = BUILDER.comment("Portal Outpost Generates in the World, Default: true")
+                .define("portaloutpostgen", true);
+        TotemGen = BUILDER.comment("Totems Generates in the World, Default: true")
+                .define("totemgen", true);
         BUILDER.pop();
         BUILDER.push("Misc");
         VizierMinion = BUILDER.comment("Viziers spawn Vexes instead of Irks, Default: false")

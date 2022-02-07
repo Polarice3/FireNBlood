@@ -29,8 +29,13 @@ public class BrainEaterSpell extends ChargingSpells{
         if (entityLiving instanceof PlayerEntity){
             PlayerEntity player = (PlayerEntity) entityLiving;
             if (player.experienceProgress > 0 && player.getHealth() < player.getMaxHealth()){
-                player.giveExperiencePoints(-FNBConfig.BrainEaterXPCost.get());
-                player.heal(1.0F);
+                if (player.isCrouching()){
+                    player.giveExperiencePoints(-FNBConfig.BrainEaterXPCost.get() * 4);
+                    player.heal(4.0F);
+                } else {
+                    player.giveExperiencePoints(-FNBConfig.BrainEaterXPCost.get());
+                    player.heal(1.0F);
+                }
                 worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.GENERIC_DRINK, SoundCategory.NEUTRAL, 1.0F, 1.0F);
                 for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
                     entityLiving.level.addParticle(ParticleTypes.HAPPY_VILLAGER, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
@@ -50,8 +55,13 @@ public class BrainEaterSpell extends ChargingSpells{
         if (entityLiving instanceof PlayerEntity){
             PlayerEntity player = (PlayerEntity) entityLiving;
             if (player.experienceProgress > 0 && player.getHealth() < player.getMaxHealth()){
-                player.giveExperiencePoints(-FNBConfig.BrainEaterXPCost.get());
-                player.heal(2.0F);
+                if (player.isCrouching()){
+                    player.giveExperiencePoints(-FNBConfig.BrainEaterXPCost.get() * 4);
+                    player.heal(8.0F);
+                } else {
+                    player.giveExperiencePoints(-FNBConfig.BrainEaterXPCost.get());
+                    player.heal(2.0F);
+                }
                 worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.GENERIC_DRINK, SoundCategory.NEUTRAL, 1.0F, 1.0F);
                 for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
                     entityLiving.level.addParticle(ParticleTypes.HAPPY_VILLAGER, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);

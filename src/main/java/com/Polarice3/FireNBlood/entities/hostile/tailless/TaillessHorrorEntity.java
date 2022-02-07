@@ -10,6 +10,7 @@ import net.minecraft.entity.ai.controller.MovementController;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.HurtByTargetGoal;
 import net.minecraft.entity.monster.AbstractIllagerEntity;
+import net.minecraft.entity.monster.WitchEntity;
 import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
@@ -183,6 +184,8 @@ public class TaillessHorrorEntity extends FlyingTaillessEntity {
         if (super.isAlliedTo(entityIn)) {
             return true;
         } else if (entityIn instanceof AbstractTaillessEntity) {
+            return this.getTeam() == null && entityIn.getTeam() == null;
+        } else if (entityIn instanceof WitchEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;
         } else if (entityIn instanceof AbstractCultistEntity) {
             return this.getTeam() == null && entityIn.getTeam() == null;

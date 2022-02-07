@@ -1,6 +1,7 @@
 package com.Polarice3.FireNBlood.entities.hostile.cultists;
 
 import com.Polarice3.FireNBlood.FNBConfig;
+import com.Polarice3.FireNBlood.entities.ally.SkeletonMinionEntity;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.BlackBullEntity;
 import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
@@ -52,6 +53,7 @@ public class ApostleEntity extends SpellcastingCultistEntity {
         this.goalSelector.addGoal(3, new CastingSpellGoal());
         this.goalSelector.addGoal(3, new FireballSpellGoal());
         this.goalSelector.addGoal(3, new ZombieSpellGoal());
+        this.goalSelector.addGoal(3, new SkeletonSpellGoal());
         this.goalSelector.addGoal(3, new RoarSpellGoal());
         this.goalSelector.addGoal(3, new OpenDoorGoal(this, true));
         this.goalSelector.addGoal(8, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
@@ -265,6 +267,59 @@ public class ApostleEntity extends SpellcastingCultistEntity {
             if (livingentity != null) {
                 BlockPos blockpos = ApostleEntity.this.blockPosition();
                 ZombieVillagerMinionEntity summonedentity = new ZombieVillagerMinionEntity(ModEntityType.ZOMBIE_VILLAGER_MINION.get(), ApostleEntity.this.level);
+                summonedentity.moveTo(blockpos, 0.0F, 0.0F);
+                summonedentity.setOwnerId(ApostleEntity.this.getUUID());
+                summonedentity.setLimitedLife(60 * (90 + ApostleEntity.this.level.random.nextInt(180)));
+                summonedentity.finalizeSpawn((IServerWorld) ApostleEntity.this.level, ApostleEntity.this.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
+                summonedentity.setTarget(livingentity);
+                ApostleEntity.this.level.addFreshEntity(summonedentity);
+            }
+        }
+
+        protected SoundEvent getSpellPrepareSound() {
+            return SoundEvents.EVOKER_CAST_SPELL;
+        }
+
+        @Override
+        protected SpellcastingCultistEntity.SpellType getSpellType() {
+            return SpellType.ZOMBIE;
+        }
+    }
+
+    class SkeletonSpellGoal extends SpellcastingCultistEntity.UseSpellGoal {
+        private int lastTargetId;
+        private SkeletonSpellGoal() {
+        }
+
+        @Override
+        public boolean canUse() {
+            if (!super.canUse()) {
+                return false;
+            } else if (ApostleEntity.this.getTarget() == null) {
+                return false;
+            } else if (ApostleEntity.this.getTarget().getId() == this.lastTargetId) {
+                return false;
+            } else return ApostleEntity.this.getSpellInt() == 1;
+        }
+
+        public void start() {
+            super.start();
+            this.lastTargetId = ApostleEntity.this.getTarget().getId();
+        }
+
+        protected int getCastingTime() {
+            return FNBConfig.SkeletonDuration.get();
+        }
+
+        protected int getCastingInterval() {
+            return FNBConfig.SkeletonCooldown.get();
+        }
+
+        public void castSpell() {
+            LivingEntity livingentity = ApostleEntity.this.getTarget();
+            if (livingentity != null) {
+                BlockPos blockpos = ApostleEntity.this.blockPosition();
+                SkeletonVillagerMinionEntity summonedentity = new SkeletonVillagerMinionEntity(ModEntityType.SKELETON_VILLAGER_MINION.get(), ApostleEntity.this.level);
                 summonedentity.moveTo(blockpos, 0.0F, 0.0F);
                 summonedentity.setOwnerId(ApostleEntity.this.getUUID());
                 summonedentity.setLimitedLife(60 * (90 + ApostleEntity.this.level.random.nextInt(180)));

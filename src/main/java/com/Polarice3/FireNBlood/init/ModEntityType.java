@@ -174,24 +174,28 @@ public class ModEntityType {
 
     public static final RegistryObject<EntityType<ChannellerEntity>> CHANNELLER = ENTITY_TYPES.register("channeller",
             () -> EntityType.Builder.of(ChannellerEntity::new, EntityClassification.MONSTER)
+                    .canSpawnFarFromPlayer()
                     .sized(0.6F, 1.95F)
                     .clientTrackingRange(8)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "channeller").toString()));
 
     public static final RegistryObject<EntityType<FanaticEntity>> FANATIC = ENTITY_TYPES.register("fanatic",
             () -> EntityType.Builder.of(FanaticEntity::new, EntityClassification.MONSTER)
+                    .canSpawnFarFromPlayer()
                     .sized(0.6F, 1.95F)
                     .clientTrackingRange(8)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "fanatic").toString()));
 
     public static final RegistryObject<EntityType<ZealotEntity>> ZEALOT = ENTITY_TYPES.register("zealot",
             () -> EntityType.Builder.of(ZealotEntity::new, EntityClassification.MONSTER)
+                    .canSpawnFarFromPlayer()
                     .sized(0.6F, 1.95F)
                     .clientTrackingRange(8)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "zealot").toString()));
 
     public static final RegistryObject<EntityType<ApostleEntity>> APOSTLE = ENTITY_TYPES.register("apostle",
             () -> EntityType.Builder.of(ApostleEntity::new, EntityClassification.MONSTER)
+                    .canSpawnFarFromPlayer()
                     .sized(0.6F, 1.95F)
                     .clientTrackingRange(8)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "apostle").toString()));
@@ -201,6 +205,12 @@ public class ModEntityType {
                     .sized(0.6F, 1.95F)
                     .clientTrackingRange(8)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "zombievillagerminion").toString()));
+
+    public static final RegistryObject<EntityType<SkeletonVillagerMinionEntity>> SKELETON_VILLAGER_MINION = ENTITY_TYPES.register("skeletonvillagerminion",
+            () -> EntityType.Builder.of(SkeletonVillagerMinionEntity::new, EntityClassification.MONSTER)
+                    .sized(0.6F, 1.99F)
+                    .clientTrackingRange(8)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "skeletonvillagerminion").toString()));
 
     public static final RegistryObject<EntityType<MutatedCowEntity>> MUTATED_COW = ENTITY_TYPES.register("mutatedcow",
             () -> EntityType.Builder.of(MutatedCowEntity::new, EntityClassification.MONSTER)
@@ -221,6 +231,12 @@ public class ModEntityType {
             () -> EntityType.Builder.of(MutatedPigEntity::new, EntityClassification.MONSTER)
                     .sized(0.9F, 1.55F)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "mutatedpig").toString()));
+
+    public static final RegistryObject<EntityType<MutatedRabbitEntity>> MUTATED_RABBIT = ENTITY_TYPES.register("mutatedrabbit",
+            () -> EntityType.Builder.of(MutatedRabbitEntity::new, EntityClassification.MONSTER)
+                    .sized(0.8F, 1.0F)
+                    .clientTrackingRange(8)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "mutatedrabbit").toString()));
 
     public static final RegistryObject<EntityType<SacredFishEntity>> SACRED_FISH = ENTITY_TYPES.register("sacredfish",
             () -> EntityType.Builder.of(SacredFishEntity::new, EntityClassification.MISC)

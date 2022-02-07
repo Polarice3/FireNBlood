@@ -20,10 +20,10 @@ public class FocusBagContainer extends Container {
         super(ModContainerType.FOCUSBAG.get(), id);
         this.stack = stack;
         for (int i = 0; i < 5; i++) {
-            addSlot(new SlotItemHandler(handler, i, 62 - 18 + i * 18, 25));
+            addSlot(new SlotItemHandler(handler, i + 1, 62 - 18 + i * 18, 25));
         }
         for (int i = 0; i < 5; i++) {
-            addSlot(new SlotItemHandler(handler,5 + i, 62 - 18 + i * 18, 44));
+            addSlot(new SlotItemHandler(handler,6 + i, 62 - 18 + i * 18, 43));
         }
 
         for(int i = 0; i < 3; ++i) {
@@ -37,29 +37,17 @@ public class FocusBagContainer extends Container {
         }
     }
 
-    public ItemStack quickMoveStack(PlayerEntity playerIn, int index) {
+    public ItemStack quickMoveStack(PlayerEntity pPlayer, int pIndex) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(index);
+        Slot slot = this.slots.get(pIndex);
         if (slot != null && slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
-            if (index == 0) {
-                if (!this.moveItemStackTo(itemstack1, 1, 37, true)) {
+            if (pIndex < 11) {
+                if (!this.moveItemStackTo(itemstack1, 11, this.slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-
-                slot.onQuickCraft(itemstack1, itemstack);
-            } else if (this.moveItemStackTo(itemstack1, 0, 1, false)) {
-                return ItemStack.EMPTY;
-            } else if (index >= 1 && index < 28) {
-                if (!this.moveItemStackTo(itemstack1, 28, 37, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (index >= 28 && index < 37) {
-                if (!this.moveItemStackTo(itemstack1, 1, 28, false)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (!this.moveItemStackTo(itemstack1, 1, 37, false)) {
+            } else if (!this.moveItemStackTo(itemstack1, 0, 11, false)) {
                 return ItemStack.EMPTY;
             }
 
@@ -68,12 +56,6 @@ public class FocusBagContainer extends Container {
             } else {
                 slot.setChanged();
             }
-
-            if (itemstack1.getCount() == itemstack.getCount()) {
-                return ItemStack.EMPTY;
-            }
-
-            slot.onTake(playerIn, itemstack1);
         }
 
         return itemstack;

@@ -2,8 +2,11 @@ package com.Polarice3.FireNBlood.items;
 
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.inventory.container.SoulItemContainer;
+import com.Polarice3.FireNBlood.inventory.container.WandandBagContainer;
 import com.Polarice3.FireNBlood.items.capability.SoulUsingItemCapability;
+import com.Polarice3.FireNBlood.items.handler.FocusBagItemHandler;
 import com.Polarice3.FireNBlood.spells.*;
+import com.Polarice3.FireNBlood.utils.FocusBagFinder;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import com.Polarice3.FireNBlood.items.handler.SoulUsingItemHandler;
 import net.minecraft.client.util.ITooltipFlag;
@@ -161,15 +164,8 @@ public class SoulWand extends Item{
     @Nonnull
     public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack itemstack = playerIn.getItemInHand(handIn);
-        if (!playerIn.isCrouching()) {
-            if (this.getSpell(itemstack) != null) {
-                playerIn.startUsingItem(handIn);
-                for (int i = 0; i < playerIn.level.random.nextInt(35) + 10; ++i) {
-                    double d = worldIn.random.nextGaussian() * 0.2D;
-                    playerIn.level.addParticle(ParticleTypes.ENTITY_EFFECT, playerIn.getX(), playerIn.getEyeY(), playerIn.getZ(), d, d, d);
-                }
-            }
-            return ActionResult.consume(itemstack);
+/*        if (!playerIn.isCrouching()) {
+
         } else {
             if (!worldIn.isClientSide) {
                 SimpleNamedContainerProvider provider = new SimpleNamedContainerProvider(
@@ -177,8 +173,36 @@ public class SoulWand extends Item{
                 NetworkHooks.openGui((ServerPlayerEntity) playerIn, provider, (buffer) -> buffer.writeBoolean(handIn == Hand.MAIN_HAND));
             }
             return ActionResult.pass(itemstack);
-        }
+        }*/
 
+        if (this.getSpell(itemstack) != null) {
+            playerIn.startUsingItem(handIn);
+            for (int i = 0; i < playerIn.level.random.nextInt(35) + 10; ++i) {
+                double d = worldIn.random.nextGaussian() * 0.2D;
+                playerIn.level.addParticle(ParticleTypes.ENTITY_EFFECT, playerIn.getX(), playerIn.getEyeY(), playerIn.getZ(), d, d, d);
+            }
+        }
+        return ActionResult.consume(itemstack);
+
+    }
+
+    public static void onKeyPressed(ItemStack stack, PlayerEntity playerEntity){
+        if (!playerEntity.level.isClientSide) {
+            SimpleNamedContainerProvider provider = new SimpleNamedContainerProvider(
+                    (id, inventory, player) -> new SoulItemContainer(id, inventory, SoulUsingItemHandler.get(stack), stack, playerEntity.getUsedItemHand()), stack.getDisplayName());
+            NetworkHooks.openGui((ServerPlayerEntity) playerEntity, provider, (buffer) -> buffer.writeBoolean(playerEntity.getUsedItemHand() == Hand.MAIN_HAND));
+        }
+    }
+
+    public static void BagonKeyPressed(ItemStack stack, PlayerEntity playerEntity){
+        if (!playerEntity.level.isClientSide) {
+            ItemStack bag = FocusBagFinder.findBag(playerEntity);
+            if (bag != ItemStack.EMPTY){
+                SimpleNamedContainerProvider provider = new SimpleNamedContainerProvider(
+                        (id, inventory, player) -> new WandandBagContainer(id, SoulUsingItemHandler.get(playerEntity.getMainHandItem()), FocusBagItemHandler.get(bag), playerEntity.getMainHandItem()), stack.getDisplayName());
+                NetworkHooks.openGui((ServerPlayerEntity) playerEntity, provider, (buffer) -> buffer.writeBoolean(playerEntity.getUsedItemHand() == Hand.MAIN_HAND));
+            }
+        }
     }
 
     public void ChangeFocus(ItemStack itemStack){
