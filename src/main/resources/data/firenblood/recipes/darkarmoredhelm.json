@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "fff",
+    "flf"
+  ],
+  "key":
+  {
+    "f":
+    {
+      "item": "firenblood:cursed_ingot"
+    },
+    "l":
+    {
+      "item": "firenblood:darkhelm"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:darkarmoredhelm",
+    "count": 1
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "flf",
+    "fff",
+    "fff"
+  ],
+  "key":
+  {
+    "f":
+    {
+      "item": "firenblood:cursed_ingot"
+    },
+    "l":
+    {
+      "item": "firenblood:necrorobe"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:necroarmoredrobe",
+    "count": 1
+  }
+}

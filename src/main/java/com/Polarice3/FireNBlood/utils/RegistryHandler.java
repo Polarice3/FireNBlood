@@ -6,15 +6,14 @@ import com.Polarice3.FireNBlood.armors.*;
 import com.Polarice3.FireNBlood.blocks.*;
 import com.Polarice3.FireNBlood.items.*;
 import com.Polarice3.FireNBlood.potions.*;
-import com.Polarice3.FireNBlood.spells.VexSpell;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
-import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemTier;
 import net.minecraft.potion.Effect;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.RegistryObject;
@@ -86,10 +85,23 @@ public class RegistryHandler {
     public static final RegistryObject<Item> CRIPPLINGFOCUS = ITEMS.register("cripplingfocus", () -> new MagicFocusItem(FNBConfig.CrippleCost.get()));
     public static final RegistryObject<Item> SPIDERLINGFOCUS = ITEMS.register("spiderlingfocus", () -> new MagicFocusItem(FNBConfig.SpiderlingCost.get()));
     public static final RegistryObject<Item> BRAINEATERFOCUS = ITEMS.register("braineaterfocus", () -> new MagicFocusItem(FNBConfig.BrainEaterCost.get()));
+    public static final RegistryObject<Item> TELEPORTFOCUS = ITEMS.register("teleportfocus", () -> new MagicFocusItem(FNBConfig.TeleportCost.get()));
+    public static final RegistryObject<Item> SOULSKULLFOCUS = ITEMS.register("soulskullfocus", () -> new MagicFocusItem(FNBConfig.SoulSkullCost.get()));
+
     //Tools
     public static final RegistryObject<Item> GOLDEN_MACE = ITEMS.register("golden_mace", GoldenMaceItem::new);
     public static final RegistryObject<Item> DIAMOND_MACE = ITEMS.register("diamond_mace", DiamondMaceItem::new);
     public static final RegistryObject<Item> WARPED_SPEAR = ITEMS.register("warped_spear", WarpedSpearItem::new);
+    public static final RegistryObject<Item> WOODEN_SPEAR = ITEMS.register("wooden_spear", () ->
+            new SpearItem(ItemTier.WOOD, 2, -2.9F));
+    public static final RegistryObject<Item> STONE_SPEAR = ITEMS.register("stone_spear", () ->
+            new SpearItem(ItemTier.STONE, 2, -2.9F));
+    public static final RegistryObject<Item> IRON_SPEAR = ITEMS.register("iron_spear", () ->
+            new SpearItem(ItemTier.IRON, 2, -2.9F));
+    public static final RegistryObject<Item> DIAMOND_SPEAR = ITEMS.register("diamond_spear", () ->
+            new SpearItem(ItemTier.DIAMOND, 2, -2.9F));
+    public static final RegistryObject<Item> NETHERITE_SPEAR = ITEMS.register("netherite_spear", () ->
+            new SpearItem(ItemTier.NETHERITE, 2, -2.9F));
     public static final RegistryObject<Item> SOULWAND = ITEMS.register("soulwand", SoulWand::new);
     public static final RegistryObject<Item> SOULSTAFF = ITEMS.register("soulstaff", SoulStaff::new);
     //Armors
@@ -109,6 +121,14 @@ public class RegistryHandler {
             new NecroRobeArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.HEAD, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> NECROROBE = ITEMS.register("necrorobe", () ->
             new NecroRobeArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.CHEST, new Item.Properties().tab(FireNBlood.TAB)));
+    public static final RegistryObject<Item> DARKARMOREDHELM = ITEMS.register("darkarmoredhelm", () ->
+            new DarkArmoredRobeArmor(ModArmorMaterial.DARKARMOREDMAGE, EquipmentSlotType.HEAD, new Item.Properties().tab(FireNBlood.TAB)));
+    public static final RegistryObject<Item> DARKARMOREDROBE = ITEMS.register("darkarmoredrobe", () ->
+            new DarkArmoredRobeArmor(ModArmorMaterial.DARKARMOREDMAGE, EquipmentSlotType.CHEST, new Item.Properties().tab(FireNBlood.TAB)));
+    public static final RegistryObject<Item> NECROARMOREDHELM = ITEMS.register("necroarmoredhelm", () ->
+            new NecroArmoredRobeArmor(ModArmorMaterial.ARMOREDNECROTURGE, EquipmentSlotType.HEAD, new Item.Properties().tab(FireNBlood.TAB)));
+    public static final RegistryObject<Item> NECROARMOREDROBE = ITEMS.register("necroarmoredrobe", () ->
+            new NecroArmoredRobeArmor(ModArmorMaterial.ARMOREDNECROTURGE, EquipmentSlotType.CHEST, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> APOSTLEHELM = ITEMS.register("apostlehelm", () ->
             new ApostleRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.HEAD, new Item.Properties()));
     public static final RegistryObject<Item> APOSTLEROBE = ITEMS.register("apostlerobe", () ->

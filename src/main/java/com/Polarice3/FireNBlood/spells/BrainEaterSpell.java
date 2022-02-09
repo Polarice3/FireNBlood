@@ -25,7 +25,7 @@ public class BrainEaterSpell extends ChargingSpells{
         return SoundEvents.ILLUSIONER_PREPARE_BLINDNESS;
     }
 
-    public ItemStack WandResult(World worldIn, LivingEntity entityLiving) {
+    public void WandResult(World worldIn, LivingEntity entityLiving) {
         if (entityLiving instanceof PlayerEntity){
             PlayerEntity player = (PlayerEntity) entityLiving;
             if (player.experienceProgress > 0 && player.getHealth() < player.getMaxHealth()){
@@ -48,7 +48,6 @@ public class BrainEaterSpell extends ChargingSpells{
             }
         }
 
-        return null;
     }
 
     public void StaffResult(World worldIn, LivingEntity entityLiving) {

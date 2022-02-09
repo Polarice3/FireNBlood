@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    " f ",
+    "ses",
+    " s "
+  ],
+  "key":
+  {
+    "e":
+    {
+      "item": "firenblood:emptycore"
+    },
+    "f":
+    {
+      "item": "firenblood:riftshard"
+    },
+    "s":
+    {
+      "item": "minecraft:ender_pearl"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:teleportfocus",
+    "count": 1
+  }
+}

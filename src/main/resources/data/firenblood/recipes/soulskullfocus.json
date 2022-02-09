@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "ksk",
+    "ses",
+    "ksk"
+  ],
+  "key":
+  {
+    "e":
+    {
+      "item": "firenblood:emptycore"
+    },
+    "k":
+    {
+      "item": "minecraft:skeleton_skull"
+    },
+    "s":
+    {
+      "item": "minecraft:soul_sand"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:soulskullfocus",
+    "count": 1
+  }
+}

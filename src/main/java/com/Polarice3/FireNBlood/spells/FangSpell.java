@@ -30,7 +30,7 @@ public class FangSpell extends Spells{
         return SoundEvents.EVOKER_PREPARE_ATTACK;
     }
 
-    public ItemStack WandResult(World worldIn, LivingEntity entityLiving){
+    public void WandResult(World worldIn, LivingEntity entityLiving){
         PlayerEntity playerEntity = (PlayerEntity) entityLiving;
         RayTraceResult rayTraceResult = rayTrace(worldIn, playerEntity, RayTraceContext.FluidMode.NONE);
         Vector3d vector3d = rayTraceResult.getLocation();
@@ -58,7 +58,6 @@ public class FangSpell extends Spells{
         for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
             entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         }
-        return null;
     }
 
     public void StaffResult(World worldIn, LivingEntity entityLiving){

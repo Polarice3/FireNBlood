@@ -43,9 +43,11 @@ public class ClientEventBusSubscriber {
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.CALLER.get(), CallerRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.SOUL_FIREBALL.get(), SoulFireballRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.WARPED_SPEAR.get(), WarpedSpearRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.SPEAR.get(), SpearRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.WITCHBOMB.get(), WitchBombRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.SLOWBOMB.get(), SlowBombRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.NETHERBALL.get(), NetherBallRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.SOULSKULL.get(), SoulSkullRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.REDEMPTOR.get(), RedemptorRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.PROTECTOR.get(), ProtectorRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.BREWER.get(), BrewerRenderer::new);

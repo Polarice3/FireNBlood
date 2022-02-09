@@ -33,7 +33,7 @@ public class SpiderlingSpell extends ChargingSpells{
         return SoundEvents.EVOKER_PREPARE_SUMMON;
     }
 
-    public ItemStack WandResult(World worldIn, LivingEntity entityLiving) {
+    public void WandResult(World worldIn, LivingEntity entityLiving) {
         BlockPos blockpos = entityLiving.blockPosition();
         SpiderlingMinionEntity summonedentity = new SpiderlingMinionEntity(ModEntityType.SPIDERLING_MINION.get(), worldIn);
         summonedentity.setOwnerId(entityLiving.getUUID());
@@ -44,7 +44,6 @@ public class SpiderlingSpell extends ChargingSpells{
         for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
             entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         }
-        return null;
     }
 
     public void StaffResult(World worldIn, LivingEntity entityLiving) {

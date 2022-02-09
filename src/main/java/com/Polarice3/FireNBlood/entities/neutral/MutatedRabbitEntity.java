@@ -65,7 +65,7 @@ public class MutatedRabbitEntity extends MutatedEntity {
         return MobEntity.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 16.0D)
                 .add(Attributes.ARMOR, 8.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.3D);
+                .add(Attributes.MOVEMENT_SPEED, 0.8D);
     }
 
     protected float getJumpPower() {
@@ -73,14 +73,14 @@ public class MutatedRabbitEntity extends MutatedEntity {
             Path path = this.navigation.getPath();
             if (path != null && !path.isDone()) {
                 Vector3d vector3d = path.getNextEntityPos(this);
-                if (vector3d.y > this.getY() + 0.5D) {
-                    return 0.5F;
+                if (vector3d.y > this.getY() + 0.75D) {
+                    return 0.75F;
                 }
             }
 
             return this.moveControl.getSpeedModifier() <= 0.6D ? 0.2F : 0.3F;
         } else {
-            return 0.5F;
+            return 0.75F;
         }
     }
 
@@ -89,8 +89,8 @@ public class MutatedRabbitEntity extends MutatedEntity {
         double d0 = this.moveControl.getSpeedModifier();
         if (d0 > 0.0D) {
             double d1 = getHorizontalDistanceSqr(this.getDeltaMovement());
-            if (d1 < 0.01D) {
-                this.moveRelative(0.1F, new Vector3d(0.0D, 0.0D, 1.0D));
+            if (d1 < 0.02D) {
+                this.moveRelative(0.2F, new Vector3d(0.0D, 0.0D, 2.0D));
             }
         }
 

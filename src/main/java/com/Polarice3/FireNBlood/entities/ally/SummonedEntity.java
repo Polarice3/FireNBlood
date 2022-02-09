@@ -55,8 +55,11 @@ public class SummonedEntity extends MonsterEntity {
     public void tick(){
         super.tick();
         if (this.getTrueOwner() != null){
-            if (this.getTrueOwner().getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.NECROHELM.get()){
-                this.limitedLifespan = false;
+            if (this.getTrueOwner().getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.NECROHELM.get()
+                    || this.getTrueOwner().getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.NECROARMOREDHELM.get()){
+                if (!(this instanceof SpiderlingMinionEntity)){
+                    this.limitedLifespan = false;
+                }
             } else if (this.limitedLifeTicks > 0){
                 this.limitedLifespan = true;
             }

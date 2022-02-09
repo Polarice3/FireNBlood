@@ -58,7 +58,7 @@ public class RobeModel<T extends LivingEntity> extends BipedModel<T> {
         Body.setPos(0.0F, 13.0F, 0.0F);
         darkrobe.addChild(Body);
         Body.texOffs(16, 48).addBox(-4.0F, -12.0F, -2.0F, 8.0F, 24.0F, 4.0F, 1.01F, false);
-        Body.texOffs(0, 92).addBox(-5.0F, -13.0F, -4.0F, 10.0F, 6.0F, 8.0F, 0.0F, false);
+        Body.texOffs(0, 92).addBox(-5.0F, -13.0F, -4.0F, 10.0F, 16.0F, 8.0F, 0.0F, false);
 
         RightArm = new ModelRenderer(this);
         RightArm.setPos(-1.5F, 5.0F, 0.0F);

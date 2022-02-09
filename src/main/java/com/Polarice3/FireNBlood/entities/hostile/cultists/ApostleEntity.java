@@ -41,7 +41,7 @@ public class ApostleEntity extends SpellcastingCultistEntity {
 
     public ApostleEntity(EntityType<? extends SpellcastingCultistEntity> type, World worldIn) {
         super(type, worldIn);
-        int random = this.random.nextInt(3);
+        int random = this.random.nextInt(4);
         this.setSpellInt(random);
         this.f = 0;
     }
@@ -299,7 +299,7 @@ public class ApostleEntity extends SpellcastingCultistEntity {
                 return false;
             } else if (ApostleEntity.this.getTarget().getId() == this.lastTargetId) {
                 return false;
-            } else return ApostleEntity.this.getSpellInt() == 1;
+            } else return ApostleEntity.this.getSpellInt() == 2;
         }
 
         public void start() {
@@ -352,7 +352,7 @@ public class ApostleEntity extends SpellcastingCultistEntity {
                 return false;
             } else if (ApostleEntity.this.getTarget().getId() == this.lastTargetId) {
                 return false;
-            } else return ApostleEntity.this.getSpellInt() == 2 && ApostleEntity.this.distanceTo(ApostleEntity.this.getTarget()) < 4.0F;
+            } else return ApostleEntity.this.getSpellInt() == 3 && ApostleEntity.this.distanceTo(ApostleEntity.this.getTarget()) < 4.0F;
         }
 
         public void start() {

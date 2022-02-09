@@ -35,7 +35,7 @@ public class VexSpell extends SummonSpells {
         return SoundEvents.EVOKER_PREPARE_SUMMON;
     }
 
-    public ItemStack WandResult(World worldIn, LivingEntity entityLiving){
+    public void WandResult(World worldIn, LivingEntity entityLiving){
         BlockPos blockpos = entityLiving.blockPosition();
         FriendlyVexEntity vexentity = new FriendlyVexEntity(ModEntityType.FRIENDLY_VEX.get(), worldIn);
         vexentity.setOwnerId(entityLiving.getUUID());
@@ -49,7 +49,6 @@ public class VexSpell extends SummonSpells {
             entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         }
         this.SummonDown(entityLiving);
-        return null;
     }
 
     public void StaffResult(World worldIn, LivingEntity entityLiving){

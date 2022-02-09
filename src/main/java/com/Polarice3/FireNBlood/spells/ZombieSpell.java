@@ -35,7 +35,7 @@ public class ZombieSpell extends SummonSpells{
         return SoundEvents.EVOKER_PREPARE_SUMMON;
     }
 
-    public ItemStack WandResult(World worldIn, LivingEntity entityLiving) {
+    public void WandResult(World worldIn, LivingEntity entityLiving) {
         BlockPos blockpos = entityLiving.blockPosition();
         ZombieMinionEntity summonedentity = new ZombieMinionEntity(ModEntityType.ZOMBIE_MINION.get(), worldIn);
         summonedentity.setOwnerId(entityLiving.getUUID());
@@ -49,7 +49,6 @@ public class ZombieSpell extends SummonSpells{
             entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         }
         this.SummonDown(entityLiving);
-        return null;
     }
 
     public void StaffResult(World worldIn, LivingEntity entityLiving) {

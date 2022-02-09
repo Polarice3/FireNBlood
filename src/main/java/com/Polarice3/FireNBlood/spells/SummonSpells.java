@@ -10,11 +10,11 @@ public abstract class SummonSpells extends Spells{
     public abstract int SummonDownDuration();
 
     public boolean NecroPower(LivingEntity entityLiving){
-        return entityLiving.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.NECROROBE.get();
+        return entityLiving.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.NECROROBE.get() || entityLiving.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.NECROARMOREDROBE.get();
     }
 
     public boolean NecroMastery(LivingEntity entityLiving){
-        return entityLiving.getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.NECROHELM.get();
+        return entityLiving.getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.NECROHELM.get() || entityLiving.getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.NECROARMOREDHELM.get();
     }
 
     public void SummonDown(LivingEntity entityLiving){

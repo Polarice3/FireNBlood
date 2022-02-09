@@ -25,6 +25,10 @@ public class CastSpells {
                 return new SpiderlingSpell();
             case 7:
                 return new BrainEaterSpell();
+            case 8:
+                return new TeleportSpell();
+            case 9:
+                return new SoulSkullSpell();
             default:
                 return null;
         }

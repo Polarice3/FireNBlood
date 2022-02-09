@@ -417,10 +417,10 @@ public class VizierEntity extends SpellcastingIllagerEntity implements IChargeab
                         VizierEntity.this.heal(5.0F);
                     }
                     this.duration3 = 0;
-                    VizierEntity.this.setSpellcasting(false);
-                    VizierEntity.this.casttimes = 0;
-                    VizierEntity.this.finishcasting = 1;
                 }
+                VizierEntity.this.setSpellcasting(false);
+                VizierEntity.this.casttimes = 0;
+                VizierEntity.this.finishcasting = 1;
             }
         }
 

@@ -16,7 +16,7 @@ public abstract class Spells {
 
     public abstract SoundEvent CastingSound();
 
-    public abstract ItemStack WandResult(World worldIn, LivingEntity entityLiving);
+    public abstract void WandResult(World worldIn, LivingEntity entityLiving);
 
     public abstract void StaffResult(World worldIn, LivingEntity entityLiving);
 

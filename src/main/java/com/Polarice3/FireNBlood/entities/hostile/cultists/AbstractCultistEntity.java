@@ -2,14 +2,25 @@ package com.Polarice3.FireNBlood.entities.hostile.cultists;
 
 import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
 import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEntity;
+import com.Polarice3.FireNBlood.entities.projectiles.SpearEntity;
+import com.Polarice3.FireNBlood.items.SpearItem;
+import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.monster.AbstractRaiderEntity;
+import net.minecraft.entity.monster.DrownedEntity;
 import net.minecraft.entity.monster.WitchEntity;
 import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.TridentEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemTier;
+import net.minecraft.item.Items;
+import net.minecraft.item.TieredItem;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -81,6 +92,7 @@ public class AbstractCultistEntity extends AbstractRaiderEntity {
         CROSSBOW_HOLD,
         CROSSBOW_CHARGE,
         BOMB_AND_WEAPON,
+        THROW_SPEAR,
         NEUTRAL;
     }
 }

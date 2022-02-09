@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smithing",
+  "base": {
+    "item": "firenblood:darkarmoredhelm"
+  },
+  "addition": {
+    "item": "minecraft:skeleton_skull"
+  },
+  "result": {
+    "item": "firenblood:necroarmoredhelm"
+  }
+}

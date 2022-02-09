@@ -104,6 +104,13 @@ public class ModEntityType {
                     .updateInterval(20)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "warped_spear").toString()));
 
+    public static final RegistryObject<EntityType<SpearEntity>> SPEAR = ENTITY_TYPES.register("spear",
+            () -> EntityType.Builder.<SpearEntity>of(SpearEntity::new, EntityClassification.MISC)
+                    .sized(0.5F, 0.5F)
+                    .clientTrackingRange(4)
+                    .updateInterval(20)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "spear").toString()));
+
     public static final RegistryObject<EntityType<WitchBombEntity>> WITCHBOMB = ENTITY_TYPES.register("witchbomb",
             () -> EntityType.Builder.<WitchBombEntity>of(WitchBombEntity::new, EntityClassification.MISC)
                     .sized(0.25f,0.25f)
@@ -122,6 +129,13 @@ public class ModEntityType {
                     .sized(1.0f,1.0f)
                     .clientTrackingRange(4)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "scorchball").toString()));
+
+    public static final RegistryObject<EntityType<SoulSkullEntity>> SOULSKULL = ENTITY_TYPES.register("soulskull",
+            () -> EntityType.Builder.<SoulSkullEntity>of(SoulSkullEntity::new, EntityClassification.MISC)
+                    .sized(0.3125F, 0.3125F)
+                    .clientTrackingRange(4)
+                    .updateInterval(1)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "soulskull").toString()));
 
     public static final RegistryObject<EntityType<RedemptorEntity>> REDEMPTOR = ENTITY_TYPES.register("redemptor",
             () -> EntityType.Builder.of(RedemptorEntity::new, EntityClassification.MONSTER)

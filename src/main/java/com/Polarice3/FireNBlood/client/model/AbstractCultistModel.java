@@ -1,6 +1,7 @@
 package com.Polarice3.FireNBlood.client.model;
 
 import com.Polarice3.FireNBlood.entities.hostile.cultists.AbstractCultistEntity;
+import com.Polarice3.FireNBlood.items.SpearItem;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -129,26 +130,49 @@ public class AbstractCultistModel<T extends AbstractCultistEntity> extends Biped
                 this.leftArm.xRot = 0;
                 break;
             case ATTACKING:
-                if (!entityIn.getMainHandItem().isEmpty() && !(entityIn.getMainHandItem().getItem() instanceof ShootableItem))
+                if (!entityIn.getMainHandItem().isEmpty() && !(entityIn.getMainHandItem().getItem() instanceof ShootableItem)) {
                     ModelHelper.swingWeaponDown(this.rightArm, this.leftArm, entityIn, this.attackTime, ageInTicks);
+                }
                 break;
             case ZOMBIE:
                 ModelHelper.animateZombieArms(this.rightArm, this.leftArm, this.isAggressive(entityIn), this.attackTime, ageInTicks);
                 break;
             case BOMB_AND_WEAPON:
-                if (!entityIn.getMainHandItem().isEmpty() && !(entityIn.getMainHandItem().getItem() instanceof ShootableItem))
-                    ModelHelper.swingWeaponDown(this.rightArm, this.leftArm, entityIn, this.attackTime, ageInTicks);
-                this.leftArm.z = 0.0F;
-                this.leftArm.x = 5.0F;
-                this.leftArm.xRot = MathHelper.cos(ageInTicks * 0.6662F) * 0.25F;
-                this.leftArm.zRot = -2.3561945F;
-                this.leftArm.yRot = 0.0F;
+                if (!entityIn.getMainHandItem().isEmpty() && !(entityIn.getMainHandItem().getItem() instanceof ShootableItem)) {
+                    if (entityIn.getMainArm() == HandSide.RIGHT) {
+                        ModelHelper.swingWeaponDown(this.rightArm, this.leftArm, entityIn, this.attackTime, ageInTicks);
+                    } else {
+                        ModelHelper.swingWeaponDown(this.leftArm, this.rightArm, entityIn, this.attackTime, ageInTicks);
+                    }
+                }
+                if (entityIn.getMainArm() == HandSide.RIGHT){
+                    this.leftArm.z = 0.0F;
+                    this.leftArm.x = 5.0F;
+                    this.leftArm.xRot = MathHelper.cos(ageInTicks * 0.6662F) * 0.25F;
+                    this.leftArm.zRot = -2.3561945F;
+                    this.leftArm.yRot = 0.0F;
+                } else {
+                    this.rightArm.z = 0.0F;
+                    this.rightArm.x = -5.0F;
+                    this.rightArm.xRot = MathHelper.cos(ageInTicks * 0.6662F) * 0.25F;
+                    this.rightArm.zRot = 2.3561945F;
+                    this.rightArm.yRot = 0.0F;
+                }
                 break;
             case BOW_AND_ARROW:
                 this.rightArm.yRot = -0.1F + this.head.yRot;
                 this.leftArm.yRot = 0.1F + this.head.yRot + 0.4F;
                 this.rightArm.xRot = (-(float)Math.PI / 2F) + this.head.xRot;
                 this.leftArm.xRot = (-(float)Math.PI / 2F) + this.head.xRot;
+                break;
+            case THROW_SPEAR:
+                if (entityIn.getMainArm() == HandSide.RIGHT) {
+                    this.rightArm.xRot = this.rightArm.xRot * 0.5F - (float)Math.PI;
+                    this.rightArm.yRot = 0.0F;
+                } else {
+                    this.leftArm.xRot = this.leftArm.xRot * 0.5F - (float)Math.PI;
+                    this.leftArm.yRot = 0.0F;
+                }
                 break;
             case CROSSBOW_CHARGE:
                 ModelHelper.animateCrossbowCharge(this.rightArm, this.leftArm, entityIn, true);
@@ -167,6 +191,16 @@ public class AbstractCultistModel<T extends AbstractCultistEntity> extends Biped
                 this.leftArm.zRot = -2.3561945F;
                 this.rightArm.yRot = 0.0F;
                 this.leftArm.yRot = 0.0F;
+        }
+
+        if (this.leftArmPose == BipedModel.ArmPose.THROW_SPEAR) {
+            this.leftArm.xRot = this.leftArm.xRot * 0.5F - (float)Math.PI;
+            this.leftArm.yRot = 0.0F;
+        }
+
+        if (this.rightArmPose == BipedModel.ArmPose.THROW_SPEAR) {
+            this.rightArm.xRot = this.rightArm.xRot * 0.5F - (float)Math.PI;
+            this.rightArm.yRot = 0.0F;
         }
 
         boolean flag = abstractprotectorentity$armpose == AbstractCultistEntity.ArmPose.CROSSED;
@@ -200,6 +234,13 @@ public class AbstractCultistModel<T extends AbstractCultistEntity> extends Biped
                 this.leftArmPose = BipedModel.ArmPose.BOW_AND_ARROW;
             }
         }
+        if (itemstack.getItem() instanceof SpearItem && entityIn.isAggressive()) {
+            if (entityIn.getMainArm() == HandSide.RIGHT) {
+                this.rightArmPose = BipedModel.ArmPose.THROW_SPEAR;
+            } else {
+                this.leftArmPose = BipedModel.ArmPose.THROW_SPEAR;
+            }
+        }
         super.prepareMobModel(entityIn, limbSwing, limbSwingAmount, partialTick);
     }
 
@@ -216,6 +257,9 @@ public class AbstractCultistModel<T extends AbstractCultistEntity> extends Biped
                     break;
                 case BOW:
                     this.rightArmPose = BipedModel.ArmPose.BOW_AND_ARROW;
+                    break;
+                case SPEAR:
+                    this.rightArmPose = ArmPose.THROW_SPEAR;
                     break;
                 default:
                     this.rightArmPose = BipedModel.ArmPose.EMPTY;
@@ -240,6 +284,9 @@ public class AbstractCultistModel<T extends AbstractCultistEntity> extends Biped
                     break;
                 case BOW:
                     this.leftArmPose = BipedModel.ArmPose.BOW_AND_ARROW;
+                    break;
+                case SPEAR:
+                    this.leftArmPose = ArmPose.THROW_SPEAR;
                     break;
                 default:
                     this.leftArmPose = BipedModel.ArmPose.EMPTY;

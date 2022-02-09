@@ -20,6 +20,8 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> CrippleCost;
     public static final ForgeConfigSpec.ConfigValue<Integer> SpiderlingCost;
     public static final ForgeConfigSpec.ConfigValue<Integer> BrainEaterCost;
+    public static final ForgeConfigSpec.ConfigValue<Integer> TeleportCost;
+    public static final ForgeConfigSpec.ConfigValue<Integer> SoulSkullCost;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> VexDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> FangDuration;
@@ -135,6 +137,10 @@ public class FNBConfig {
                 .defineInRange("braincost", 5, 0, 1000000);
         BrainEaterXPCost = BUILDER.comment("How much Experience the above spell Cost per heal, Default: 10")
                 .defineInRange("brainxpcost", 10, 0, 1000);
+        TeleportCost = BUILDER.comment("Teleport Spell Cost, Default: 5")
+                .defineInRange("teleportcost", 5, 0, 1000000);
+        SoulSkullCost = BUILDER.comment("Soul Skull Spell Cost, Default: 25")
+                .defineInRange("soulskullcost", 25, 0, 1000000);
         BUILDER.pop();
         BUILDER.push("Casting Time");
         VexDuration = BUILDER.comment("Time to cast Vex Spell, Default: 100")

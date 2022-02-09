@@ -1,8 +1,6 @@
 package com.Polarice3.FireNBlood.tileentities;
 
-import com.Polarice3.FireNBlood.blocks.FangTotemBlock;
 import com.Polarice3.FireNBlood.blocks.MutateTotemBlock;
-import com.Polarice3.FireNBlood.entities.hostile.ScorchEntity;
 import com.Polarice3.FireNBlood.entities.neutral.*;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.particles.ModParticleTypes;
@@ -13,22 +11,17 @@ import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.passive.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.EvokerFangsEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 

@@ -107,6 +107,10 @@ public class SkeletonMinionEntity extends SummonedEntity implements IRangedAttac
         this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BOW));
     }
 
+    public boolean canBeAffected(EffectInstance potioneffectIn) {
+        return potioneffectIn.getEffect() != RegistryHandler.HOSTED.get();
+    }
+
     public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
         spawnDataIn = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
         float f = difficultyIn.getSpecialMultiplier();

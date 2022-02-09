@@ -31,7 +31,7 @@ public class CrippleSpell extends Spells{
         return SoundEvents.ILLUSIONER_PREPARE_BLINDNESS;
     }
 
-    public ItemStack WandResult(World worldIn, LivingEntity entityLiving) {
+    public void WandResult(World worldIn, LivingEntity entityLiving) {
         for(LivingEntity entity : worldIn.getEntitiesOfClass(LivingEntity.class, entityLiving.getBoundingBox().inflate(8.0D), field_213690_b)) {
             if (!(entity == entityLiving)) {
                 entity.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 1800));
@@ -52,7 +52,6 @@ public class CrippleSpell extends Spells{
         for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
             entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         }
-        return null;
     }
 
     public void StaffResult(World worldIn, LivingEntity entityLiving) {
