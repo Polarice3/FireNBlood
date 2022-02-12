@@ -7,6 +7,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.UseAction;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.ActionResult;
@@ -26,6 +27,7 @@ public class DarkScrollItem extends Item {
         worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.RAID_HORN, SoundCategory.NEUTRAL, 1.0F, 1.0F);
         VizierEntity vizier = new VizierEntity(ModEntityType.VIZIER.get(), worldIn);
         vizier.setPos(entityLiving.getX(), entityLiving.getY(), entityLiving.getZ());
+        vizier.setItemInHand(Hand.MAIN_HAND, new ItemStack(Items.IRON_SWORD));
         worldIn.addFreshEntity(vizier);
         stack.setCount(0);
         return stack;

@@ -33,7 +33,7 @@ public class RoarSpell extends Spells {
     public void WandResult(World worldIn, LivingEntity entityLiving) {
         for(Entity entity : worldIn.getEntitiesOfClass(LivingEntity.class, entityLiving.getBoundingBox().inflate(8.0D), field_213690_b)) {
             if (!(entity == entityLiving)) {
-                entity.hurt(DamageSource.mobAttack(entityLiving), 8.0F);
+                entity.hurt(DamageSource.mobAttack(entityLiving), 2.0F);
                 this.launch(entity, entityLiving);
             }
 
@@ -56,7 +56,7 @@ public class RoarSpell extends Spells {
     public void StaffResult(World worldIn, LivingEntity entityLiving) {
         for(Entity entity : worldIn.getEntitiesOfClass(LivingEntity.class, entityLiving.getBoundingBox().inflate(16.0D), field_213690_b)) {
             if (!(entity == entityLiving)) {
-                entity.hurt(DamageSource.mobAttack(entityLiving), 16.0F);
+                entity.hurt(DamageSource.mobAttack(entityLiving), 4.0F);
                 this.superlaunch(entity, entityLiving);
             }
 

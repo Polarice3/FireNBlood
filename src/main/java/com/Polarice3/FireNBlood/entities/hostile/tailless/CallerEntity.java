@@ -124,6 +124,7 @@ public class CallerEntity extends AbstractTaillessEntity implements IChargeableM
                 entity.addEffect(effectinstance);
             }
         }
+        this.dropCustomDeathLoot(cause, 0, false);
     }
 
     protected void customServerAiStep(){
@@ -152,7 +153,11 @@ public class CallerEntity extends AbstractTaillessEntity implements IChargeableM
 
     protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
         super.dropCustomDeathLoot(source, looting, recentlyHitIn);
-        this.spawnAtLocation(RegistryHandler.RIFTSHARD.get());
+        ItemEntity itementity = this.spawnAtLocation(RegistryHandler.RIFTSHARD.get());
+        if (itementity != null) {
+            itementity.setExtendedLifetime();
+            itementity.fireImmune();
+        }
     }
 
     private final EntityPredicate mobs = (new EntityPredicate().range(64.0D));

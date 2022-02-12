@@ -1,17 +1,20 @@
 package com.Polarice3.FireNBlood.spells;
 
 import com.Polarice3.FireNBlood.FNBConfig;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.EnderTeleportEvent;
+
+import javax.annotation.Nullable;
 
 public class TeleportSpell extends InstantCastSpells{
 
@@ -27,34 +30,49 @@ public class TeleportSpell extends InstantCastSpells{
 
     @Override
     public void WandResult(World worldIn, LivingEntity entityLiving) {
-        PlayerEntity playerEntity = (PlayerEntity) entityLiving;
-        RayTraceResult rayTraceResult = rayTrace(worldIn, playerEntity, RayTraceContext.FluidMode.NONE);
-        Vector3d vector3d = rayTraceResult.getLocation();
-        playerEntity.teleportTo(vector3d.x, vector3d.y, vector3d.z);
+        PlayerEntity player = (PlayerEntity) entityLiving;
+        RayTraceResult trace = player.pick(32, 0, true);
+        BlockRayTraceResult blockRayTraceResult = (BlockRayTraceResult) trace;
+        Direction face = blockRayTraceResult.getDirection();
+        BlockPos newPos = blockRayTraceResult.getBlockPos().relative(face);
+        enderTeleportEvent(entityLiving, worldIn, newPos);
         worldIn.playSound(null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), CastingSound(), SoundCategory.PLAYERS, 1.0F, 1.0F);
     }
 
     @Override
     public void StaffResult(World worldIn, LivingEntity entityLiving) {
-        PlayerEntity playerEntity = (PlayerEntity) entityLiving;
-        RayTraceResult rayTraceResult = rayTrace(worldIn, playerEntity, RayTraceContext.FluidMode.NONE);
-        Vector3d vector3d = rayTraceResult.getLocation();
-        playerEntity.teleportTo(vector3d.x, vector3d.y, vector3d.z);
+        PlayerEntity player = (PlayerEntity) entityLiving;
+        RayTraceResult trace = player.pick(64, 0, true);
+        BlockRayTraceResult blockRayTraceResult = (BlockRayTraceResult) trace;
+        Direction face = blockRayTraceResult.getDirection();
+        BlockPos newPos = blockRayTraceResult.getBlockPos().relative(face);
+        enderTeleportEvent(entityLiving, worldIn, newPos);
         worldIn.playSound(null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), CastingSound(), SoundCategory.PLAYERS, 1.0F, 1.0F);
     }
 
-    protected static BlockRayTraceResult rayTrace(World worldIn, PlayerEntity player, RayTraceContext.FluidMode fluidMode) {
-        float f = player.xRot;
-        float f1 = player.yRot;
-        Vector3d vector3d = player.getEyePosition(1.0F);
-        float f2 = MathHelper.cos(-f1 * ((float)Math.PI / 180F) - (float)Math.PI);
-        float f3 = MathHelper.sin(-f1 * ((float)Math.PI / 180F) - (float)Math.PI);
-        float f4 = -MathHelper.cos(-f * ((float)Math.PI / 180F));
-        float f5 = MathHelper.sin(-f * ((float)Math.PI / 180F));
-        float f6 = f3 * f4 * 8;
-        float f7 = f2 * f4 * 8;
-        double d0 = player.getAttribute(net.minecraftforge.common.ForgeMod.REACH_DISTANCE.get()).getValue();
-        Vector3d vector3d1 = vector3d.add((double)f6 * d0, (double)f5 * d0, (double)f7 * d0);
-        return worldIn.clip(new RayTraceContext(vector3d, vector3d1, RayTraceContext.BlockMode.OUTLINE, fluidMode, player));
+    public static void enderTeleportEvent(LivingEntity player, World world, BlockPos target) {
+        enderTeleportEvent(player, world, target.getX() + .5F, target.getY() + .5F, target.getZ() + .5F);
     }
+
+    private static void enderTeleportEvent(LivingEntity player, World world, double x, double y, double z) {
+        EnderTeleportEvent event = new EnderTeleportEvent(player, x, y, z, 0);
+        boolean wasCancelled = MinecraftForge.EVENT_BUS.post(event);
+        if (!wasCancelled) {
+            teleportWallSafe(player, world, event.getTargetX(), event.getTargetY(), event.getTargetZ());
+        }
+    }
+
+    private static void teleportWallSafe(LivingEntity player, World world, double x, double y, double z) {
+        BlockPos coords = new BlockPos(x, y, z);
+        world.getChunk(coords).setUnsaved(true);
+        player.moveTo(x, y, z);
+        moveEntityWallSafe(player, world);
+    }
+
+    public static void moveEntityWallSafe(Entity entity, World world) {
+        while (!world.noCollision(entity)) {
+            entity.moveTo(entity.xo, entity.yo + 1.0D, entity.zo);
+        }
+    }
+
 }

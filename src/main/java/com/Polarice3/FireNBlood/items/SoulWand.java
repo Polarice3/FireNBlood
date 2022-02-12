@@ -231,6 +231,9 @@ public class SoulWand extends Item{
         } else if (getFocus(itemStack).getTag().getString(FOCUS).contains("soulskull")) {
             this.setSpellConditions(new SoulSkullSpell(), itemStack);
             this.setSpell(9, itemStack);
+        } else if (getFocus(itemStack).getTag().getString(FOCUS).contains("feast")) {
+            this.setSpellConditions(new FeastSpell(), itemStack);
+            this.setSpell(10, itemStack);
         }
     }
 

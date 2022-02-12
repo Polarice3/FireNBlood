@@ -29,6 +29,8 @@ public class CastSpells {
                 return new TeleportSpell();
             case 9:
                 return new SoulSkullSpell();
+            case 10:
+                return new FeastSpell();
             default:
                 return null;
         }

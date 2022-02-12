@@ -48,9 +48,9 @@ public class CrippleSpell extends Spells{
             double d2 = worldIn.random.nextGaussian() * 0.2D;
             entityLiving.level.addParticle(ParticleTypes.WITCH, vector3d.x, vector3d.y, vector3d.z, d0, d1, d2);
         }
-        worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.GENERIC_EXPLODE, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+        worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.ZOMBIE_VILLAGER_CONVERTED, SoundCategory.NEUTRAL, 1.0F, 1.0F);
         for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
-            entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
+            entityLiving.level.addParticle(ParticleTypes.DRAGON_BREATH, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         }
     }
 
@@ -71,9 +71,9 @@ public class CrippleSpell extends Spells{
             double d2 = worldIn.random.nextGaussian() * 0.2D;
             entityLiving.level.addParticle(ParticleTypes.WITCH, vector3d.x, vector3d.y, vector3d.z, d0, d1, d2);
         }
-        worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.GENERIC_EXPLODE, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+        worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.ZOMBIE_VILLAGER_CONVERTED, SoundCategory.NEUTRAL, 1.0F, 1.0F);
         for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
-            entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
+            entityLiving.level.addParticle(ParticleTypes.DRAGON_BREATH, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         }
     }
 

@@ -20,6 +20,7 @@ public class CursedTotemFeature extends Feature<NoFeatureConfig> {
     private final BlockState cursedtotem = RegistryHandler.CURSED_TOTEM_BLOCK.get().defaultBlockState();
     private final BlockState fanghead = RegistryHandler.FANG_TOTEM.get().defaultBlockState();
     private final BlockState mutatehead = RegistryHandler.MUTATE_TOTEM.get().defaultBlockState();
+    private final BlockState undeadhead = RegistryHandler.UNDEAD_TOTEM.get().defaultBlockState();
 
     public CursedTotemFeature(Codec<NoFeatureConfig> codec) {
         super(codec);
@@ -27,7 +28,7 @@ public class CursedTotemFeature extends Feature<NoFeatureConfig> {
 
     public boolean place(ISeedReader reader, ChunkGenerator generator, Random random, BlockPos pos, NoFeatureConfig config) {
         int h = random.nextInt(3) + 3;
-        int totem = random.nextInt(2);
+        int totem = random.nextInt(3);
 
         reader.setBlock(pos.offset(0, -1, 0), this.cursedtiles, 2);
 
@@ -35,10 +36,15 @@ public class CursedTotemFeature extends Feature<NoFeatureConfig> {
             reader.setBlock(pos.offset(0, t, 0), this.cursedtotem, 2);
         }
 
-        if (totem == 1){
-            reader.setBlock(pos.offset(0, h, 0), this.fanghead, 2);
-        } else {
-            reader.setBlock(pos.offset(0, h, 0), this.mutatehead, 2);
+        switch (totem){
+            case 0:
+                reader.setBlock(pos.offset(0, h, 0), this.fanghead, 2);
+                break;
+            case 1:
+                reader.setBlock(pos.offset(0, h, 0), this.mutatehead, 2);
+                break;
+            case 2:
+                reader.setBlock(pos.offset(0, h, 0), this.undeadhead, 2);
         }
 
         return true;

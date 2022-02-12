@@ -87,6 +87,7 @@ public class RegistryHandler {
     public static final RegistryObject<Item> BRAINEATERFOCUS = ITEMS.register("braineaterfocus", () -> new MagicFocusItem(FNBConfig.BrainEaterCost.get()));
     public static final RegistryObject<Item> TELEPORTFOCUS = ITEMS.register("teleportfocus", () -> new MagicFocusItem(FNBConfig.TeleportCost.get()));
     public static final RegistryObject<Item> SOULSKULLFOCUS = ITEMS.register("soulskullfocus", () -> new MagicFocusItem(FNBConfig.SoulSkullCost.get()));
+    public static final RegistryObject<Item> FEASTFOCUS = ITEMS.register("feastfocus", () -> new MagicFocusItem(FNBConfig.FeastCost.get()));
 
     //Tools
     public static final RegistryObject<Item> GOLDEN_MACE = ITEMS.register("golden_mace", GoldenMaceItem::new);
@@ -145,6 +146,7 @@ public class RegistryHandler {
     public static final RegistryObject<Block> FANG_TOTEM = BLOCKS.register("fang_totem", FangTotemBlock::new);
     public static final RegistryObject<Block> MUTATE_TOTEM = BLOCKS.register("mutation_totem", MutateTotemBlock::new);
     public static final RegistryObject<Block> TLIGHTNING_TOTEM = BLOCKS.register("tlightning_totem", TLightningTotemBlock::new);
+    public static final RegistryObject<Block> UNDEAD_TOTEM = BLOCKS.register("undead_totem", UndeadTotemBlock::new);
 //    public static final RegistryObject<Block> SOULFORGE = BLOCKS.register("soulforge", SoulForgeBlock::new);
 
     //Slabs
@@ -222,6 +224,8 @@ public class RegistryHandler {
             () -> new BlockItemBase(MUTATE_TOTEM.get()));
     public static final RegistryObject<Item> TLIGHTNING_TOTEM_ITEM = ITEMS.register("tlightning_totem",
             () -> new BlockItemBase(TLIGHTNING_TOTEM.get()));
+    public static final RegistryObject<Item> UNDEAD_TOTEM_ITEM = ITEMS.register("undead_totem",
+            () -> new BlockItemBase(UNDEAD_TOTEM.get()));
     //Effects
     public static final RegistryObject<Effect> EVIL_EYE = EFFECTS.register("evileye",
             EvilEyeEffect::new);

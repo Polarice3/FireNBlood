@@ -19,6 +19,9 @@ public class ModTileEntityType {
     public static final RegistryObject<TileEntityType<TLightningTotemTileEntity>> TLIGHTNING_TOTEM = TILEENTITY_TYPES.register("tlightning_totem",
             () -> TileEntityType.Builder.of(TLightningTotemTileEntity::new, RegistryHandler.TLIGHTNING_TOTEM.get()).build(null));
 
+    public static final RegistryObject<TileEntityType<UndeadTotemTileEntity>> UNDEAD_TOTEM = TILEENTITY_TYPES.register("undead_totem",
+            () -> TileEntityType.Builder.of(UndeadTotemTileEntity::new, RegistryHandler.UNDEAD_TOTEM.get()).build(null));
+
 /*    public static final RegistryObject<TileEntityType<SoulForgeTileEntity>> SOULFORGE = TILEENTITY_TYPES.register("soulforge",
             () -> TileEntityType.Builder.create(SoulForgeTileEntity::new, RegistryHandler.SOULFORGE.get()).build(null));*/
 }

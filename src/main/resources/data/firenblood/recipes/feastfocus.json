@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "srs",
+    "fef",
+    "sfs"
+  ],
+  "key":
+  {
+    "e":
+    {
+      "item": "firenblood:bitingfocus"
+    },
+    "f":
+    {
+      "tag": "minecraft:wool"
+    },
+    "r":
+    {
+      "tag": "firenblood:riftshard"
+    },
+    "s":
+    {
+      "item": "firenblood:savagetooth"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:feastfocus",
+    "count": 1
+  }
+}

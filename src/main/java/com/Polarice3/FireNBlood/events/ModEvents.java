@@ -188,7 +188,7 @@ public class ModEvents {
     @SubscribeEvent
     public static void onPlayerEquipment(TickEvent.PlayerTickEvent event){
         PlayerEntity player = event.player;
-        if (KeyPressed.openWandandBag()){
+        if (KeyPressed.openWandandBag() && player.getMainHandItem().getItem() instanceof SoulWand){
             SoulWand.BagonKeyPressed(player.getMainHandItem(), player);
         }
         if (KeyPressed.openWand()){

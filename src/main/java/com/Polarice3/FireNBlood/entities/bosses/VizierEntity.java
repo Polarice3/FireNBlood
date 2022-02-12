@@ -19,6 +19,7 @@ import net.minecraft.entity.monster.AbstractRaiderEntity;
 import net.minecraft.entity.monster.SpellcastingIllagerEntity;
 import net.minecraft.entity.monster.VexEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.EvokerFangsEntity;
@@ -29,6 +30,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -36,7 +39,9 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.*;
+import net.minecraft.world.raid.Raid;
 import net.minecraft.world.server.ServerBossInfo;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -121,6 +126,16 @@ public class VizierEntity extends SpellcastingIllagerEntity implements IChargeab
                 ally.hurt(DamageSource.STARVE, 200.0F);
             }
         }
+        if (cause.getEntity() != null) {
+            if (cause.getEntity() instanceof PlayerEntity){
+                PlayerEntity player = (PlayerEntity) cause.getEntity();
+                EffectInstance effectinstance = new EffectInstance(Effects.BAD_OMEN, 120000, 4, false, false, true);
+                if (!this.level.getGameRules().getBoolean(GameRules.RULE_DISABLE_RAIDS)) {
+                    player.addEffect(effectinstance);
+                }
+            }
+        }
+
         super.die(cause);
     }
 

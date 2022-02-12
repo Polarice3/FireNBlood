@@ -22,6 +22,7 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> BrainEaterCost;
     public static final ForgeConfigSpec.ConfigValue<Integer> TeleportCost;
     public static final ForgeConfigSpec.ConfigValue<Integer> SoulSkullCost;
+    public static final ForgeConfigSpec.ConfigValue<Integer> FeastCost;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> VexDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> FangDuration;
@@ -31,6 +32,7 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> CrippleDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> SpiderlingDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> BrainEaterDuration;
+    public static final ForgeConfigSpec.ConfigValue<Integer> FeastDuration;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> BrainEaterXPCost;
 
@@ -78,7 +80,7 @@ public class FNBConfig {
     static {
         BUILDER.push("General");
         MaxSouls = BUILDER.comment("Totem Maximum Soul Count, Default: 10000")
-                .defineInRange("maxSouls", 10000, 100, 1000000);
+                .defineInRange("maxSouls", 10000, 100, Integer.MAX_VALUE);
         SoulRepair = BUILDER.comment("Dark and Necro Robes repair themselves using Soul Energy, Default: true")
                 .define("soulrepair", true);
         TotemUndying = BUILDER.comment("Totem of Souls will save the Player if full of Soul Energy, Default: true")
@@ -88,7 +90,7 @@ public class FNBConfig {
         StarterTotem = BUILDER.comment("Gives Players a Totem of Souls when first entering World, Default: false")
                 .define("startertotem", false);
         CraftingSouls = BUILDER.comment("How much Souls is consumed when crafting with Totem, Default: 1")
-                .defineInRange("craftsouls", 1, 0, 1000000);
+                .defineInRange("craftsouls", 1, 0, Integer.MAX_VALUE);
         BUILDER.pop();
         BUILDER.push("Protectors");
         HiredTimer = BUILDER.comment("Hired Timer, Default: 24000")
@@ -100,47 +102,49 @@ public class FNBConfig {
         BUILDER.pop();
         BUILDER.push("Soul Taken");
         UndeadSouls = BUILDER.comment("Undead Killed, Default: 5")
-                .defineInRange("undeadsouls", 5, 0, 1000000);
+                .defineInRange("undeadsouls", 5, 0, Integer.MAX_VALUE);
         AnthropodSouls = BUILDER.comment("Anthropods Killed, Default: 5")
-                .defineInRange("anthropodsouls", 5, 0, 1000000);
+                .defineInRange("anthropodsouls", 5, 0, Integer.MAX_VALUE);
         IllagerSouls = BUILDER.comment("Illagers, Witches, Cultists, Protectors Killed, Default: 25")
-                .defineInRange("illagersouls", 25, 0, 1000000);
+                .defineInRange("illagersouls", 25, 0, Integer.MAX_VALUE);
         VillagerSouls = BUILDER.comment("Villagers Killed, Default: 50")
-                .defineInRange("villagersouls", 50, 0, 1000000);
+                .defineInRange("villagersouls", 50, 0, Integer.MAX_VALUE);
         TaillessSouls = BUILDER.comment("Tailless Killed, Default: 45")
-                .defineInRange("taillesssouls", 45, 0, 1000000);
+                .defineInRange("taillesssouls", 45, 0, Integer.MAX_VALUE);
         PiglinSouls = BUILDER.comment("Non-Undead Piglin Killed, Default: 10")
-                .defineInRange("piglinsouls", 10, 0, 1000000);
+                .defineInRange("piglinsouls", 10, 0, Integer.MAX_VALUE);
         EnderDragonSouls = BUILDER.comment("Ender Dragon Killed, Default: 1000")
-                .defineInRange("enderdragonsouls", 1000, 0, 1000000);
+                .defineInRange("enderdragonsouls", 1000, 0, Integer.MAX_VALUE);
         PlayerSouls = BUILDER.comment("Players Killed, Default: 100")
-                .defineInRange("playersouls", 100, 0, 1000000);
+                .defineInRange("playersouls", 100, 0, Integer.MAX_VALUE);
         DefaultSouls = BUILDER.comment("Others Killed, Default: 5")
-                .defineInRange("othersouls", 5, 0, 1000000);
+                .defineInRange("othersouls", 5, 0, Integer.MAX_VALUE);
         BUILDER.pop();
         BUILDER.push("Spell Costs");
         VexCost = BUILDER.comment("Vex Spell Cost, Default: 18")
-                .defineInRange("vexcost", 18, 0, 1000000);
+                .defineInRange("vexcost", 18, 0, Integer.MAX_VALUE);
         FangCost = BUILDER.comment("Fang Spell Cost, Default: 8")
-                .defineInRange("fangcost", 8, 0, 1000000);
+                .defineInRange("fangcost", 8, 0, Integer.MAX_VALUE);
         RoarCost = BUILDER.comment("Roaring Spell Cost, Default: 10")
-                .defineInRange("bitecost", 10, 0, 1000000);
+                .defineInRange("bitecost", 10, 0, Integer.MAX_VALUE);
         ZombieCost = BUILDER.comment("Necroturgy Spell Cost, Default: 5")
-                .defineInRange("zombiecost", 5, 0, 1000000);
+                .defineInRange("zombiecost", 5, 0, Integer.MAX_VALUE);
         SkeletonCost = BUILDER.comment("Osseous Spell Cost, Default: 8")
-                .defineInRange("skeletoncost", 8, 0, 1000000);
+                .defineInRange("skeletoncost", 8, 0, Integer.MAX_VALUE);
         CrippleCost = BUILDER.comment("Crippling Spell Cost, Default: 15")
-                .defineInRange("cripplecost", 15, 0, 1000000);
+                .defineInRange("cripplecost", 15, 0, Integer.MAX_VALUE);
         SpiderlingCost = BUILDER.comment("Spiderling Spell Cost per second, Default: 2")
-                .defineInRange("spiderlingcost", 2, 0, 1000000);
+                .defineInRange("spiderlingcost", 2, 0, Integer.MAX_VALUE);
         BrainEaterCost = BUILDER.comment("Brain Eater Spell Cost per second, Default: 5")
-                .defineInRange("braincost", 5, 0, 1000000);
+                .defineInRange("braincost", 5, 0, Integer.MAX_VALUE);
         BrainEaterXPCost = BUILDER.comment("How much Experience the above spell Cost per heal, Default: 10")
                 .defineInRange("brainxpcost", 10, 0, 1000);
         TeleportCost = BUILDER.comment("Teleport Spell Cost, Default: 5")
-                .defineInRange("teleportcost", 5, 0, 1000000);
-        SoulSkullCost = BUILDER.comment("Soul Skull Spell Cost, Default: 25")
-                .defineInRange("soulskullcost", 25, 0, 1000000);
+                .defineInRange("teleportcost", 5, 0, Integer.MAX_VALUE);
+        SoulSkullCost = BUILDER.comment("Soul Skull Spell Cost, Default: 16")
+                .defineInRange("soulskullcost", 16, 0, Integer.MAX_VALUE);
+        FeastCost = BUILDER.comment("Feasting Spell Cost, Default: 8")
+                .defineInRange("feastcost", 8, 0, Integer.MAX_VALUE);
         BUILDER.pop();
         BUILDER.push("Casting Time");
         VexDuration = BUILDER.comment("Time to cast Vex Spell, Default: 100")
@@ -159,6 +163,8 @@ public class FNBConfig {
                 .defineInRange("spiderlingtime", 20, 0, 72000);
         BrainEaterDuration = BUILDER.comment("Time to cast Brain Eater Spell per second, Default: 20")
                 .defineInRange("braineatertime", 20, 0, 72000);
+        FeastDuration = BUILDER.comment("Time to cast Feasting Spell per second, Default: 20")
+                .defineInRange("feasttime", 20, 0, 72000);
         BUILDER.pop();
         BUILDER.push("Summon Down Duration");
         VexCooldown = BUILDER.comment("Vex Spell Cooldown, Default: 340")
