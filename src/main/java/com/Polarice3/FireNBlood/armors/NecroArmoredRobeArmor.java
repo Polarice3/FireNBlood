@@ -45,7 +45,7 @@ public class NecroArmoredRobeArmor extends ArmorItem {
                 if (stack.getTag().getInt(COOL) > 20) {
                     stack.getTag().putInt(COOL, 0);
                     GoldTotemItem.decreaseSouls(foundStack, 1);
-                    stack.setDamageValue(stack.getDamageValue() - 1);
+                    stack.setDamageValue(stack.getDamageValue() - FNBConfig.NecroArmoredRobeRepairAmount.get());
                 }
             }
         }

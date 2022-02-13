@@ -1,15 +1,25 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "ingredients": [
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "sss",
+    "sts",
+    "sss"
+  ],
+  "key":
+  {
+    "s":
     {
       "item": "minecraft:stone"
     },
+    "t":
     {
       "item": "firenblood:goldtotem"
     }
-  ],
-  "result": {
+  },
+  "result":
+  {
     "item": "firenblood:cursed_stone",
-    "count": 1
+    "count": 8
   }
 }

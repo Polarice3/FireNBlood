@@ -28,7 +28,6 @@ import com.mojang.serialization.Codec;
 import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -210,6 +209,10 @@ public class FireNBlood
         });
 
         DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.DISCIPLE.get(), DiscipleEntity.setCustomAttributes().build());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.APOSTLE.get(), ApostleEntity.setCustomAttributes().build());
         });
 
@@ -334,6 +337,16 @@ public class FireNBlood
                 event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_DARKMANOR);
             }
         }
+        if (FNBConfig.CursedGraveyardGen.get()) {
+            if (event.getCategory() == Biome.Category.FOREST
+                    || event.getCategory() == Biome.Category.SAVANNA
+                    || event.getCategory() == Biome.Category.TAIGA
+                    || event.getCategory() == Biome.Category.PLAINS
+                    || event.getCategory() == Biome.Category.EXTREME_HILLS
+                    || event.getCategory() == Biome.Category.SWAMP) {
+                event.getGeneration().getStructures().add(() -> ConfiguredStructures.CONFIGURED_CURSED_GRAVEYARD);
+            }
+        }
         if (FNBConfig.TotemGen.get()) {
             if (event.getCategory() != Biome.Category.THEEND
                     && event.getCategory() != Biome.Category.MUSHROOM
@@ -372,6 +385,7 @@ public class FireNBlood
             tempMap.putIfAbsent(RegistryStructures.PROFANEDSHRINE.get(), DimensionStructuresSettings.DEFAULTS.get(RegistryStructures.PROFANEDSHRINE.get()));
             tempMap.putIfAbsent(RegistryStructures.DARKMANOR.get(), DimensionStructuresSettings.DEFAULTS.get(RegistryStructures.DARKMANOR.get()));
             tempMap.putIfAbsent(RegistryStructures.PORTAL_OUTPOST.get(), DimensionStructuresSettings.DEFAULTS.get(RegistryStructures.PORTAL_OUTPOST.get()));
+            tempMap.putIfAbsent(RegistryStructures.CURSED_GRAVEYARD.get(), DimensionStructuresSettings.DEFAULTS.get(RegistryStructures.CURSED_GRAVEYARD.get()));
 
             serverWorld.getChunkSource().generator.getSettings().structureConfig = tempMap;
         }

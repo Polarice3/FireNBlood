@@ -1,15 +1,45 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "ingredients": [
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "rip",
+    "itg",
+    "sgb"
+  ],
+  "key":
+  {
+    "r":
+    {
+      "item": "minecraft:rotten_flesh"
+    },
+    "s":
+    {
+      "item": "minecraft:spider_eye"
+    },
+    "b":
+    {
+      "item": "minecraft:bone"
+    },
+    "p":
+    {
+      "item": "minecraft:gunpowder"
+    },
+    "i":
     {
       "item": "minecraft:iron_ingot"
     },
+    "g":
+    {
+      "item": "minecraft:gold_ingot"
+    },
+    "t":
     {
       "item": "firenblood:goldtotem"
     }
-  ],
-  "result": {
+  },
+  "result":
+  {
     "item": "firenblood:cursed_ingot",
-    "count": 1
+    "count": 4
   }
 }

@@ -4,7 +4,7 @@ import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.client.model.ACArmorModel;
 import com.Polarice3.FireNBlood.client.model.AbstractCultistModel;
 import com.Polarice3.FireNBlood.entities.hostile.cultists.ApostleEntity;
-import com.Polarice3.FireNBlood.entities.hostile.cultists.ZealotEntity;
+import com.Polarice3.FireNBlood.entities.hostile.cultists.DiscipleEntity;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.layers.BipedArmorLayer;
 import net.minecraft.client.renderer.entity.layers.HeldItemLayer;

@@ -647,20 +647,18 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
         }
 
         protected int getCastingInterval() {
-            return 400;
+            return 340;
         }
 
         protected void castSpell() {
-            ServerWorld serverworld = (ServerWorld)HexerEntity.this.level;
 
             for(int i = 0; i < 2; ++i) {
                 BlockPos blockpos = HexerEntity.this.blockPosition().offset(-2 + HexerEntity.this.random.nextInt(5), 0, -2 + HexerEntity.this.random.nextInt(5));
-                MirageEntity mirageEntity = ModEntityType.MIRAGE.get().create(HexerEntity.this.level);
-                assert mirageEntity != null;
-                mirageEntity.finalizeSpawn(serverworld, HexerEntity.this.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData)null, (CompoundNBT)null);
+                MirageEntity mirageEntity = new MirageEntity(ModEntityType.MIRAGE.get(), HexerEntity.this.level);
+                mirageEntity.setPos(blockpos.getX(), blockpos.getY(), blockpos.getZ());
                 mirageEntity.setOwner(HexerEntity.this);
                 mirageEntity.setLimitedLife(10 * (15 + HexerEntity.this.random.nextInt(45)));
-                serverworld.addFreshEntityWithPassengers(mirageEntity);
+                ((ServerWorld) HexerEntity.this.level).addFreshEntityWithPassengers(mirageEntity);
             }
 
         }

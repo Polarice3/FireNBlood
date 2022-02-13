@@ -19,15 +19,27 @@ import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class DarkRobeArmor extends ArmorItem {
+public class WanderBootsArmor extends ArmorItem {
+    private static final UUID BOOTS_UUID = UUID.fromString("f46dd333-63a3-4c3b-a5d3-065de1e226cd");
+    private static final AttributeModifier BOOTS_SPEED_MODIFIER = new AttributeModifier(BOOTS_UUID, "Wander Boots Speed bonus", 0.1D, AttributeModifier.Operation.MULTIPLY_TOTAL);
     private static final String COOL = "Cool";
+    private final Multimap<Attribute, AttributeModifier> bootsModifier;
 
-    public DarkRobeArmor(IArmorMaterial materialIn, EquipmentSlotType slot, Properties builderIn) {
-        super(materialIn, slot, builderIn);
+    public WanderBootsArmor(IArmorMaterial pMaterial, EquipmentSlotType pSlot, Properties pProperties) {
+        super(pMaterial, pSlot, pProperties);
+        ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
+        builder.put(Attributes.ARMOR, new AttributeModifier(BOOTS_UUID, "Armor modifier", (double) this.getDefense(), AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(BOOTS_UUID, "Armor toughness", (double) this.getToughness(), AttributeModifier.Operation.ADDITION));
+        if (this.knockbackResistance > 0) {
+            builder.put(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier(BOOTS_UUID, "Armor knockback resistance", (double)this.knockbackResistance, AttributeModifier.Operation.ADDITION));
+        }
+        builder.put(Attributes.MOVEMENT_SPEED, BOOTS_SPEED_MODIFIER);
+        this.bootsModifier = builder.build();
     }
 
     @Override
@@ -51,26 +63,27 @@ public class DarkRobeArmor extends ArmorItem {
                 if (stack.getTag().getInt(COOL) > 20) {
                     stack.getTag().putInt(COOL, 0);
                     GoldTotemItem.decreaseSouls(foundStack, 1);
-                    stack.setDamageValue(stack.getDamageValue() - 1);
+                    stack.setDamageValue(stack.getDamageValue() - FNBConfig.WanderBootsRepairAmount.get());
                 }
             }
         }
+        player.maxUpStep = 1.0F;
+    }
+
+    public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlotType pEquipmentSlot) {
+        return pEquipmentSlot == EquipmentSlotType.FEET ? bootsModifier : super.getDefaultAttributeModifiers(pEquipmentSlot);
     }
 
     @Nullable
     @Override
     public <A extends BipedModel<?>> A getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlotType armorSlot, A _default) {
         RobeModel model = new RobeModel(1.0F);
-        model.hat.visible = armorSlot == EquipmentSlotType.HEAD;
-        model.Body.visible = armorSlot == EquipmentSlotType.CHEST;
-        model.RightArm.visible = armorSlot == EquipmentSlotType.CHEST;
-        model.LeftArm.visible = armorSlot == EquipmentSlotType.CHEST;
+        model.RightFeet.visible = armorSlot == EquipmentSlotType.FEET;
+        model.LeftFeet.visible = armorSlot == EquipmentSlotType.FEET;
 
         model.young = _default.young;
         model.crouching = _default.crouching;
         model.riding = _default.riding;
-        model.rightArmPose = _default.rightArmPose;
-        model.leftArmPose = _default.leftArmPose;
 
         return (A) model;
     }
@@ -78,6 +91,13 @@ public class DarkRobeArmor extends ArmorItem {
     @Nullable
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlotType slot, String type) {
-        return "firenblood:textures/models/armor/darkrobearmor.png";
+        if (stack.getItem() == RegistryHandler.DARKBOOTSOFWANDER.get()){
+            return "firenblood:textures/models/armor/darkrobearmor.png";
+        } else if (stack.getItem() == RegistryHandler.NECROBOOTSOFWANDER.get()){
+            return "firenblood:textures/models/armor/necrorobearmor.png";
+        } else {
+            return "firenblood:textures/models/armor/darkrobearmor.png";
+        }
     }
+
 }

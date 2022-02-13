@@ -29,7 +29,7 @@ public class ApostleRobeModel<T extends LivingEntity> extends BipedModel<T> {
         darkrobe.setPos(0.0F, 0.0F, 0.0F);
 
         hat = new ModelRenderer(this);
-        hat.setPos(0.0F, -5.0F, 0.0F);
+        hat.setPos(0.0F, -6.0F, 0.0F);
         darkrobe.addChild(hat);
         hat.texOffs(0, 32).addBox(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F, 1.0F, false);
 

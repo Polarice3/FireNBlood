@@ -83,7 +83,7 @@ public class UndeadTotemTileEntity extends TileEntity implements ITickableTileEn
         List<LivingEntity> list = this.level.getEntitiesOfClass(LivingEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(10.0D, 10.0D, 10.0D));
         if (list.size() > 0) {
             LivingEntity livingEntity = list.get(0);
-            if (livingEntity.getMobType() == CreatureAttribute.UNDEAD) {
+            if (livingEntity.getMobType() == CreatureAttribute.UNDEAD && livingEntity.getActiveEffects().isEmpty()) {
                 return livingEntity;
             } else {
                 return null;
@@ -186,11 +186,12 @@ public class UndeadTotemTileEntity extends TileEntity implements ITickableTileEn
         this.playSound(SoundEvents.ILLUSIONER_PREPARE_MIRROR);
         for (LivingEntity entity : this.getLevel().getEntitiesOfClass(LivingEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(10.0D, 10.0D, 10.0D))) {
             float f = (float) MathHelper.atan2(entity.getZ() - this.getBlockPos().getZ(), entity.getX() - this.getBlockPos().getX());
-            if (entity.getMobType() == CreatureAttribute.UNDEAD){
+            if (entity.getMobType() == CreatureAttribute.UNDEAD && entity.getActiveEffects().isEmpty()){
                 entity.addEffect(new EffectInstance(Effects.REGENERATION, 900, 1));
                 entity.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 900, 1));
                 entity.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 900, 1));
                 entity.addEffect(new EffectInstance(Effects.ABSORPTION, 900, 1));
+                entity.addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 900, 1));
             }
         }
     }

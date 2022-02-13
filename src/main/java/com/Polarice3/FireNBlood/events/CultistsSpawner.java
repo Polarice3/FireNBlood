@@ -10,6 +10,7 @@ import net.minecraft.entity.monster.PatrollerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.server.ServerWorld;
@@ -77,6 +78,13 @@ public class CultistsSpawner {
                                         this.spawnWitch(world, blockpos$mutable, random);
                                     }
 
+                                    if (world.getDifficulty() == Difficulty.HARD){
+                                        blockpos$mutable.setY(world.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockpos$mutable).getY());
+                                        blockpos$mutable.setX(blockpos$mutable.getX() + random.nextInt(5) - random.nextInt(5));
+                                        blockpos$mutable.setZ(blockpos$mutable.getZ() + random.nextInt(5) - random.nextInt(5));
+                                        this.spawnApostle(world, blockpos$mutable, random);
+                                    }
+
                                     return i1;
                                 }
                             }
@@ -106,7 +114,7 @@ public class CultistsSpawner {
                     entity = ModEntityType.ZEALOT.get().create(worldIn);
                     break;
                 case 2:
-                    entity = ModEntityType.APOSTLE.get().create(worldIn);
+                    entity = ModEntityType.DISCIPLE.get().create(worldIn);
                     break;
             }
             PatrollerEntity patrollerentity = entity;
@@ -131,6 +139,26 @@ public class CultistsSpawner {
         } else {
             int random1 = worldIn.random.nextInt(2);
             PatrollerEntity patrollerentity = random1 == 0 ? ModEntityType.CHANNELLER.get().create(worldIn): EntityType.WITCH.create(worldIn);
+            if (patrollerentity != null) {
+                patrollerentity.setPos((double)p_222695_2_.getX(), (double)p_222695_2_.getY(), (double)p_222695_2_.getZ());
+                if(net.minecraftforge.common.ForgeHooks.canEntitySpawn(patrollerentity, worldIn, p_222695_2_.getX(), p_222695_2_.getY(), p_222695_2_.getZ(), null, SpawnReason.PATROL) == -1) return false;
+                patrollerentity.finalizeSpawn(worldIn, worldIn.getCurrentDifficultyAt(p_222695_2_), SpawnReason.PATROL, (ILivingEntityData)null, (CompoundNBT)null);
+                worldIn.addFreshEntityWithPassengers(patrollerentity);
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private boolean spawnApostle(ServerWorld worldIn, BlockPos p_222695_2_, Random random) {
+        BlockState blockstate = worldIn.getBlockState(p_222695_2_);
+        if (!WorldEntitySpawner.isValidEmptySpawnBlock(worldIn, p_222695_2_, blockstate, blockstate.getFluidState(), ModEntityType.APOSTLE.get())) {
+            return false;
+        } else if (!PatrollerEntity.checkPatrollingMonsterSpawnRules(ModEntityType.APOSTLE.get(), worldIn, SpawnReason.PATROL, p_222695_2_, random)) {
+            return false;
+        } else {
+            PatrollerEntity patrollerentity = ModEntityType.APOSTLE.get().create(worldIn);
             if (patrollerentity != null) {
                 patrollerentity.setPos((double)p_222695_2_.getX(), (double)p_222695_2_.getY(), (double)p_222695_2_.getZ());
                 if(net.minecraftforge.common.ForgeHooks.canEntitySpawn(patrollerentity, worldIn, p_222695_2_.getX(), p_222695_2_.getY(), p_222695_2_.getZ(), null, SpawnReason.PATROL) == -1) return false;

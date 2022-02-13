@@ -75,6 +75,8 @@ public class RegistryHandler {
     public static final RegistryObject<MutatedPorkchopItem> MUTATED_PORKCHOP = ITEMS.register("mutatedporkchop", MutatedPorkchopItem::new);
     public static final RegistryObject<UncookedMutatedItem> MUTATED_RABBIT_UNCOOKED = ITEMS.register("mutatedrabbit_uncooked", UncookedMutatedItem::new);
     public static final RegistryObject<MutatedRabbitItem> MUTATED_RABBIT = ITEMS.register("mutatedrabbit", MutatedRabbitItem::new);
+    public static final RegistryObject<Item> DARKFABRIC = ITEMS.register("darkfabric", ItemBase::new);
+    public static final RegistryObject<Item> MAGICFABRIC = ITEMS.register("magicfabric", ItemBase::new);
     //Focuses
     public static final RegistryObject<Item> FOCUSBAG = ITEMS.register("focusbag", FocusBagItem::new);
     public static final RegistryObject<Item> VEXINGFOCUS = ITEMS.register("vexingfocus", () -> new MagicFocusItem(FNBConfig.VexCost.get()));
@@ -118,10 +120,14 @@ public class RegistryHandler {
             new DarkRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.HEAD, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> DARKROBE = ITEMS.register("darkrobe", () ->
             new DarkRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.CHEST, new Item.Properties().tab(FireNBlood.TAB)));
+    public static final RegistryObject<Item> DARKBOOTSOFWANDER = ITEMS.register("darkbootsofwander", () ->
+            new WanderBootsArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.FEET, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> NECROHELM = ITEMS.register("necrohelm", () ->
             new NecroRobeArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.HEAD, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> NECROROBE = ITEMS.register("necrorobe", () ->
             new NecroRobeArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.CHEST, new Item.Properties().tab(FireNBlood.TAB)));
+    public static final RegistryObject<Item> NECROBOOTSOFWANDER = ITEMS.register("necrobootsofwander", () ->
+            new WanderBootsArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.FEET, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> DARKARMOREDHELM = ITEMS.register("darkarmoredhelm", () ->
             new DarkArmoredRobeArmor(ModArmorMaterial.DARKARMOREDMAGE, EquipmentSlotType.HEAD, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> DARKARMOREDROBE = ITEMS.register("darkarmoredrobe", () ->
@@ -134,6 +140,10 @@ public class RegistryHandler {
             new ApostleRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.HEAD, new Item.Properties()));
     public static final RegistryObject<Item> APOSTLEROBE = ITEMS.register("apostlerobe", () ->
             new ApostleRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.CHEST, new Item.Properties()));
+    public static final RegistryObject<Item> APOSTLEARMOREDHELM = ITEMS.register("apostlearmoredhelm", () ->
+            new ApostleArmoredRobeArmor(ModArmorMaterial.DARKARMOREDMAGE, EquipmentSlotType.HEAD, new Item.Properties()));
+    public static final RegistryObject<Item> APOSTLEARMOREDROBE = ITEMS.register("apostlearmoredrobe", () ->
+            new ApostleArmoredRobeArmor(ModArmorMaterial.DARKARMOREDMAGE, EquipmentSlotType.CHEST, new Item.Properties()));
     //Blocks
     public static final RegistryObject<Block> BLAZE_CORE_BLOCK = BLOCKS.register("blazecoreblock", TankCoreBlock::new);
     public static final RegistryObject<Block> PORCUS_SHRINE = BLOCKS.register("porcusshrine", PorcusShrineBlock::new);

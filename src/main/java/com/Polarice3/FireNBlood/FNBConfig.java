@@ -58,6 +58,10 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> CraftingSouls;
     public static final ForgeConfigSpec.ConfigValue<Integer> CultistSpawnFreq;
     public static final ForgeConfigSpec.ConfigValue<Integer> MRabbitMax;
+    public static final ForgeConfigSpec.ConfigValue<Integer> DarkArmoredRobeRepairAmount;
+    public static final ForgeConfigSpec.ConfigValue<Integer> NecroArmoredRobeRepairAmount;
+    public static final ForgeConfigSpec.ConfigValue<Integer> WanderBootsRepairAmount;
+    public static final ForgeConfigSpec.ConfigValue<Integer> CallerSpawnMax;
 
     public static final ForgeConfigSpec.ConfigValue<Float> HealAmount;
 
@@ -67,6 +71,7 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> SoulRepair;
     public static final ForgeConfigSpec.ConfigValue<Boolean> TotemUndying;
     public static final ForgeConfigSpec.ConfigValue<Boolean> StarterTotem;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> SoulSkullFire;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> ProfanedTowerGen;
     public static final ForgeConfigSpec.ConfigValue<Boolean> ProfanedShrineGen;
@@ -74,6 +79,7 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> DarkManorGen;
     public static final ForgeConfigSpec.ConfigValue<Boolean> PortalOutpostGen;
     public static final ForgeConfigSpec.ConfigValue<Boolean> TotemGen;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> CursedGraveyardGen;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> VizierMinion;
 
@@ -89,8 +95,8 @@ public class FNBConfig {
                 .defineInRange("maxEnchant", 3, 1, 10);
         StarterTotem = BUILDER.comment("Gives Players a Totem of Souls when first entering World, Default: false")
                 .define("startertotem", false);
-        CraftingSouls = BUILDER.comment("How much Souls is consumed when crafting with Totem, Default: 1")
-                .defineInRange("craftsouls", 1, 0, Integer.MAX_VALUE);
+        CraftingSouls = BUILDER.comment("How much Souls is consumed when crafting with Totem, Default: 20")
+                .defineInRange("craftsouls", 20, 0, Integer.MAX_VALUE);
         BUILDER.pop();
         BUILDER.push("Protectors");
         HiredTimer = BUILDER.comment("Hired Timer, Default: 24000")
@@ -195,12 +201,24 @@ public class FNBConfig {
                 .define("darkmanorgen", true);
         PortalOutpostGen = BUILDER.comment("Portal Outpost Generates in the World, Default: true")
                 .define("portaloutpostgen", true);
+        CursedGraveyardGen = BUILDER.comment("Cursed Graveyard Generates in the World, Default: true")
+                .define("cursedgraveyardgen", true);
         TotemGen = BUILDER.comment("Totems Generates in the World, Default: true")
                 .define("totemgen", true);
         BUILDER.pop();
         BUILDER.push("Misc");
         VizierMinion = BUILDER.comment("Viziers spawn Vexes instead of Irks, Default: false")
                 .define("vizierminion", false);
+        DarkArmoredRobeRepairAmount = BUILDER.comment("Amount of Souls needed to repair Dark Armored Robes per second, Default: 20")
+                .defineInRange("maxSouls", 20, 1, Integer.MAX_VALUE);
+        NecroArmoredRobeRepairAmount = BUILDER.comment("Amount of Souls needed to repair Necro Armored Robes per second, Default: 20")
+                .defineInRange("maxSouls", 20, 1, Integer.MAX_VALUE);
+        WanderBootsRepairAmount = BUILDER.comment("Amount of Souls needed to repair Wander Boots per second, Default: 20")
+                .defineInRange("maxSouls", 20, 1, Integer.MAX_VALUE);
+        SoulSkullFire = BUILDER.comment("Soul Skulls when shot from Staffs sets ground aflame, Default: false")
+                .define("soulskullfire", false);
+        CallerSpawnMax = BUILDER.comment("Max Amount of mobs spawned around a Caller, Default: 60")
+                .defineInRange("callerspawnmax", 60, 1, Integer.MAX_VALUE);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }

@@ -3,12 +3,8 @@ package com.Polarice3.FireNBlood.client.model;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.model.ModelHelper;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.math.MathHelper;
 
 public class RobeModel<T extends LivingEntity> extends BipedModel<T> {
     private final ModelRenderer darkrobe;
@@ -21,8 +17,10 @@ public class RobeModel<T extends LivingEntity> extends BipedModel<T> {
     public final ModelRenderer Pauldron;
     public final ModelRenderer LeftArm;
     public final ModelRenderer Pauldron2;
-    private final ModelRenderer rightLeg;
-    private final ModelRenderer leftLeg;
+    public final ModelRenderer RightLeg;
+    public final ModelRenderer LeftLeg;
+    public final ModelRenderer RightFeet;
+    public final ModelRenderer LeftFeet;
 
     public RobeModel(float modelSize) {
         super(modelSize, 0, 64, 128);
@@ -58,7 +56,7 @@ public class RobeModel<T extends LivingEntity> extends BipedModel<T> {
         Body.setPos(0.0F, 13.0F, 0.0F);
         darkrobe.addChild(Body);
         Body.texOffs(16, 48).addBox(-4.0F, -12.0F, -2.0F, 8.0F, 24.0F, 4.0F, 1.01F, false);
-        Body.texOffs(0, 92).addBox(-5.0F, -13.0F, -4.0F, 10.0F, 16.0F, 8.0F, 0.0F, false);
+        Body.texOffs(0, 92).addBox(-5.0F, -13.0F, -4.0F, 10.0F, 6.0F, 8.0F, 0.0F, false);
 
         RightArm = new ModelRenderer(this);
         RightArm.setPos(-1.5F, 5.0F, 0.0F);
@@ -80,20 +78,32 @@ public class RobeModel<T extends LivingEntity> extends BipedModel<T> {
         LeftArm.addChild(Pauldron2);
         Pauldron2.texOffs(36, 35).addBox(-2.0F, -2.0F, -3.0F, 4.0F, 4.0F, 6.0F, 1.0F, false);
 
-        rightLeg = new ModelRenderer(this);
-        rightLeg.setPos(-1.9F, -7.0F, 0.0F);
-        darkrobe.addChild(rightLeg);
-        rightLeg.texOffs(0, 48).addBox(-2.0F, -6.0F, -2.0F, 4.0F, 12.0F, 4.0F, 1.0F, false);
+        RightLeg = new ModelRenderer(this);
+        RightLeg.setPos(-1.9F, -7.0F, 0.0F);
+        darkrobe.addChild(RightLeg);
+        RightLeg.texOffs(0, 48).addBox(-2.0F, -6.0F, -2.0F, 4.0F, 12.0F, 4.0F, 1.0F, false);
 
-        leftLeg = new ModelRenderer(this);
-        leftLeg.setPos(1.9F, -7.0F, 0.0F);
-        darkrobe.addChild(leftLeg);
-        leftLeg.texOffs(0, 48).addBox(-2.0F, -6.0F, -2.0F, 4.0F, 12.0F, 4.0F, 1.0F, true);
+        RightFeet = new ModelRenderer(this);
+        RightFeet.setPos(0.0F, 10.0F, 0.0F);
+        RightLeg.addChild(RightFeet);
+        RightFeet.texOffs(0, 64).addBox(-2.0F, -2.0F, -2.0F, 4.0F, 4.0F, 4.0F, 1.0F, false);
+
+        LeftLeg = new ModelRenderer(this);
+        LeftLeg.setPos(1.9F, -7.0F, 0.0F);
+        darkrobe.addChild(LeftLeg);
+        LeftLeg.texOffs(0, 48).addBox(-2.0F, -6.0F, -2.0F, 4.0F, 12.0F, 4.0F, 1.0F, true);
+
+        LeftFeet = new ModelRenderer(this);
+        LeftFeet.setPos(0.2F, 10.0F, 0.0F);
+        LeftLeg.addChild(LeftFeet);
+        LeftFeet.texOffs(0, 64).addBox(-2.2F, -2.0F, -2.0F, 4.0F, 4.0F, 4.0F, 1.0F, false);
 
         this.head.addChild(hat);
         this.body.addChild(Body);
         this.leftArm.addChild(LeftArm);
         this.rightArm.addChild(RightArm);
+        this.leftLeg.addChild(LeftFeet);
+        this.rightLeg.addChild(RightFeet);
     }
 
     @Override
@@ -103,6 +113,8 @@ public class RobeModel<T extends LivingEntity> extends BipedModel<T> {
         this.Body.copyFrom(this.body);
         this.RightArm.copyFrom(this.rightArm);
         this.LeftArm.copyFrom(this.leftArm);
+        this.RightFeet.copyFrom(this.rightLeg);
+        this.LeftFeet.copyFrom(this.leftLeg);
     }
 
 

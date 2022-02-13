@@ -17,9 +17,9 @@ public enum ModArmorMaterial implements IArmorMaterial {
 
     FURRED(FireNBlood.MOD_ID + ":furred", 5, new int[] {1, 2, 3, 1}, 15,
             SoundEvents.ARMOR_EQUIP_LEATHER, 0.0F, 0.0F, () -> { return Ingredient.of(RegistryHandler.FURLEATHER.get());}),
-    DARKMAGE(FireNBlood.MOD_ID + ":darkmage", 5, new int[] {1, 2, 2, 1}, 25,
+    DARKMAGE(FireNBlood.MOD_ID + ":darkmage", 5, new int[] {2, 2, 2, 2}, 25,
             SoundEvents.ARMOR_EQUIP_LEATHER, 0.0F, 0.0F, () -> { return Ingredient.of(Items.BLACK_WOOL);}),
-    NECROTURGE(FireNBlood.MOD_ID + ":necroturge", 5, new int[] {1, 2, 2, 1}, 25,
+    NECROTURGE(FireNBlood.MOD_ID + ":necroturge", 5, new int[] {2, 2, 2, 2}, 25,
             SoundEvents.ARMOR_EQUIP_LEATHER, 0.0F, 0.0F, () -> { return Ingredient.of(Items.BONE);}),
     DARKARMOREDMAGE(FireNBlood.MOD_ID + ":darkarmoredmage", 15, new int[]{2, 5, 6, 2}, 25,
             SoundEvents.ARMOR_EQUIP_IRON, 0.0F, 0.0F, () -> {return Ingredient.of(Items.IRON_INGOT);

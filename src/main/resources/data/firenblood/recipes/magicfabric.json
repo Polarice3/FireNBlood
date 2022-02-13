@@ -2,15 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "pattern":
   [
-    "bb ",
-    "btb",
-    " b "
+    "fsf",
+    "sts",
+    "fsf"
   ],
   "key":
   {
-    "b":
+    "f":
     {
-      "item": "minecraft:bone_block"
+      "item": "minecraft:yellow_dye"
+    },
+    "s":
+    {
+      "item": "minecraft:string"
     },
     "t":
     {
@@ -19,7 +23,7 @@
   },
   "result":
   {
-    "item": "firenblood:savagetooth",
+    "item": "firenblood:magicfabric",
     "count": 1
   }
 }

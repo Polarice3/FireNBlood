@@ -207,6 +207,13 @@ public class ModEntityType {
                     .clientTrackingRange(8)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "zealot").toString()));
 
+    public static final RegistryObject<EntityType<DiscipleEntity>> DISCIPLE = ENTITY_TYPES.register("disciple",
+            () -> EntityType.Builder.of(DiscipleEntity::new, EntityClassification.MONSTER)
+                    .canSpawnFarFromPlayer()
+                    .sized(0.6F, 1.95F)
+                    .clientTrackingRange(8)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "disciple").toString()));
+
     public static final RegistryObject<EntityType<ApostleEntity>> APOSTLE = ENTITY_TYPES.register("apostle",
             () -> EntityType.Builder.of(ApostleEntity::new, EntityClassification.MONSTER)
                     .canSpawnFarFromPlayer()

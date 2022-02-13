@@ -2,28 +2,28 @@
   "type": "minecraft:crafting_shaped",
   "pattern":
   [
-    "b",
-    "c",
-    "d"
+    "fsf",
+    "sts",
+    "fsf"
   ],
   "key":
   {
-    "b":
+    "f":
     {
       "item": "minecraft:black_dye"
     },
-    "c":
+    "s":
     {
-      "item": "firenblood:magicfabric"
+      "item": "minecraft:string"
     },
-    "d":
+    "t":
     {
-      "item": "minecraft:totem_of_undying"
+      "item": "firenblood:goldtotem"
     }
   },
   "result":
   {
-    "item": "firenblood:dark_scroll",
+    "item": "firenblood:darkfabric",
     "count": 1
   }
 }

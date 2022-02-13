@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.entities.hostile.tailless;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.entities.hostile.cultists.ChannellerEntity;
 import com.Polarice3.FireNBlood.entities.projectiles.NetherBallEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
@@ -124,7 +125,6 @@ public class CallerEntity extends AbstractTaillessEntity implements IChargeableM
                 entity.addEffect(effectinstance);
             }
         }
-        this.dropCustomDeathLoot(cause, 0, false);
     }
 
     protected void customServerAiStep(){
@@ -193,7 +193,8 @@ public class CallerEntity extends AbstractTaillessEntity implements IChargeableM
         public int wave = 0;
 
         public boolean canUse() {
-            return CallerEntity.this.isAlive();
+            List<LivingEntity> list = CallerEntity.this.level.getEntitiesOfClass(LivingEntity.class, CallerEntity.this.getBoundingBox().inflate(32, 32, 32));
+            return CallerEntity.this.isAlive() && list.size() < FNBConfig.CallerSpawnMax.get();
         }
 
         public void tick() {
@@ -293,7 +294,15 @@ public class CallerEntity extends AbstractTaillessEntity implements IChargeableM
                     ++this.wave;
                     this.wavetimer = 0;
                     if (this.wave > 120) {
-                        CallerEntity.this.actuallyHurt(DamageSource.GENERIC, 8.0F);
+                        CallerEntity.this.actuallyHurt(DamageSource.STARVE, 8.0F);
+                        if (CallerEntity.this.getHealth() <= 16){
+                            ItemEntity itemEntity = CallerEntity.this.spawnAtLocation(new ItemStack(RegistryHandler.RIFTSHARD.get()));
+                            if (itemEntity != null){
+                                itemEntity.fireImmune();
+                                itemEntity.setExtendedLifetime();
+                            }
+                            CallerEntity.this.kill();
+                        }
                     }
                     if (random == a) {
                         if (CallerEntity.this.getHealth() < CallerEntity.this.getMaxHealth()/2){

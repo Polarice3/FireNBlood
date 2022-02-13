@@ -24,6 +24,7 @@ public class RegistryStructures {
     public static final RegistryObject<Structure<NoFeatureConfig>> PROFANEDSHRINE = STRUCTURES.register("profanedshrine", () -> (new ProfanedShrineStructure(NoFeatureConfig.CODEC)));
     public static final RegistryObject<Structure<NoFeatureConfig>> DARKMANOR = STRUCTURES.register("darkmanor", () -> (new DarkManorStructure(NoFeatureConfig.CODEC)));
     public static final RegistryObject<Structure<NoFeatureConfig>> PORTAL_OUTPOST = STRUCTURES.register("portal_outpost", () -> (new PortalOutpostStructure(NoFeatureConfig.CODEC)));
+    public static final RegistryObject<Structure<NoFeatureConfig>> CURSED_GRAVEYARD = STRUCTURES.register("cursed_graveyard", () -> (new CursedGraveyardStructure(NoFeatureConfig.CODEC)));
 
     public static void init(){
         STRUCTURES.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -59,6 +60,12 @@ public class RegistryStructures {
                 new StructureSeparationSettings(40,
                         20,
                         1654323456),
+                true);
+        setupMapSpacingAndLand(
+                CURSED_GRAVEYARD.get(),
+                new StructureSeparationSettings(32,
+                        5,
+                        1765434567),
                 true);
 
     }

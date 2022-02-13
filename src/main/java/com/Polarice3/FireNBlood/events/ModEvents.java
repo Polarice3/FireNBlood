@@ -13,10 +13,7 @@ import com.Polarice3.FireNBlood.utils.FocusBagFinder;
 import com.Polarice3.FireNBlood.utils.KeyPressed;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.CreatureEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.monster.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -34,6 +31,8 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
@@ -202,6 +201,30 @@ public class ModEvents {
             player.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 100));
             player.addEffect(new EffectInstance(Effects.DIG_SPEED, 100));
         }
+    }
+
+    @SubscribeEvent
+    public static void OnLivingFall(LivingFallEvent event){
+        if (event.getEntity() instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) event.getEntity();
+            if (player.getItemBySlot(EquipmentSlotType.FEET).getItem() == RegistryHandler.DARKBOOTSOFWANDER.get()
+                    || player.getItemBySlot(EquipmentSlotType.FEET).getItem() == RegistryHandler.NECROBOOTSOFWANDER.get()){
+                event.setDistance(event.getDistance()/2);
+            }
+        }
+
+    }
+
+    @SubscribeEvent
+    public static void OnLivingJump(LivingEvent.LivingJumpEvent event){
+        if (event.getEntity() instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) event.getEntity();
+            if (player.getItemBySlot(EquipmentSlotType.FEET).getItem() == RegistryHandler.DARKBOOTSOFWANDER.get()
+                    || player.getItemBySlot(EquipmentSlotType.FEET).getItem() == RegistryHandler.NECROBOOTSOFWANDER.get()){
+               player.setDeltaMovement(player.getDeltaMovement().x, 0.75, player.getDeltaMovement().z);
+            }
+        }
+
     }
 
     @SubscribeEvent

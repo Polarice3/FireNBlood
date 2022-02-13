@@ -67,6 +67,9 @@ public class ModItems {
     public static final RegistryObject<ModSpawnEggItem> ZEALOT_SPAWN_EGG = ITEMS.register("zealot_spawn_egg",
             () -> new ModSpawnEggItem(ModEntityType.ZEALOT, 0x120e0e, 0x5a0b0b, new Item.Properties().tab(FireNBlood.TAB)));
 
+    public static final RegistryObject<ModSpawnEggItem> DISCIPLE_SPAWN_EGG = ITEMS.register("disciple_spawn_egg",
+            () -> new ModSpawnEggItem(ModEntityType.DISCIPLE, 0x120e0e, 0x5a0b0b, new Item.Properties().tab(FireNBlood.TAB)));
+
     public static final RegistryObject<ModSpawnEggItem> APOSTLE_SPAWN_EGG = ITEMS.register("apostle_spawn_egg",
             () -> new ModSpawnEggItem(ModEntityType.APOSTLE, 0x120e0e, 0x5a0b0b, new Item.Properties().tab(FireNBlood.TAB)));
 

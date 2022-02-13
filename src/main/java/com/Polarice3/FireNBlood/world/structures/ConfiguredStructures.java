@@ -16,6 +16,7 @@ public class ConfiguredStructures {
     public static StructureFeature<?, ?> CONFIGURED_PROFANEDSHRINE= RegistryStructures.PROFANEDSHRINE.get().configured(NoFeatureConfig.NONE);
     public static StructureFeature<?, ?> CONFIGURED_DARKMANOR= RegistryStructures.DARKMANOR.get().configured(NoFeatureConfig.NONE);
     public static StructureFeature<?, ?> CONFIGURED_PORTAL_OUTPOST= RegistryStructures.PORTAL_OUTPOST.get().configured(NoFeatureConfig.NONE);
+    public static StructureFeature<?, ?> CONFIGURED_CURSED_GRAVEYARD= RegistryStructures.CURSED_GRAVEYARD.get().configured(NoFeatureConfig.NONE);
 
     public static void registerConfiguredStructures() {
         Registry<StructureFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_STRUCTURE_FEATURE;
@@ -29,5 +30,7 @@ public class ConfiguredStructures {
         FlatGenerationSettings.STRUCTURE_FEATURES.put(RegistryStructures.DARKMANOR.get(), CONFIGURED_DARKMANOR);
         Registry.register(registry, new ResourceLocation(FireNBlood.MOD_ID, "configured_portal_outpost"), CONFIGURED_PORTAL_OUTPOST);
         FlatGenerationSettings.STRUCTURE_FEATURES.put(RegistryStructures.PORTAL_OUTPOST.get(), CONFIGURED_PORTAL_OUTPOST);
+        Registry.register(registry, new ResourceLocation(FireNBlood.MOD_ID, "configured_cursed_graveyard"), CONFIGURED_CURSED_GRAVEYARD);
+        FlatGenerationSettings.STRUCTURE_FEATURES.put(RegistryStructures.CURSED_GRAVEYARD.get(), CONFIGURED_CURSED_GRAVEYARD);
     }
 }

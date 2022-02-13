@@ -1,6 +1,7 @@
 package com.Polarice3.FireNBlood.blocks;
 
 import com.Polarice3.FireNBlood.tileentities.FangTotemTileEntity;
+import com.Polarice3.FireNBlood.tileentities.UndeadTotemTileEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.state.BooleanProperty;
@@ -39,7 +40,7 @@ public class UndeadTotemBlock extends ContainerBlock implements IForgeBlock {
     @Nullable
     @Override
     public TileEntity newBlockEntity(IBlockReader worldIn) {
-        return new FangTotemTileEntity();
+        return new UndeadTotemTileEntity();
     }
 
     public BlockRenderType getRenderShape(BlockState state) {

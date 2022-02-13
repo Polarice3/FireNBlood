@@ -48,6 +48,7 @@ public class SoulSkullSpell extends InstantCastSpells {
         double d3 = random.nextGaussian() * 0.01D + vector3d.y;
         double d4 = random.nextGaussian() * 0.01D + vector3d.z;
         SoulSkullEntity soulSkullEntity = new SoulSkullEntity(worldIn, entityLiving, d2, d3, d4);
+        soulSkullEntity.setUpgraded(true);
         if (entityLiving.isCrouching()){
             soulSkullEntity.setDangerous(true);
         }
@@ -56,5 +57,4 @@ public class SoulSkullSpell extends InstantCastSpells {
         worldIn.addFreshEntity(soulSkullEntity);
         worldIn.playSound(null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), CastingSound(), SoundCategory.PLAYERS, 1.0F, 1.0F);
     }
-
 }

@@ -2,9 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "pattern":
   [
-    "f f",
-    "yly",
-    "fff"
+    "flf",
+    "y y",
+    "r r"
   ],
   "key":
   {
@@ -18,12 +18,16 @@
     },
     "l":
     {
-      "item": "minecraft:lapis_lazuli"
+      "item": "minecraft:leather_boots"
+    },
+    "r":
+    {
+      "item": "minecraft:rabbit_foot"
     }
   },
   "result":
   {
-    "item": "firenblood:darkrobe",
+    "item": "firenblood:darkbootsofwander",
     "count": 1
   }
 }

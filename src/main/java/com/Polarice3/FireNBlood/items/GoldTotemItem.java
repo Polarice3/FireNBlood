@@ -62,7 +62,7 @@ public class GoldTotemItem extends Item {
     public ItemStack getContainerItem(ItemStack itemStack) {
         ItemStack container = itemStack.copy();
         assert container.getTag() != null;
-        if (container.getTag().getInt(SOULSAMOUNT) > 0) {
+        if (container.getTag().getInt(SOULSAMOUNT) > FNBConfig.CraftingSouls.get()) {
             GoldTotemItem.decreaseSouls(container, FNBConfig.CraftingSouls.get());
             return container;
         } else {

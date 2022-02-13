@@ -18,6 +18,8 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.*;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.util.math.BlockPos;
@@ -57,11 +59,16 @@ public class SummonedEntity extends MonsterEntity {
         if (this.getTrueOwner() != null){
             if (this.getTrueOwner().getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.NECROHELM.get()
                     || this.getTrueOwner().getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.NECROARMOREDHELM.get()){
-                if (!(this instanceof SpiderlingMinionEntity)){
+                if (this.getMobType() == CreatureAttribute.UNDEAD){
                     this.limitedLifespan = false;
                 }
             } else if (this.limitedLifeTicks > 0){
                 this.limitedLifespan = true;
+            }
+            if (this.getTrueOwner().getItemBySlot(EquipmentSlotType.FEET).getItem() == RegistryHandler.NECROBOOTSOFWANDER.get()){
+                if (this.getMobType() == CreatureAttribute.UNDEAD){
+                    this.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 100, 1, false, false, false));
+                }
             }
         }
         if (this.getTarget() instanceof SummonedEntity){
