@@ -20,6 +20,7 @@ import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -141,9 +142,9 @@ public class SkeletonMinionEntity extends SummonedEntity implements IRangedAttac
 
     protected AbstractArrowEntity getMobArrow(ItemStack arrowStack, float distanceFactor) {
         AbstractArrowEntity abstractarrowentity = ProjectileHelper.getMobArrow(this, arrowStack, distanceFactor);
-        int random = this.level.random.nextInt(8);
+        int random = this.level.random.nextInt(4);
         if (this.isUpgraded() && abstractarrowentity instanceof ArrowEntity && random == 0) {
-            ((ArrowEntity)abstractarrowentity).addEffect(new EffectInstance(RegistryHandler.HOSTED.get(), 600));
+            ((ArrowEntity)abstractarrowentity).addEffect(new EffectInstance(Effects.WEAKNESS, 300));
         }
 
         return abstractarrowentity;

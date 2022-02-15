@@ -179,7 +179,7 @@ public class ParasiteEntity extends MonsterEntity {
         }
 
         public boolean canUse() {
-            return ParasiteEntity.this.isAttackAll() ? super.canUse() : null;
+            return ParasiteEntity.this.isAttackAll();
         }
     }
 

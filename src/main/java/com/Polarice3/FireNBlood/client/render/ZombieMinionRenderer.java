@@ -15,7 +15,7 @@ public class ZombieMinionRenderer extends BipedRenderer<ZombieMinionEntity, Zomb
 
     public ZombieMinionRenderer(EntityRendererManager entityRendererManager) {
         super(entityRendererManager, new ZombieMinionModel(0.0F, false),0.5F);
-        this.addLayer(new BipedArmorLayer<>(this, new ZombieMinionModel(0.5F, false), new ZombieMinionModel(1.0F, false)));
+        this.addLayer(new BipedArmorLayer<>(this, new ZombieMinionModel(0.5F, true), new ZombieMinionModel(1.0F, true)));
         this.addLayer(new ZombieMinionClothingLayer(this));
     }
 

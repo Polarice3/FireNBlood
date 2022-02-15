@@ -14,7 +14,7 @@ public class SkeletonMinionRenderer extends BipedRenderer<SkeletonMinionEntity, 
 
     public SkeletonMinionRenderer(EntityRendererManager renderManagerIn) {
         super(renderManagerIn, new SkeletonModel<>(), 0.5F);
-        this.addLayer(new BipedArmorLayer<>(this, new SkeletonModel(0.5F, true), new SkeletonModel(1.0F, true)));
+        this.addLayer(new BipedArmorLayer<>(this, new SkeletonModel<>(0.5F, true), new SkeletonModel<>(1.0F, true)));
         this.addLayer(new SkeletonMinionClothingLayer<>(this));
     }
 

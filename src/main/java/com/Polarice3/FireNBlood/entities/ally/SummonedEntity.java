@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.entities.ally;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.entities.hostile.ParasiteEntity;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.BlockState;
@@ -364,7 +365,7 @@ public class SummonedEntity extends MonsterEntity {
             if (--this.timeToRecalcPath <= 0) {
                 this.timeToRecalcPath = 10;
                 if (!this.summonedEntity.isLeashed() && !this.summonedEntity.isPassenger()) {
-                    if (this.summonedEntity.distanceToSqr(this.owner) >= 144.0D) {
+                    if (this.summonedEntity.distanceToSqr(this.owner) >= 144.0D && FNBConfig.UndeadTeleport.get()) {
                         this.tryToTeleportNearEntity();
                     } else {
                         this.navigation.moveTo(this.owner, this.followSpeed);

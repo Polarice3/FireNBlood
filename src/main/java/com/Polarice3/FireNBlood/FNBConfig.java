@@ -74,6 +74,8 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> TotemUndying;
     public static final ForgeConfigSpec.ConfigValue<Boolean> StarterTotem;
     public static final ForgeConfigSpec.ConfigValue<Boolean> SoulSkullFire;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> UndeadTeleport;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> VexTeleport;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> ProfanedTowerGen;
     public static final ForgeConfigSpec.ConfigValue<Boolean> ProfanedShrineGen;
@@ -225,6 +227,10 @@ public class FNBConfig {
                 .define("soulskullfire", false);
         CallerSpawnMax = BUILDER.comment("Max Amount of mobs spawned around a Caller, Default: 60")
                 .defineInRange("callerspawnmax", 60, 1, Integer.MAX_VALUE);
+        UndeadTeleport = BUILDER.comment("Whether Undead Minions can teleport to Players, Default: false")
+                .define("undeadteleport", false);
+        VexTeleport = BUILDER.comment("Whether Vex Minions can teleport to Players, Default: true")
+                .define("vexteleport", true);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }

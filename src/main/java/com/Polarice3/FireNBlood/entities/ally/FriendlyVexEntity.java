@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.entities.ally;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.entities.neutral.MinionEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
@@ -465,7 +466,7 @@ public class FriendlyVexEntity extends MinionEntity {
                         }
                     }
                 }
-                if (this.summonedEntity.distanceToSqr(this.owner) > 144.0){
+                if (this.summonedEntity.distanceToSqr(this.owner) > 144.0 && FNBConfig.VexTeleport.get()){
                     this.tryToTeleportNearEntity();
                 }
             }
