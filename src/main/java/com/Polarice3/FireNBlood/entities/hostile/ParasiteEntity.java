@@ -20,13 +20,13 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.function.Predicate;
 
 public class ParasiteEntity extends MonsterEntity {
-    private final NearestAttackableTargetGoal<LivingEntity> aiAttackAllGoal =  new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, true, true, TARGETS);
     private int lifetime;
     private boolean attackAll;
     private int field_234358_by_ = 0;
@@ -54,6 +54,7 @@ public class ParasiteEntity extends MonsterEntity {
         this.goalSelector.addGoal(8, new LookRandomlyGoal(this));
         this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setAlertOthers());
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, true, true, HOSTED));
+        this.targetSelector.addGoal(2, new AttackAllGoal(this));
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
@@ -122,9 +123,6 @@ public class ParasiteEntity extends MonsterEntity {
     }
 
     public void customServerAiStep(){
-        if (this.isAttackAll()){
-            this.goalSelector.addGoal(2, aiAttackAllGoal);
-        }
         if (this.func_234364_eK_()) {
             ++this.field_234358_by_;
             if (this.field_234358_by_ > 300 && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.ENDERMITE, (timer) -> this.field_234358_by_ = timer)) {
@@ -160,7 +158,7 @@ public class ParasiteEntity extends MonsterEntity {
             ++this.lifetime;
         }
 
-        if (this.lifetime >= 1200 && !this.level.dimensionType().createDragonFight()) {
+        if (this.lifetime >= 300 && !this.level.dimensionType().createDragonFight()) {
             this.actuallyHurt(DamageSource.STARVE, this.getMaxHealth());
         }
         this.yBodyRot = this.yRot;
@@ -172,6 +170,17 @@ public class ParasiteEntity extends MonsterEntity {
 
     public CreatureAttribute getMobType() {
         return CreatureAttribute.ARTHROPOD;
+    }
+
+    class AttackAllGoal extends NearestAttackableTargetGoal<LivingEntity> {
+
+        public AttackAllGoal(ParasiteEntity p_i47061_1_) {
+            super(p_i47061_1_, LivingEntity.class, 0, true, true, TARGETS);
+        }
+
+        public boolean canUse() {
+            return ParasiteEntity.this.isAttackAll() ? super.canUse() : null;
+        }
     }
 
 }

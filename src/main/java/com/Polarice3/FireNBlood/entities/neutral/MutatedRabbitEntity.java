@@ -332,9 +332,9 @@ public class MutatedRabbitEntity extends MutatedEntity {
     protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHitIn) {
         super.dropCustomDeathLoot(source, looting, recentlyHitIn);
         if (source.getEntity() instanceof PlayerEntity) {
-            int random = this.level.random.nextInt(4);
-            int random2 = this.level.random.nextInt(64);
-            if (random == 1 || looting > 2) {
+            int random = this.level.random.nextInt(4 - looting);
+            int random2 = this.level.random.nextInt(8 - looting);
+            if (random == 1) {
                 this.spawnAtLocation(RegistryHandler.MUTATED_RABBIT_UNCOOKED.get());
                 for (int i = 0; i < 4 + this.level.random.nextInt(8); ++i) {
                     this.spawnAtLocation(Items.RABBIT_HIDE);

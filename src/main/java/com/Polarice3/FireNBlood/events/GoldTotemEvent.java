@@ -2,12 +2,15 @@ package com.Polarice3.FireNBlood.events;
 
 import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.FireNBlood;
+import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
+import com.Polarice3.FireNBlood.entities.ally.SummonedEntity;
 import com.Polarice3.FireNBlood.items.GoldTotemItem;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.EffectInstance;
@@ -32,6 +35,42 @@ public class GoldTotemEvent {
             LivingEntity victim = (LivingEntity) killed;
             if (!(slayer instanceof FakePlayer)){
                 GoldTotemItem.handleKill(slayer, victim);
+            }
+        }
+
+        if (killer instanceof SummonedEntity){
+            LivingEntity owner = ((SummonedEntity) killer).getTrueOwner();
+            if (owner != null){
+                if (owner instanceof PlayerEntity) {
+                    if (owner.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.DARKROBE.get()
+                    || owner.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.NECROROBE.get()
+                    || owner.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.DARKARMOREDROBE.get()
+                    || owner.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.NECROARMOREDROBE.get()) {
+                        PlayerEntity slayer = (PlayerEntity) owner;
+                        LivingEntity victim = (LivingEntity) killed;
+                        if (!(slayer instanceof FakePlayer)) {
+                            GoldTotemItem.handleKill(slayer, victim);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (killer instanceof FriendlyVexEntity){
+            LivingEntity owner = ((FriendlyVexEntity) killer).getTrueOwner();
+            if (owner != null){
+                if (owner instanceof PlayerEntity) {
+                    if (owner.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.DARKROBE.get()
+                            || owner.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.NECROROBE.get()
+                            || owner.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.DARKARMOREDROBE.get()
+                            || owner.getItemBySlot(EquipmentSlotType.CHEST).getItem() == RegistryHandler.NECROARMOREDROBE.get()) {
+                        PlayerEntity slayer = (PlayerEntity) owner;
+                        LivingEntity victim = (LivingEntity) killed;
+                        if (!(slayer instanceof FakePlayer)) {
+                            GoldTotemItem.handleKill(slayer, victim);
+                        }
+                    }
+                }
             }
         }
 

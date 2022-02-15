@@ -190,11 +190,6 @@ public class TLightningTotemTileEntity extends TileEntity implements ITickableTi
         for (PlayerEntity entity : this.getLevel().getEntitiesOfClass(PlayerEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(16.0D, 16.0D, 16.0D))) {
             LightningTrapEntity lightningTrap = new LightningTrapEntity(this.getLevel(), entity.getX(), entity.getY(), entity.getZ());
             lightningTrap.setDuration(60);
-            AreaEffectCloudEntity areaeffectcloudentity = new AreaEffectCloudEntity(this.getLevel(), entity.getX(), entity.getY(), entity.getZ());
-            areaeffectcloudentity.setParticle(ParticleTypes.CLOUD);
-            areaeffectcloudentity.setRadius(2.0F);
-            areaeffectcloudentity.setDuration(60);
-            this.getLevel().addFreshEntity(areaeffectcloudentity);
             this.getLevel().addFreshEntity(lightningTrap);
         }
     }

@@ -19,14 +19,13 @@ import net.minecraft.item.IArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class WanderBootsArmor extends ArmorItem {
     private static final UUID BOOTS_UUID = UUID.fromString("f46dd333-63a3-4c3b-a5d3-065de1e226cd");
-    private static final AttributeModifier BOOTS_SPEED_MODIFIER = new AttributeModifier(BOOTS_UUID, "Wander Boots Speed bonus", 0.1D, AttributeModifier.Operation.MULTIPLY_TOTAL);
+    private static final AttributeModifier BOOTS_SPEED_MODIFIER = new AttributeModifier(BOOTS_UUID, "Wander Boots Speed bonus", 0.15D, AttributeModifier.Operation.MULTIPLY_TOTAL);
     private static final String COOL = "Cool";
     private final Multimap<Attribute, AttributeModifier> bootsModifier;
 

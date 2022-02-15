@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.items;
 
+import com.Polarice3.FireNBlood.utils.ParticleUtil;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -46,7 +47,7 @@ public class SoulStaff extends SoulWand{
             worldIn.playSound(null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
             for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
                 double d = worldIn.random.nextGaussian() * 0.2D;
-                entityLiving.level.addParticle(ParticleTypes.CLOUD, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), d, d, d);
+                new ParticleUtil(ParticleTypes.CLOUD, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), d, d, d);
             }
         }
     }

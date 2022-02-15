@@ -14,7 +14,7 @@
     },
     "e":
     {
-      "item": "minecraft:emerald"
+      "item": "minecraft:lapis_lazuli"
     },
     "c":
     {
@@ -22,7 +22,7 @@
     },
     "s":
     {
-      "item": "minecraft:soul_sand"
+      "tag": "minecraft:soul_fire_base_blocks"
     }
   },
   "result":

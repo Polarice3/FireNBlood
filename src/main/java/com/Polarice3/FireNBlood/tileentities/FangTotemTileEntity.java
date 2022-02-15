@@ -198,8 +198,13 @@ public class FangTotemTileEntity extends TileEntity implements ITickableTileEnti
         this.playSound(SoundEvents.EVOKER_PREPARE_ATTACK);
         for (LivingEntity entity : this.getLevel().getEntitiesOfClass(LivingEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(10.0D, 10.0D, 10.0D))) {
             float f = (float) MathHelper.atan2(entity.getZ() - this.getBlockPos().getZ(), entity.getX() - this.getBlockPos().getX());
-
-            this.spawnFangs(entity.getX(), entity.getZ(), entity.getY(), entity.getY() + 1.0D, f, 1);
+            if (entity instanceof PlayerEntity) {
+                if (!((PlayerEntity) entity).isCreative()) {
+                    this.spawnFangs(entity.getX(), entity.getZ(), entity.getY(), entity.getY() + 1.0D, f, 1);
+                }
+            } else {
+                this.spawnFangs(entity.getX(), entity.getZ(), entity.getY(), entity.getY() + 1.0D, f, 1);
+            }
         }
     }
 

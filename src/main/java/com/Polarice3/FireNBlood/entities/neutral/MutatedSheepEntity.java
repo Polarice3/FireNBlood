@@ -11,6 +11,7 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
+import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
@@ -54,9 +55,15 @@ public class MutatedSheepEntity extends MutatedEntity implements IForgeShearable
         p_203402_0_.put(DyeColor.RED, Blocks.RED_WOOL);
         p_203402_0_.put(DyeColor.BLACK, Blocks.BLACK_WOOL);
     });
-    private static final Map<DyeColor, float[]> COLORARRAY_BY_COLOR = Maps.newEnumMap(Arrays.stream(DyeColor.values()).collect(Collectors.toMap((DyeColor p_200204_0_) -> p_200204_0_, MutatedSheepEntity::createSheepColor)));
+    private static final Map<DyeColor, float[]> COLORARRAY_BY_COLOR = Maps.newEnumMap(Arrays.stream(DyeColor.values())
+            .collect(Collectors.toMap((DyeColor p_200204_0_) -> p_200204_0_, MutatedSheepEntity::createSheepColor)));
     private int sheepTimer;
     private EatGrassGoal eatGrassGoal;
+
+    @OnlyIn(Dist.CLIENT)
+    public static float[] getColorArray(DyeColor pDyeColor) {
+        return COLORARRAY_BY_COLOR.get(pDyeColor);
+    }
 
     private static float[] createSheepColor(DyeColor p_192020_0_) {
         if (p_192020_0_ == DyeColor.WHITE) {
@@ -64,54 +71,7 @@ public class MutatedSheepEntity extends MutatedEntity implements IForgeShearable
         } else {
             float[] afloat = p_192020_0_.getTextureDiffuseColors();
             float f = 0.75F;
-            return new float[]{afloat[0] * 0.75F, afloat[1] * 0.75F, afloat[2] * 0.75F};
-        }
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public static float[] getColorArray(DyeColor pDyeColor) {
-        return COLORARRAY_BY_COLOR.get(pDyeColor);
-    }
-
-    public ResourceLocation getDefaultLootTable() {
-        if (this.isSheared()) {
-            return this.getType().getDefaultLootTable();
-        } else {
-            switch(this.getColor()) {
-                case WHITE:
-                default:
-                    return LootTables.SHEEP_WHITE;
-                case ORANGE:
-                    return LootTables.SHEEP_ORANGE;
-                case MAGENTA:
-                    return LootTables.SHEEP_MAGENTA;
-                case LIGHT_BLUE:
-                    return LootTables.SHEEP_LIGHT_BLUE;
-                case YELLOW:
-                    return LootTables.SHEEP_YELLOW;
-                case LIME:
-                    return LootTables.SHEEP_LIME;
-                case PINK:
-                    return LootTables.SHEEP_PINK;
-                case GRAY:
-                    return LootTables.SHEEP_GRAY;
-                case LIGHT_GRAY:
-                    return LootTables.SHEEP_LIGHT_GRAY;
-                case CYAN:
-                    return LootTables.SHEEP_CYAN;
-                case PURPLE:
-                    return LootTables.SHEEP_PURPLE;
-                case BLUE:
-                    return LootTables.SHEEP_BLUE;
-                case BROWN:
-                    return LootTables.SHEEP_BROWN;
-                case GREEN:
-                    return LootTables.SHEEP_GREEN;
-                case RED:
-                    return LootTables.SHEEP_RED;
-                case BLACK:
-                    return LootTables.SHEEP_BLACK;
-            }
+            return new float[]{afloat[0] * f, afloat[1] * f, afloat[2] * f};
         }
     }
 
@@ -165,7 +125,7 @@ public class MutatedSheepEntity extends MutatedEntity implements IForgeShearable
     }
 
     @OnlyIn(Dist.CLIENT)
-    public float getHeady(float p_70894_1_) {
+    public float getHeadEatPositionScale(float p_70894_1_) {
         if (this.sheepTimer <= 0) {
             return 0.0F;
         } else if (this.sheepTimer >= 4 && this.sheepTimer <= 36) {
@@ -176,7 +136,7 @@ public class MutatedSheepEntity extends MutatedEntity implements IForgeShearable
     }
 
     @OnlyIn(Dist.CLIENT)
-    public float getHeadRotationAngleX(float p_70890_1_) {
+    public float getHeadEatAngleScale(float p_70890_1_) {
         if (this.sheepTimer > 4 && this.sheepTimer <= 36) {
             float f = ((float)(this.sheepTimer - 4) - p_70890_1_) / 32.0F;
             return ((float)Math.PI / 5F) + 0.21991149F * MathHelper.sin(f * 28.7F);
@@ -185,10 +145,24 @@ public class MutatedSheepEntity extends MutatedEntity implements IForgeShearable
         }
     }
 
+    public boolean readyForShearing() {
+        return this.isAlive() && !this.isSheared();
+    }
+
     public ActionResultType mobInteract(PlayerEntity pPlayer, Hand pHand) {
         ItemStack itemstack = pPlayer.getItemInHand(pHand);
+        if (itemstack.getItem() instanceof DyeItem){
+            DyeItem dyeItem = (DyeItem) itemstack.getItem();
+            if (!this.isSheared() && this.getColor() != dyeItem.getDyeColor()){
+                this.setColor(dyeItem.getDyeColor());
+                itemstack.shrink(1);
+                return ActionResultType.SUCCESS;
+            }
+        } else {
+            return super.mobInteract(pPlayer, pHand);
+        }
         if (itemstack.getItem() == Items.SHEARS) {
-            if (!this.level.isClientSide && !this.isSheared()) {
+            if (!this.level.isClientSide && !this.readyForShearing()) {
                 this.shear(SoundCategory.PLAYERS);
                 itemstack.hurtAndBreak(1, pPlayer, (p_213613_1_) -> {
                     p_213613_1_.broadcastBreakEvent(pHand);
@@ -255,18 +229,6 @@ public class MutatedSheepEntity extends MutatedEntity implements IForgeShearable
     }
 
     public static DyeColor getRandomSheepColor(Random pRandom) {
-/*        int i = pRandom.nextInt(100);
-        if (i < 5) {
-            return DyeColor.BLACK;
-        } else if (i < 10) {
-            return DyeColor.GRAY;
-        } else if (i < 15) {
-            return DyeColor.LIGHT_GRAY;
-        } else if (i < 18) {
-            return DyeColor.BROWN;
-        } else {
-            return pRandom.nextInt(500) == 0 ? DyeColor.PINK : DyeColor.WHITE;
-        }*/
         return DyeColor.WHITE;
     }
 
@@ -300,8 +262,13 @@ public class MutatedSheepEntity extends MutatedEntity implements IForgeShearable
         return 1.3F;
     }
 
+    public void ate() {
+        this.setSheared(false);
+    }
+
+    @Override
     public boolean isShearable(@Nonnull ItemStack item, World world, BlockPos pos) {
-        return !this.isSheared();
+        return readyForShearing();
     }
 
     @Nonnull
@@ -332,6 +299,11 @@ public class MutatedSheepEntity extends MutatedEntity implements IForgeShearable
         } else {
             for (int i = 0; i < 4 + this.level.random.nextInt(8); ++i) {
                 this.spawnAtLocation(Items.ROTTEN_FLESH);
+            }
+        }
+        if (!this.isSheared()) {
+            for (int i = 0; i < 4 + this.level.random.nextInt(4); ++i) {
+                this.spawnAtLocation(ITEM_BY_DYE.get(this.getColor()));
             }
         }
     }

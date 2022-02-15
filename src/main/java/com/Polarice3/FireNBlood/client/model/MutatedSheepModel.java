@@ -3,6 +3,7 @@ package com.Polarice3.FireNBlood.client.model;
 import com.Polarice3.FireNBlood.entities.neutral.MutatedSheepEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.model.EntityModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.math.MathHelper;
@@ -67,7 +68,7 @@ public class MutatedSheepModel<T extends MutatedSheepEntity> extends EntityModel
 
     public void prepareMobModel(T entityIn, float limbSwing, float limbSwingAmount, float partialTick) {
         super.prepareMobModel(entityIn, limbSwing, limbSwingAmount, partialTick);
-        this.head.y = 6.0F + entityIn.getHeady(partialTick) * 9.0F;
-        this.head.xRot = entityIn.getHeadRotationAngleX(partialTick);
+        this.head.y = 6.0F + entityIn.getHeadEatPositionScale(partialTick) * 9.0F;
+        this.head.xRot = entityIn.getHeadEatAngleScale(partialTick);
     }
 }

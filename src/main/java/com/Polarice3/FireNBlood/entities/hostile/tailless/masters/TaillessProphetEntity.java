@@ -385,11 +385,6 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
                 assert livingentity != null;
                 LightningTrapEntity lightningrune = new LightningTrapEntity(TaillessProphetEntity.this.level, livingentity.getX(), livingentity.getY(), livingentity.getZ());
                 lightningrune.setDuration(60);
-                AreaEffectCloudEntity areaeffectcloudentity = new AreaEffectCloudEntity(TaillessProphetEntity.this.level, livingentity.getX(), livingentity.getY(), livingentity.getZ());
-                areaeffectcloudentity.setParticle(ParticleTypes.CLOUD);
-                areaeffectcloudentity.setRadius(2.0F);
-                areaeffectcloudentity.setDuration(60);
-                TaillessProphetEntity.this.level.addFreshEntity(areaeffectcloudentity);
                 TaillessProphetEntity.this.level.addFreshEntity(lightningrune);
                 if (TaillessProphetEntity.this.SecondPhase()){
                     TaillessProphetEntity.this.teleportRandomly();

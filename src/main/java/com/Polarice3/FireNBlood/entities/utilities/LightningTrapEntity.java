@@ -1,6 +1,7 @@
 package com.Polarice3.FireNBlood.entities.utilities;
 
 import com.Polarice3.FireNBlood.init.ModEntityType;
+import com.Polarice3.FireNBlood.utils.ParticleUtil;
 import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -63,18 +64,16 @@ public class LightningTrapEntity extends Entity {
 
     public void tick() {
         super.tick();
-        if (this.level.isClientSide){
-            float f = 3.0F;
-            float f5 = (float)Math.PI * f * f;
-            for(int k1 = 0; (float)k1 < f5; ++k1) {
-                float f6 = this.random.nextFloat() * ((float)Math.PI * 2F);
-                float f7 = MathHelper.sqrt(this.random.nextFloat()) * f;
-                float f8 = MathHelper.cos(f6) * f7;
-                float f9 = MathHelper.sin(f6) * f7;
-                this.level.addParticle(ParticleTypes.CLOUD, this.getX() + (double)f8, this.getY(), this.getZ() + (double)f9, (0.5D - this.random.nextDouble()) * 0.15D, (double)0.01F, (0.5D - this.random.nextDouble()) * 0.15D);
-            }
+        float f = 3.0F;
+        float f5 = (float)Math.PI * f * f;
+        for(int k1 = 0; (float)k1 < f5; ++k1) {
+            float f6 = this.random.nextFloat() * ((float)Math.PI * 2F);
+            float f7 = MathHelper.sqrt(this.random.nextFloat()) * f;
+            float f8 = MathHelper.cos(f6) * f7;
+            float f9 = MathHelper.sin(f6) * f7;
+            new ParticleUtil(ParticleTypes.CLOUD, this.getX() + (double)f8, this.getY(), this.getZ() + (double)f9, (0.5D - this.random.nextDouble()) * 0.15D, (double)0.01F, (0.5D - this.random.nextDouble()) * 0.15D);
         }
-        if (this.tickCount >= this.duration) {
+        if (this.tickCount >= this.getDuration()) {
             LightningBoltEntity lightning = new LightningBoltEntity(EntityType.LIGHTNING_BOLT, level);
             lightning.setPos(this.getX(),this.getY(),this.getZ());
             level.addFreshEntity(lightning);

@@ -246,11 +246,12 @@ public class ModEntityType {
     public static final RegistryObject<EntityType<MutatedSheepEntity>> MUTATED_SHEEP = ENTITY_TYPES.register("mutatedsheep",
             () -> EntityType.Builder.of(MutatedSheepEntity::new, EntityClassification.MONSTER)
                     .sized(0.9F, 1.95F)
+                    .clientTrackingRange(10)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "mutatedsheep").toString()));
 
     public static final RegistryObject<EntityType<MutatedPigEntity>> MUTATED_PIG = ENTITY_TYPES.register("mutatedpig",
             () -> EntityType.Builder.of(MutatedPigEntity::new, EntityClassification.MONSTER)
-                    .sized(0.9F, 1.55F)
+                    .sized(0.9F, 1.75F)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "mutatedpig").toString()));
 
     public static final RegistryObject<EntityType<MutatedRabbitEntity>> MUTATED_RABBIT = ENTITY_TYPES.register("mutatedrabbit",

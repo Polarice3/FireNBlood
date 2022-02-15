@@ -1,6 +1,7 @@
 package com.Polarice3.FireNBlood.items;
 
 import com.Polarice3.FireNBlood.FireNBlood;
+import com.Polarice3.FireNBlood.utils.ParticleUtil;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,7 +27,7 @@ public class MockingEffigyItem extends Item {
         worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.WITHER_DEATH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
         entityLiving.addEffect(new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, 4));
         entityLiving.level.explode(entityLiving, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), 3.0F, Explosion.Mode.NONE);
-        entityLiving.level.addParticle(ParticleTypes.FLAME, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
+        new ParticleUtil(ParticleTypes.FLAME, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         stack.setCount(0);
         return stack;
     }

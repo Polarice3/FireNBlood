@@ -3,6 +3,7 @@ package com.Polarice3.FireNBlood.spells;
 import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
+import com.Polarice3.FireNBlood.utils.ParticleUtil;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -36,22 +37,6 @@ public class VexSpell extends SummonSpells {
     }
 
     public void WandResult(World worldIn, LivingEntity entityLiving){
-        BlockPos blockpos = entityLiving.blockPosition();
-        FriendlyVexEntity vexentity = new FriendlyVexEntity(ModEntityType.FRIENDLY_VEX.get(), worldIn);
-        vexentity.setOwnerId(entityLiving.getUUID());
-        vexentity.moveTo(blockpos, 0.0F, 0.0F);
-        vexentity.finalizeSpawn((IServerWorld) worldIn, entityLiving.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
-        vexentity.setBoundOrigin(blockpos);
-        vexentity.setLimitedLife(20 * (30 + entityLiving.level.random.nextInt(90)));
-        worldIn.addFreshEntity(vexentity);
-        worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.EVOKER_CAST_SPELL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-        for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
-            entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
-        }
-        this.SummonDown(entityLiving);
-    }
-
-    public void StaffResult(World worldIn, LivingEntity entityLiving){
         for(int i1 = 0; i1 < 3; ++i1) {
             BlockPos blockpos = entityLiving.blockPosition();
             FriendlyVexEntity vexentity = new FriendlyVexEntity(ModEntityType.FRIENDLY_VEX.get(), worldIn);
@@ -62,10 +47,28 @@ public class VexSpell extends SummonSpells {
             vexentity.setLimitedLife(20 * (30 + entityLiving.level.random.nextInt(90)));
             worldIn.addFreshEntity(vexentity);
         }
+        worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.EVOKER_CAST_SPELL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+        for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
+            new ParticleUtil(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
+        }
+        this.SummonDown(entityLiving);
+    }
+
+    public void StaffResult(World worldIn, LivingEntity entityLiving){
+        for(int i1 = 0; i1 < 3 + worldIn.random.nextInt(3); ++i1) {
+            BlockPos blockpos = entityLiving.blockPosition();
+            FriendlyVexEntity vexentity = new FriendlyVexEntity(ModEntityType.FRIENDLY_VEX.get(), worldIn);
+            vexentity.setOwnerId(entityLiving.getUUID());
+            vexentity.moveTo(blockpos, 0.0F, 0.0F);
+            vexentity.finalizeSpawn((IServerWorld) worldIn, entityLiving.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
+            vexentity.setBoundOrigin(blockpos);
+            vexentity.setLimitedLife(40 * (60 + entityLiving.level.random.nextInt(180)));
+            worldIn.addFreshEntity(vexentity);
+        }
         this.SummonDown(entityLiving);
         worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.ZOMBIE_VILLAGER_CURE, SoundCategory.NEUTRAL, 1.0F, 1.0F);
         for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
-            entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
+            new ParticleUtil(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         }
     }
 }

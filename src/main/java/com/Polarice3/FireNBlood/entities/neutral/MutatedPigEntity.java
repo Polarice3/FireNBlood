@@ -1,18 +1,23 @@
 package com.Polarice3.FireNBlood.entities.neutral;
 
+import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.effect.LightningBoltEntity;
+import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.monster.ZoglinEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
@@ -61,9 +66,19 @@ public class MutatedPigEntity extends MutatedEntity {
         this.playSound(SoundEvents.PIG_STEP, 0.15F, 1.0F);
     }
 
+    public boolean hurt(DamageSource pSource, float pAmount) {
+        int random = this.level.random.nextInt(16);
+        if (pSource.getEntity() != null && pSource.getEntity() instanceof LivingEntity) {
+            if (random == 0) {
+                ((LivingEntity) pSource.getEntity()).addEffect(new EffectInstance(Effects.LEVITATION, 200));
+            }
+        }
+        return super.hurt(pSource, pAmount);
+    }
+
     public void thunderHit(ServerWorld world, LightningBoltEntity lightning) {
-        if (world.getDifficulty() != Difficulty.PEACEFUL && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.ZOMBIFIED_PIGLIN, (timer) -> {})) {
-            ZoglinEntity zombifiedpiglinentity = EntityType.ZOGLIN.create(world);
+        if (world.getDifficulty() != Difficulty.PEACEFUL && net.minecraftforge.event.ForgeEventFactory.canLivingConvert(this, EntityType.CREEPER, (timer) -> {})) {
+            CreeperEntity zombifiedpiglinentity = EntityType.CREEPER.create(world);
             zombifiedpiglinentity.moveTo(this.getX(), this.getY(), this.getZ(), this.yRot, this.xRot);
             zombifiedpiglinentity.setNoAi(this.isNoAi());
             if (this.hasCustomName()) {

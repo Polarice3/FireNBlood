@@ -7,6 +7,7 @@ import com.Polarice3.FireNBlood.items.capability.SoulUsingItemCapability;
 import com.Polarice3.FireNBlood.items.handler.FocusBagItemHandler;
 import com.Polarice3.FireNBlood.spells.*;
 import com.Polarice3.FireNBlood.utils.FocusBagFinder;
+import com.Polarice3.FireNBlood.utils.ParticleUtil;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import com.Polarice3.FireNBlood.items.handler.SoulUsingItemHandler;
 import net.minecraft.client.util.ITooltipFlag;
@@ -173,7 +174,7 @@ public class SoulWand extends Item{
                 playerIn.startUsingItem(handIn);
                 for (int i = 0; i < playerIn.level.random.nextInt(35) + 10; ++i) {
                     double d = worldIn.random.nextGaussian() * 0.2D;
-                    playerIn.level.addParticle(ParticleTypes.ENTITY_EFFECT, playerIn.getX(), playerIn.getEyeY(), playerIn.getZ(), d, d, d);
+                    new ParticleUtil(ParticleTypes.ENTITY_EFFECT, playerIn.getX(), playerIn.getEyeY(), playerIn.getZ(), d, d, d);
                 }
             }
         }
@@ -234,6 +235,9 @@ public class SoulWand extends Item{
         } else if (getFocus(itemStack).getTag().getString(FOCUS).contains("feast")) {
             this.setSpellConditions(new FeastSpell(), itemStack);
             this.setSpell(10, itemStack);
+        } else if (getFocus(itemStack).getTag().getString(FOCUS).contains("tempting")) {
+            this.setSpellConditions(new TemptingSpell(), itemStack);
+            this.setSpell(11, itemStack);
         }
     }
 
@@ -307,7 +311,7 @@ public class SoulWand extends Item{
             worldIn.playSound(null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
             for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
                 double d = worldIn.random.nextGaussian() * 0.2D;
-                entityLiving.level.addParticle(ParticleTypes.CLOUD, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), d, d, d);
+                new ParticleUtil(ParticleTypes.CLOUD, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), d, d, d);
             }
         }
     }

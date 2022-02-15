@@ -14,6 +14,7 @@ import net.minecraft.entity.passive.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -181,69 +182,14 @@ public class MutateTotemTileEntity extends TileEntity implements ITickableTileEn
         }
     }
 
-    public void mutateMobs(){
+    public void mutateMobs() {
         this.playSound(SoundEvents.ILLUSIONER_CAST_SPELL);
-        if (this.target instanceof CowEntity){
-            MutatedCowEntity mutatedCowEntity = new MutatedCowEntity(ModEntityType.MUTATED_COW.get(), this.level);
-            mutatedCowEntity.moveTo(target.getX(), target.getY(), target.getZ(), target.yRot, target.xRot);
-            mutatedCowEntity.finalizeSpawn((IServerWorld) this.level, this.level.getCurrentDifficultyAt(mutatedCowEntity.blockPosition()), SpawnReason.CONVERSION, (ILivingEntityData)null, (CompoundNBT)null);
-            if (target.hasCustomName()) {
-                mutatedCowEntity.setCustomName(target.getCustomName());
-                mutatedCowEntity.setCustomNameVisible(target.isCustomNameVisible());
+        if (this.target != null) {
+            if (!this.target.hasEffect(RegistryHandler.COSMIC.get())
+                    && (this.target instanceof CowEntity || this.target instanceof ChickenEntity || this.target instanceof SheepEntity
+                    || this.target instanceof PigEntity || this.target instanceof RabbitEntity)) {
+                this.target.addEffect(new EffectInstance(RegistryHandler.COSMIC.get(), 200));
             }
-            mutatedCowEntity.setPersistenceRequired();
-            this.level.addFreshEntity(mutatedCowEntity);
-            target.remove();
-        } else if (this.target instanceof ChickenEntity){
-            MutatedChickenEntity mutatedChickenEntity = new MutatedChickenEntity(ModEntityType.MUTATED_CHICKEN.get(), this.level);
-            mutatedChickenEntity.moveTo(target.getX(), target.getY(), target.getZ(), target.yRot, target.xRot);
-            mutatedChickenEntity.finalizeSpawn((IServerWorld) this.level, this.level.getCurrentDifficultyAt(mutatedChickenEntity.blockPosition()), SpawnReason.CONVERSION, (ILivingEntityData)null, (CompoundNBT)null);
-            if (target.hasCustomName()) {
-                mutatedChickenEntity.setCustomName(target.getCustomName());
-                mutatedChickenEntity.setCustomNameVisible(target.isCustomNameVisible());
-            }
-            mutatedChickenEntity.setPersistenceRequired();
-            this.level.addFreshEntity(mutatedChickenEntity);
-            target.remove();
-        } else if (this.target instanceof SheepEntity){
-            MutatedSheepEntity mutatedSheepEntity = new MutatedSheepEntity(ModEntityType.MUTATED_SHEEP.get(), this.level);
-            mutatedSheepEntity.moveTo(target.getX(), target.getY(), target.getZ(), target.yRot, target.xRot);
-            mutatedSheepEntity.finalizeSpawn((IServerWorld) this.level, this.level.getCurrentDifficultyAt(mutatedSheepEntity.blockPosition()), SpawnReason.CONVERSION, (ILivingEntityData)null, (CompoundNBT)null);
-            if (target.hasCustomName()) {
-                mutatedSheepEntity.setCustomName(target.getCustomName());
-                mutatedSheepEntity.setCustomNameVisible(target.isCustomNameVisible());
-            }
-            mutatedSheepEntity.setPersistenceRequired();
-            this.level.addFreshEntity(mutatedSheepEntity);
-            target.remove();
-        } else if (this.target instanceof PigEntity){
-            MutatedPigEntity mutatedPigEntity = new MutatedPigEntity(ModEntityType.MUTATED_PIG.get(), this.level);
-            mutatedPigEntity.moveTo(target.getX(), target.getY(), target.getZ(), target.yRot, target.xRot);
-            mutatedPigEntity.finalizeSpawn((IServerWorld) this.level, this.level.getCurrentDifficultyAt(mutatedPigEntity.blockPosition()), SpawnReason.CONVERSION, (ILivingEntityData)null, (CompoundNBT)null);
-            if (target.hasCustomName()) {
-                mutatedPigEntity.setCustomName(target.getCustomName());
-                mutatedPigEntity.setCustomNameVisible(target.isCustomNameVisible());
-            }
-            mutatedPigEntity.setPersistenceRequired();
-            this.level.addFreshEntity(mutatedPigEntity);
-            target.remove();
-        } else if (this.target instanceof RabbitEntity){
-            RabbitEntity rabbit = (RabbitEntity) this.target;
-            MutatedRabbitEntity mutatedRabbitEntity = new MutatedRabbitEntity(ModEntityType.MUTATED_RABBIT.get(), this.level);
-            mutatedRabbitEntity.moveTo(target.getX(), target.getY(), target.getZ(), target.yRot, target.xRot);
-            mutatedRabbitEntity.finalizeSpawn((IServerWorld) this.level, this.level.getCurrentDifficultyAt(mutatedRabbitEntity.blockPosition()), SpawnReason.CONVERSION, (ILivingEntityData)null, (CompoundNBT)null);
-            if (target.hasCustomName()) {
-                mutatedRabbitEntity.setCustomName(target.getCustomName());
-                mutatedRabbitEntity.setCustomNameVisible(target.isCustomNameVisible());
-            }
-            if (rabbit.getRabbitType() != 99) {
-                mutatedRabbitEntity.setRabbitType(rabbit.getRabbitType());
-            } else {
-                mutatedRabbitEntity.setRabbitType(1);
-            }
-            mutatedRabbitEntity.setPersistenceRequired();
-            this.level.addFreshEntity(mutatedRabbitEntity);
-            target.remove();
         }
     }
 }

@@ -2,6 +2,7 @@ package com.Polarice3.FireNBlood.spells;
 
 import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.entities.bosses.VizierEntity;
+import com.Polarice3.FireNBlood.utils.ParticleUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.MonsterEntity;
@@ -42,7 +43,7 @@ public class FeastSpell extends ChargingSpells {
                 this.spawnFangs(entityLiving, entity.getX(), entity.getZ(), entity.getY(), entity.getY() + 1.0D, f, 1);
             }        }
         for(int i1 = 0; i1 < entityLiving.level.random.nextInt(35) + 10; ++i1) {
-            entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
+            new ParticleUtil(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         }
     }
 
@@ -57,7 +58,7 @@ public class FeastSpell extends ChargingSpells {
             }
         }
         for(int i1 = 0; i1 < entityLiving.level.random.nextInt(35) + 10; ++i1) {
-            entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
+            new ParticleUtil(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         }
     }
 

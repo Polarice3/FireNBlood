@@ -31,6 +31,8 @@ public class CastSpells {
                 return new SoulSkullSpell();
             case 10:
                 return new FeastSpell();
+            case 11:
+                return new TemptingSpell();
             default:
                 return null;
         }

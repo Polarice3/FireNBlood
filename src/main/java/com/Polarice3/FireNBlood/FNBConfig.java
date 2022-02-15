@@ -23,6 +23,7 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> TeleportCost;
     public static final ForgeConfigSpec.ConfigValue<Integer> SoulSkullCost;
     public static final ForgeConfigSpec.ConfigValue<Integer> FeastCost;
+    public static final ForgeConfigSpec.ConfigValue<Integer> TemptingCost;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> VexDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> FangDuration;
@@ -33,6 +34,7 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> SpiderlingDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> BrainEaterDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> FeastDuration;
+    public static final ForgeConfigSpec.ConfigValue<Integer> TemptingDuration;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> BrainEaterXPCost;
 
@@ -151,6 +153,8 @@ public class FNBConfig {
                 .defineInRange("soulskullcost", 16, 0, Integer.MAX_VALUE);
         FeastCost = BUILDER.comment("Feasting Spell Cost, Default: 8")
                 .defineInRange("feastcost", 8, 0, Integer.MAX_VALUE);
+        TemptingCost = BUILDER.comment("Tempting Spell Cost, Default: 2")
+                .defineInRange("temptingcost", 2, 0, Integer.MAX_VALUE);
         BUILDER.pop();
         BUILDER.push("Casting Time");
         VexDuration = BUILDER.comment("Time to cast Vex Spell, Default: 100")
@@ -165,12 +169,14 @@ public class FNBConfig {
                 .defineInRange("skeletontime", 60, 0, 72000);
         CrippleDuration = BUILDER.comment("Time to cast Crippling Spell, Default: 20")
                 .defineInRange("crippletime", 20, 0, 72000);
-        SpiderlingDuration = BUILDER.comment("Time to cast Spiderling Spell per second, Default: 20")
-                .defineInRange("spiderlingtime", 20, 0, 72000);
-        BrainEaterDuration = BUILDER.comment("Time to cast Brain Eater Spell per second, Default: 20")
-                .defineInRange("braineatertime", 20, 0, 72000);
+        SpiderlingDuration = BUILDER.comment("Time to cast Spiderling Spell per second, Default: 10")
+                .defineInRange("spiderlingtime", 10, 0, 72000);
+        BrainEaterDuration = BUILDER.comment("Time to cast Brain Eater Spell per second, Default: 5")
+                .defineInRange("braineatertime", 5, 0, 72000);
         FeastDuration = BUILDER.comment("Time to cast Feasting Spell per second, Default: 20")
                 .defineInRange("feasttime", 20, 0, 72000);
+        TemptingDuration = BUILDER.comment("Time to cast Tempting Spell per second, Default: 20")
+                .defineInRange("temptingtime", 20, 0, 72000);
         BUILDER.pop();
         BUILDER.push("Summon Down Duration");
         VexCooldown = BUILDER.comment("Vex Spell Cooldown, Default: 340")

@@ -90,6 +90,7 @@ public class RegistryHandler {
     public static final RegistryObject<Item> TELEPORTFOCUS = ITEMS.register("teleportfocus", () -> new MagicFocusItem(FNBConfig.TeleportCost.get()));
     public static final RegistryObject<Item> SOULSKULLFOCUS = ITEMS.register("soulskullfocus", () -> new MagicFocusItem(FNBConfig.SoulSkullCost.get()));
     public static final RegistryObject<Item> FEASTFOCUS = ITEMS.register("feastfocus", () -> new MagicFocusItem(FNBConfig.FeastCost.get()));
+    public static final RegistryObject<Item> TEMPTINGFOCUS = ITEMS.register("temptingfocus", () -> new MagicFocusItem(FNBConfig.TemptingCost.get()));
 
     //Tools
     public static final RegistryObject<Item> GOLDEN_MACE = ITEMS.register("golden_mace", GoldenMaceItem::new);
@@ -249,4 +250,6 @@ public class RegistryHandler {
             HostedEffect::new);
     public static final RegistryObject<Effect> SUMMONDOWN = EFFECTS.register("summondown",
             SummonDownEffect::new);
+    public static final RegistryObject<Effect> COSMIC = EFFECTS.register("cosmic",
+            CosmicEffect::new);
 }

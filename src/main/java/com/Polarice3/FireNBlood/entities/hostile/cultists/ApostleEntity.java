@@ -6,6 +6,8 @@ import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEnt
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -14,6 +16,7 @@ import net.minecraft.entity.monster.WitchEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
@@ -34,12 +37,14 @@ import java.util.function.Predicate;
 
 public class ApostleEntity extends SpellcastingCultistEntity {
     private int f;
+    private int cooldown;
     private final Predicate<Entity> field_213690_b = Entity::isAlive;
     private boolean roarparticles;
 
     public ApostleEntity(EntityType<? extends SpellcastingCultistEntity> type, World worldIn) {
         super(type, worldIn);
         this.f = 0;
+        this.cooldown = 0;
     }
 
     protected void registerGoals() {
@@ -129,6 +134,9 @@ public class ApostleEntity extends SpellcastingCultistEntity {
 
     public void aiStep() {
         super.aiStep();
+        if (this.cooldown <= 0){
+            ++this.cooldown;
+        }
         if (this.isFiring()) {
             ++this.f;
             if (this.f % 2 == 0 && this.f < 10) {
@@ -184,7 +192,8 @@ public class ApostleEntity extends SpellcastingCultistEntity {
                 return false;
             } else if (ApostleEntity.this.getTarget() == null) {
                 return false;
-            } else return ApostleEntity.this.getTarget().getId() != this.lastTargetId;
+            } else return ApostleEntity.this.getTarget().getId() != this.lastTargetId
+                    && ApostleEntity.this.cooldown >= 60;
         }
 
         public void start() {
@@ -240,7 +249,8 @@ public class ApostleEntity extends SpellcastingCultistEntity {
                 return false;
             } else if (ApostleEntity.this.getTarget() == null) {
                 return false;
-            } else return ApostleEntity.this.getTarget().getId() != this.lastTargetId;
+            } else return ApostleEntity.this.getTarget().getId() != this.lastTargetId &&
+                    ApostleEntity.this.cooldown >= FNBConfig.ZombieCooldown.get();
         }
 
         public void start() {
@@ -260,15 +270,18 @@ public class ApostleEntity extends SpellcastingCultistEntity {
             LivingEntity livingentity = ApostleEntity.this.getTarget();
             if (livingentity != null) {
                 BlockPos blockpos = ApostleEntity.this.blockPosition();
-                for(int i = 0; i < 2 + ApostleEntity.this.level.random.nextInt(4); ++i) {
-                    ZombieVillagerMinionEntity summonedentity = new ZombieVillagerMinionEntity(ModEntityType.ZOMBIE_VILLAGER_MINION.get(), ApostleEntity.this.level);
-                    summonedentity.moveTo(blockpos, 0.0F, 0.0F);
-                    summonedentity.setOwnerId(ApostleEntity.this.getUUID());
-                    summonedentity.setLimitedLife(60 * (90 + ApostleEntity.this.level.random.nextInt(180)));
-                    summonedentity.finalizeSpawn((IServerWorld) ApostleEntity.this.level, ApostleEntity.this.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
-                    summonedentity.setTarget(livingentity);
-                    ApostleEntity.this.level.addFreshEntity(summonedentity);
-                }
+                ZombieVillagerMinionEntity summonedentity = new ZombieVillagerMinionEntity(ModEntityType.ZOMBIE_VILLAGER_MINION.get(), ApostleEntity.this.level);
+                summonedentity.moveTo(blockpos, 0.0F, 0.0F);
+                summonedentity.setOwnerId(ApostleEntity.this.getUUID());
+                summonedentity.setLimitedLife(60 * (90 + ApostleEntity.this.level.random.nextInt(180)));
+                summonedentity.setItemSlot(EquipmentSlotType.HEAD, new ItemStack(Items.IRON_HELMET));
+                summonedentity.setItemSlot(EquipmentSlotType.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
+                summonedentity.setItemSlot(EquipmentSlotType.LEGS, new ItemStack(Items.IRON_LEGGINGS));
+                summonedentity.setItemSlot(EquipmentSlotType.FEET, new ItemStack(Items.IRON_BOOTS));
+                summonedentity.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.IRON_SWORD));
+                summonedentity.finalizeSpawn((IServerWorld) ApostleEntity.this.level, ApostleEntity.this.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
+                summonedentity.setTarget(livingentity);
+                ApostleEntity.this.level.addFreshEntity(summonedentity);
             }
         }
 
@@ -293,7 +306,8 @@ public class ApostleEntity extends SpellcastingCultistEntity {
                 return false;
             } else if (ApostleEntity.this.getTarget() == null) {
                 return false;
-            } else return ApostleEntity.this.getTarget().getId() != this.lastTargetId;
+            } else return ApostleEntity.this.getTarget().getId() != this.lastTargetId &&
+                    ApostleEntity.this.cooldown >= FNBConfig.SkeletonCooldown.get();
         }
 
         public void start() {
@@ -313,15 +327,21 @@ public class ApostleEntity extends SpellcastingCultistEntity {
             LivingEntity livingentity = ApostleEntity.this.getTarget();
             if (livingentity != null) {
                 BlockPos blockpos = ApostleEntity.this.blockPosition();
-                for(int i = 0; i < 2 + ApostleEntity.this.level.random.nextInt(4); ++i) {
-                    SkeletonVillagerMinionEntity summonedentity = new SkeletonVillagerMinionEntity(ModEntityType.SKELETON_VILLAGER_MINION.get(), ApostleEntity.this.level);
-                    summonedentity.moveTo(blockpos, 0.0F, 0.0F);
-                    summonedentity.setOwnerId(ApostleEntity.this.getUUID());
-                    summonedentity.setLimitedLife(60 * (90 + ApostleEntity.this.level.random.nextInt(180)));
-                    summonedentity.finalizeSpawn((IServerWorld) ApostleEntity.this.level, ApostleEntity.this.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
-                    summonedentity.setTarget(livingentity);
-                    ApostleEntity.this.level.addFreshEntity(summonedentity);
+                SkeletonVillagerMinionEntity summonedentity = new SkeletonVillagerMinionEntity(ModEntityType.SKELETON_VILLAGER_MINION.get(), ApostleEntity.this.level);
+                ItemStack item = summonedentity.getMainHandItem();
+                if (item.getItem() instanceof BowItem){
+                    item.enchant(Enchantments.FLAMING_ARROWS, 1);
                 }
+                summonedentity.moveTo(blockpos, 0.0F, 0.0F);
+                summonedentity.setOwnerId(ApostleEntity.this.getUUID());
+                summonedentity.setLimitedLife(60 * (90 + ApostleEntity.this.level.random.nextInt(180)));
+                summonedentity.setItemSlot(EquipmentSlotType.HEAD, new ItemStack(Items.IRON_HELMET));
+                summonedentity.setItemSlot(EquipmentSlotType.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
+                summonedentity.setItemSlot(EquipmentSlotType.LEGS, new ItemStack(Items.IRON_LEGGINGS));
+                summonedentity.setItemSlot(EquipmentSlotType.FEET, new ItemStack(Items.IRON_BOOTS));
+                summonedentity.finalizeSpawn((IServerWorld) ApostleEntity.this.level, ApostleEntity.this.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
+                summonedentity.setTarget(livingentity);
+                ApostleEntity.this.level.addFreshEntity(summonedentity);
             }
         }
 
@@ -348,7 +368,8 @@ public class ApostleEntity extends SpellcastingCultistEntity {
                 return false;
             } else if (ApostleEntity.this.getTarget().getId() == this.lastTargetId) {
                 return false;
-            } else return ApostleEntity.this.distanceTo(ApostleEntity.this.getTarget()) < 4.0F;
+            } else return ApostleEntity.this.distanceTo(ApostleEntity.this.getTarget()) < 4.0F &&
+                    ApostleEntity.this.cooldown >= 120;
         }
 
         public void start() {

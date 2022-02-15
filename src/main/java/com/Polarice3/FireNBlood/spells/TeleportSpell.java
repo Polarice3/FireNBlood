@@ -1,9 +1,11 @@
 package com.Polarice3.FireNBlood.spells;
 
 import com.Polarice3.FireNBlood.FNBConfig;
+import com.Polarice3.FireNBlood.utils.ParticleUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -36,6 +38,7 @@ public class TeleportSpell extends InstantCastSpells{
         Direction face = blockRayTraceResult.getDirection();
         BlockPos newPos = blockRayTraceResult.getBlockPos().relative(face);
         enderTeleportEvent(entityLiving, worldIn, newPos);
+        new ParticleUtil(ParticleTypes.PORTAL, entityLiving.getX(), entityLiving.getY() + worldIn.random.nextDouble() * 2.0D, entityLiving.getZ(), worldIn.random.nextGaussian(), 0.0D, worldIn.random.nextGaussian());
         worldIn.playSound(null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), CastingSound(), SoundCategory.PLAYERS, 1.0F, 1.0F);
     }
 
@@ -47,6 +50,7 @@ public class TeleportSpell extends InstantCastSpells{
         Direction face = blockRayTraceResult.getDirection();
         BlockPos newPos = blockRayTraceResult.getBlockPos().relative(face);
         enderTeleportEvent(entityLiving, worldIn, newPos);
+        new ParticleUtil(ParticleTypes.PORTAL, entityLiving.getX(), entityLiving.getY() + worldIn.random.nextDouble() * 2.0D, entityLiving.getZ(), worldIn.random.nextGaussian(), 0.0D, worldIn.random.nextGaussian());
         worldIn.playSound(null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), CastingSound(), SoundCategory.PLAYERS, 1.0F, 1.0F);
     }
 

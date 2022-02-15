@@ -4,6 +4,7 @@ import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.entities.ally.SpiderlingMinionEntity;
 import com.Polarice3.FireNBlood.entities.ally.ZombieMinionEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
+import com.Polarice3.FireNBlood.utils.ParticleUtil;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -42,7 +43,7 @@ public class SpiderlingSpell extends ChargingSpells{
         worldIn.addFreshEntity(summonedentity);
         worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.EVOKER_CAST_SPELL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
         for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
-            entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
+            new ParticleUtil(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         }
     }
 
@@ -57,7 +58,7 @@ public class SpiderlingSpell extends ChargingSpells{
         }
         worldIn.playSound((PlayerEntity) null, entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), SoundEvents.EVOKER_CAST_SPELL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
         for(int i = 0; i < entityLiving.level.random.nextInt(35) + 10; ++i) {
-            entityLiving.level.addParticle(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
+            new ParticleUtil(ParticleTypes.POOF, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);
         }
     }
 
