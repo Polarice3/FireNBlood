@@ -133,6 +133,19 @@ public class VizierEntity extends SpellcastingIllagerEntity implements IChargeab
                 if (!this.level.getGameRules().getBoolean(GameRules.RULE_DISABLE_RAIDS)) {
                     player.addEffect(effectinstance);
                 }
+                CompoundNBT playerData = player.getPersistentData();
+                CompoundNBT data;
+
+                if (!playerData.contains(PlayerEntity.PERSISTED_NBT_TAG)) {
+                    data = new CompoundNBT();
+                } else {
+                    data = playerData.getCompound(PlayerEntity.PERSISTED_NBT_TAG);
+                }
+
+                if (!data.getBoolean("firenblood:killedVizier")) {
+                    data.putBoolean("firenblood:killedVizier", true);
+                    playerData.put(PlayerEntity.PERSISTED_NBT_TAG, data);
+                }
             }
         }
 

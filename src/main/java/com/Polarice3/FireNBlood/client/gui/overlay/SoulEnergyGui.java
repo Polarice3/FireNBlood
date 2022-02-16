@@ -5,8 +5,10 @@ import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.items.GoldTotemItem;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -43,6 +45,10 @@ public class SoulEnergyGui extends AbstractGui {
         return (FindTotem(player) != null);
     }
 
+    public FontRenderer getFont() {
+        return this.minecraft.font;
+    }
+
     public void drawHUD(MatrixStack ms, float pt) {
         this.screenWidth = this.minecraft.getWindow().getGuiScaledWidth();
         this.screenHeight = this.minecraft.getWindow().getGuiScaledHeight();
@@ -68,5 +74,13 @@ public class SoulEnergyGui extends AbstractGui {
         blit(ms,i, height - 9, 0, 0, 128,9, 128, 9);
         Minecraft.getInstance().textureManager.bind(new ResourceLocation(FireNBlood.MOD_ID, "textures/gui/soulenergy.png"));
         blit(ms,i + 9, height - 7, 0, 0, energylength,5, 117, 5);
+        if (FNBConfig.ShowNum.get()) {
+            this.minecraft.getProfiler().push("soulenergy");
+            String s = "" + SoulEnergy + "/" + "" + SoulEnergyTotal;
+            int i1 = i + 36;
+            int j1 = height - 8;
+            this.getFont().draw(ms, s, (float) i1, (float) j1, 16777215);
+            this.minecraft.getProfiler().pop();
+        }
     }
 }

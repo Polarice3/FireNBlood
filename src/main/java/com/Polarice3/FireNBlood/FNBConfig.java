@@ -64,6 +64,8 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> NecroArmoredRobeRepairAmount;
     public static final ForgeConfigSpec.ConfigValue<Integer> WanderBootsRepairAmount;
     public static final ForgeConfigSpec.ConfigValue<Integer> CallerSpawnMax;
+    public static final ForgeConfigSpec.ConfigValue<Integer> WandVexLimit;
+    public static final ForgeConfigSpec.ConfigValue<Integer> StaffVexLimit;
 
     public static final ForgeConfigSpec.ConfigValue<Float> HealAmount;
 
@@ -76,6 +78,7 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> SoulSkullFire;
     public static final ForgeConfigSpec.ConfigValue<Boolean> UndeadTeleport;
     public static final ForgeConfigSpec.ConfigValue<Boolean> VexTeleport;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> ShowNum;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> ProfanedTowerGen;
     public static final ForgeConfigSpec.ConfigValue<Boolean> ProfanedShrineGen;
@@ -101,6 +104,8 @@ public class FNBConfig {
                 .define("startertotem", false);
         CraftingSouls = BUILDER.comment("How much Souls is consumed when crafting with Totem, Default: 20")
                 .defineInRange("craftsouls", 20, 0, Integer.MAX_VALUE);
+        ShowNum = BUILDER.comment("Show numerical amount of Souls on the Soul Energy Bar, Default: false")
+                .define("shownum", false);
         BUILDER.pop();
         BUILDER.push("Protectors");
         HiredTimer = BUILDER.comment("Hired Timer, Default: 24000")
@@ -214,6 +219,16 @@ public class FNBConfig {
         TotemGen = BUILDER.comment("Totems Generates in the World, Default: true")
                 .define("totemgen", true);
         BUILDER.pop();
+        BUILDER.push("Spells");
+        UndeadTeleport = BUILDER.comment("Whether Undead Minions can teleport to Players, Default: false")
+                .define("undeadteleport", false);
+        VexTeleport = BUILDER.comment("Whether Vex Minions can teleport to Players, Default: true")
+                .define("vexteleport", true);
+        WandVexLimit = BUILDER.comment("Number of Vex Minions that can be spawn with a wand, without instantly dying, around the player, Default: 8")
+                .defineInRange("wandvexlimit", 8, 1, Integer.MAX_VALUE);
+        StaffVexLimit = BUILDER.comment("Number of Vex Minions that can be spawn with a staff, without instantly dying, around the player, Default: 16")
+                .defineInRange("staffvexlimit", 16, 1, Integer.MAX_VALUE);
+        BUILDER.pop();
         BUILDER.push("Misc");
         VizierMinion = BUILDER.comment("Viziers spawn Vexes instead of Irks, Default: false")
                 .define("vizierminion", false);
@@ -227,10 +242,6 @@ public class FNBConfig {
                 .define("soulskullfire", false);
         CallerSpawnMax = BUILDER.comment("Max Amount of mobs spawned around a Caller, Default: 60")
                 .defineInRange("callerspawnmax", 60, 1, Integer.MAX_VALUE);
-        UndeadTeleport = BUILDER.comment("Whether Undead Minions can teleport to Players, Default: false")
-                .define("undeadteleport", false);
-        VexTeleport = BUILDER.comment("Whether Vex Minions can teleport to Players, Default: true")
-                .define("vexteleport", true);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }

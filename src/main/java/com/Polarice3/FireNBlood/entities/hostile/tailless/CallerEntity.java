@@ -228,7 +228,7 @@ public class CallerEntity extends AbstractTaillessEntity implements IChargeableM
                 if (wavetimer >= waveSpawn) {
                     ++this.wave;
                     this.wavetimer = 0;
-                    if (this.wave > 120) {
+                    if (this.wave > 360) {
                         if (target != null) {
                             target.addEffect(new EffectInstance(Effects.WITHER, 90, 2));
                         }
@@ -293,7 +293,7 @@ public class CallerEntity extends AbstractTaillessEntity implements IChargeableM
                 if (wavetimer >= waveSpawn) {
                     ++this.wave;
                     this.wavetimer = 0;
-                    if (this.wave > 120) {
+                    if (this.wave > 360) {
                         CallerEntity.this.actuallyHurt(DamageSource.STARVE, 8.0F);
                         if (CallerEntity.this.getHealth() <= 16){
                             ItemEntity itemEntity = CallerEntity.this.spawnAtLocation(new ItemStack(RegistryHandler.RIFTSHARD.get()));
@@ -346,6 +346,21 @@ public class CallerEntity extends AbstractTaillessEntity implements IChargeableM
                             blackBullEntity.setPos(d7, d8, d9);
                             blackBullEntity.setPersistenceRequired();
                             blackBullEntity.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(RegistryHandler.GOLDEN_MACE.get()));
+                            blackBullEntity.spawnAnim();
+                            level.addFreshEntity(blackBullEntity);
+                        } else {
+                            BlackBullEntity blackBullEntity = new BlackBullEntity(ModEntityType.BLACK_BULL.get(), level);
+                            blackBullEntity.setPos(d7, d8, d9);
+                            blackBullEntity.setPersistenceRequired();
+                            blackBullEntity.spawnAnim();
+                            level.addFreshEntity(blackBullEntity);
+                        }
+                    }
+                    if (random == 9) {
+                        if (random2 == 0){
+                            TaillessDruidEntity blackBullEntity = new TaillessDruidEntity(ModEntityType.TAILLESS_DRUID.get(), level);
+                            blackBullEntity.setPos(d7, d8, d9);
+                            blackBullEntity.setPersistenceRequired();
                             blackBullEntity.spawnAnim();
                             level.addFreshEntity(blackBullEntity);
                         } else {
