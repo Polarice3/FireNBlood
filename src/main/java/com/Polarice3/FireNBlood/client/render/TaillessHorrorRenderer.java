@@ -1,7 +1,7 @@
 package com.Polarice3.FireNBlood.client.render;
 
 import com.Polarice3.FireNBlood.FireNBlood;
-import com.Polarice3.FireNBlood.client.model.BulldrakeModel;
+import com.Polarice3.FireNBlood.client.model.TaillessHorrorModel;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.TaillessHorrorEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -9,11 +9,11 @@ import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Vector3f;
 
-public class BulldrakeRenderer extends MobRenderer<TaillessHorrorEntity, BulldrakeModel> {
+public class TaillessHorrorRenderer extends MobRenderer<TaillessHorrorEntity, TaillessHorrorModel> {
     protected static final ResourceLocation TEXTURE = new ResourceLocation(FireNBlood.MOD_ID, "textures/entity/taillesshorror.png");
 
-    public BulldrakeRenderer(EntityRendererManager renderManagerIn) {
-        super(renderManagerIn, new BulldrakeModel(), 1.0F);
+    public TaillessHorrorRenderer(EntityRendererManager renderManagerIn) {
+        super(renderManagerIn, new TaillessHorrorModel(), 1.0F);
     }
 
     @Override

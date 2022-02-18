@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood;
 
+import com.Polarice3.FireNBlood.compat.CuriosCompat;
 import com.Polarice3.FireNBlood.enchantments.ModEnchantmentsType;
 import com.Polarice3.FireNBlood.entities.ally.*;
 import com.Polarice3.FireNBlood.entities.bosses.PenanceEntity;
@@ -19,9 +20,7 @@ import com.Polarice3.FireNBlood.inventory.container.ModContainerType;
 import com.Polarice3.FireNBlood.particles.ModParticleTypes;
 import com.Polarice3.FireNBlood.potions.ModPotions;
 import com.Polarice3.FireNBlood.tileentities.ModTileEntityType;
-import com.Polarice3.FireNBlood.utils.RegistryFeatures;
-import com.Polarice3.FireNBlood.utils.RegistryHandler;
-import com.Polarice3.FireNBlood.utils.RegistryStructures;
+import com.Polarice3.FireNBlood.utils.*;
 import com.Polarice3.FireNBlood.world.features.ConfiguredFeatures;
 import com.Polarice3.FireNBlood.world.structures.ConfiguredStructures;
 import com.mojang.serialization.Codec;
@@ -295,6 +294,8 @@ public class FireNBlood
         DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.FAKESEAT.get(), FakeSeatEntity.setCustomAttributes().build());
         });
+
+        CuriosCompat.setup(event);
 
         event.enqueueWork(() -> {
             RegistryStructures.setupStructures();

@@ -1,9 +1,6 @@
 package com.Polarice3.FireNBlood.entities.hostile.tailless.masters;
 
-import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
-import com.Polarice3.FireNBlood.entities.hostile.tailless.RoyalBulletEntity;
-import com.Polarice3.FireNBlood.entities.hostile.tailless.ServantTaillessEntity;
-import com.Polarice3.FireNBlood.entities.hostile.tailless.SpellcastingTaillessEntity;
+import com.Polarice3.FireNBlood.entities.hostile.tailless.*;
 import com.Polarice3.FireNBlood.entities.projectiles.SoulFireballEntity;
 import com.Polarice3.FireNBlood.entities.utilities.LightningTrapEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
@@ -394,7 +391,7 @@ public class TaillessProphetEntity extends SpellcastingTaillessEntity implements
     }
 
     class RegenSpellGoal extends SpellcastingTaillessEntity.UseSpellGoal{
-        private final EntityPredicate ally = (new EntityPredicate().range(32.0D).allowInvulnerable().selector((health) -> health.getHealth() <= 30.0F));
+        private final EntityPredicate ally = (new EntityPredicate().range(32.0D).allowInvulnerable().selector((health) -> health.getHealth() <= 30.0F).selector((mob) -> !(mob instanceof BulletEntity) && !(mob instanceof RoyalBulletEntity)));
 
         public boolean canUse() {
             if (TaillessProphetEntity.this.isSpellcasting()) {

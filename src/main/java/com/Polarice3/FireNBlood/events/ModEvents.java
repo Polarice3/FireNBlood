@@ -10,9 +10,7 @@ import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEnt
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.items.FocusBagItem;
 import com.Polarice3.FireNBlood.items.SoulWand;
-import com.Polarice3.FireNBlood.utils.FocusBagFinder;
-import com.Polarice3.FireNBlood.utils.KeyPressed;
-import com.Polarice3.FireNBlood.utils.RegistryHandler;
+import com.Polarice3.FireNBlood.utils.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
@@ -44,6 +42,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,17 +83,7 @@ public class ModEvents {
         final PlayerEntity player = Minecraft.getInstance().player;
 
         if (player != null) {
-            ItemStack foundStack = ItemStack.EMPTY;
-
-            for (int i = 0; i <= 9; i++) {
-                ItemStack itemStack = player.inventory.getItem(i);
-                if (!itemStack.isEmpty() && itemStack.getItem() == RegistryHandler.GOLDTOTEM.get()) {
-                    foundStack = itemStack;
-                    break;
-                }
-            }
-
-            if (!foundStack.isEmpty()) {
+            if (!GoldTotemFinder.FindTotem(player).isEmpty()) {
                 new SoulEnergyGui(Minecraft.getInstance(), player).drawHUD(event.getMatrixStack(), event.getPartialTicks());
             }
         }
@@ -101,12 +91,14 @@ public class ModEvents {
 
     private static final Map<ServerWorld, HexerSpawner> HEXER_SPAWNER_MAP = new HashMap<>();
     private static final Map<ServerWorld, CultistsSpawner> CULTISTS_SPAWNER_MAP = new HashMap<>();
+    private static final Map<ServerWorld, EvilEyeSpawner> EVIL_EYE_SPAWNER_MAP = new HashMap<>();
 
     @SubscribeEvent
     public static void worldLoad(WorldEvent.Load evt) {
         if (!evt.getWorld().isClientSide() && evt.getWorld() instanceof ServerWorld) {
             HEXER_SPAWNER_MAP.put((ServerWorld) evt.getWorld(), new HexerSpawner((ServerWorld) evt.getWorld()));
             CULTISTS_SPAWNER_MAP.put((ServerWorld) evt.getWorld(), new CultistsSpawner());
+            EVIL_EYE_SPAWNER_MAP.put((ServerWorld) evt.getWorld(), new EvilEyeSpawner());
         }
     }
 
@@ -115,6 +107,7 @@ public class ModEvents {
         if (!evt.getWorld().isClientSide() && evt.getWorld() instanceof ServerWorld) {
             HEXER_SPAWNER_MAP.remove(evt.getWorld());
             CULTISTS_SPAWNER_MAP.remove(evt.getWorld());
+            EVIL_EYE_SPAWNER_MAP.remove(evt.getWorld());
         }
     }
 
@@ -124,12 +117,17 @@ public class ModEvents {
             ServerWorld serverWorld = (ServerWorld)tick.world;
             HexerSpawner spawner = HEXER_SPAWNER_MAP.get(serverWorld);
             CultistsSpawner spawner2 = CULTISTS_SPAWNER_MAP.get(serverWorld);
+            EvilEyeSpawner spawner3 = EVIL_EYE_SPAWNER_MAP.get(serverWorld);
             if (spawner != null) {
                 spawner.tick();
             }
             if (spawner2 != null){
                 spawner2.tick(serverWorld);
             }
+            if (spawner3 != null){
+                spawner3.tick(serverWorld);
+            }
+
         }
 
     }

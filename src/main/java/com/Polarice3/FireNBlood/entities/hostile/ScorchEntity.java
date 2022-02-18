@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.entities.hostile;
 
+import com.Polarice3.FireNBlood.entities.hostile.cultists.AbstractCultistEntity;
 import com.Polarice3.FireNBlood.entities.hostile.cultists.ChannellerEntity;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
 import com.Polarice3.FireNBlood.entities.neutral.MinionEntity;
@@ -67,7 +68,7 @@ public class ScorchEntity extends MinionEntity {
         this.goalSelector.addGoal(10, new LookAtGoal(this, MobEntity.class, 8.0F));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 5, false, false, (entity) ->
                 !(entity instanceof WitchEntity)
-                        && !(entity instanceof ChannellerEntity)
+                        && !(entity instanceof AbstractCultistEntity)
                         && !(entity instanceof AbstractTaillessEntity)
                         && !(entity instanceof AbstractPiglinEntity)
                         && !(entity instanceof HoglinEntity)

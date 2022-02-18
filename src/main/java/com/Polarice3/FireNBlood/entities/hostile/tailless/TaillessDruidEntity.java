@@ -430,7 +430,7 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
     }
 
     class RegenSpellGoal extends SpellcastingTaillessEntity.UseSpellGoal{
-        private final EntityPredicate ally = (new EntityPredicate().range(32.0D).allowInvulnerable().selector((health) -> health.getHealth() <= 30.0F));
+        private final EntityPredicate ally = (new EntityPredicate().range(32.0D).allowInvulnerable().selector((health) -> health.getHealth() <= 30.0F).selector((mob) -> !(mob instanceof BulletEntity) && !(mob instanceof RoyalBulletEntity)));
 
         public boolean canUse() {
            if (TaillessDruidEntity.this.isSpellcasting()) {

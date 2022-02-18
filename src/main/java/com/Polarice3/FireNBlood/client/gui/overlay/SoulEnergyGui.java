@@ -3,9 +3,8 @@ package com.Polarice3.FireNBlood.client.gui.overlay;
 import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.items.GoldTotemItem;
-import com.Polarice3.FireNBlood.utils.RegistryHandler;
+import com.Polarice3.FireNBlood.utils.GoldTotemFinder;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -27,22 +26,9 @@ public class SoulEnergyGui extends AbstractGui {
         this.player = playerEntity;
     }
 
-    public static ItemStack FindTotem(PlayerEntity playerEntity){
-        ItemStack foundStack = ItemStack.EMPTY;
-
-        for (int i = 0; i <= 9; i++) {
-            ItemStack itemStack = playerEntity.inventory.getItem(i);
-            if (!itemStack.isEmpty() && itemStack.getItem() == RegistryHandler.GOLDTOTEM.get()) {
-                foundStack = itemStack;
-                break;
-            }
-        }
-
-        return foundStack;
-    }
-
     public boolean shouldDisplayBar(){
-        return (FindTotem(player) != null);
+        ItemStack stack = GoldTotemFinder.FindTotem(player);
+        return !stack.isEmpty();
     }
 
     public FontRenderer getFont() {
@@ -56,10 +42,11 @@ public class SoulEnergyGui extends AbstractGui {
             return;
         }
 
+        ItemStack stack = GoldTotemFinder.FindTotem(player);
         int SoulEnergy = 0;
-        if (FindTotem(player) != null) {
-            if (FindTotem(player).getTag() != null) {
-                SoulEnergy = Objects.requireNonNull(FindTotem(player).getTag()).getInt(GoldTotemItem.SOULSAMOUNT);
+        if (!stack.isEmpty()) {
+            if (stack.getTag() != null) {
+                SoulEnergy = Objects.requireNonNull(stack.getTag()).getInt(GoldTotemItem.SOULSAMOUNT);
             }
         }
         int SoulEnergyTotal = FNBConfig.MaxSouls.get();

@@ -30,12 +30,13 @@ public class AnathemaModel extends SegmentedModel<TaillessAnathemaEntity> {
     private final ModelRenderer REar_r1;
     private final ModelRenderer LEar;
     private final ModelRenderer LEar_r1;
-    private final ModelRenderer RHorns;
-    private final ModelRenderer RHorn2_r1;
-    private final ModelRenderer RHorn1_r1;
-    private final ModelRenderer LHorns;
-    private final ModelRenderer LHorn2_r1;
-    private final ModelRenderer LHorn1_r1;
+    private final ModelRenderer horns;
+    private final ModelRenderer lefthorns;
+    private final ModelRenderer cube_r6;
+    private final ModelRenderer cube_r7;
+    private final ModelRenderer righthorns;
+    private final ModelRenderer cube_r8;
+    private final ModelRenderer cube_r9;
     private final ModelRenderer Arrows;
     private final ModelRenderer cube_r1;
     private final ModelRenderer cube_r2;
@@ -62,9 +63,8 @@ public class AnathemaModel extends SegmentedModel<TaillessAnathemaEntity> {
         Body.setPos(0.0F, -17.0F, 3.0F);
         Bulldrake.addChild(Body);
         setRotationAngle(Body, 1.309F, 0.0F, 0.0F);
-        Body.texOffs(170, 141).addBox(-8.0F, 16.0F, -6.0002F, 16.0F, 8.0F, 12.0F, 0.0F, false);
         Body.texOffs(153, 58).addBox(-12.0F, 0.0F, -10.0002F, 24.0F, 16.0F, 16.0F, 0.0F, false);
-        Body.texOffs(0, 169).addBox(-8.0F, 24.0F, -10.0002F, 16.0F, 12.0F, 16.0F, 0.0F, false);
+        Body.texOffs(0, 169).addBox(-8.0F, 15.3067F, -12.3295F, 16.0F, 12.0F, 16.0F, 0.0F, false);
 
         Body_r1 = new ModelRenderer(this);
         Body_r1.setPos(0.0F, 24.0F, -6.0F);
@@ -82,27 +82,28 @@ public class AnathemaModel extends SegmentedModel<TaillessAnathemaEntity> {
         RThigh.setPos(0.0F, -4.2541F, 3.6454F);
         RLegParts.addChild(RThigh);
         setRotationAngle(RThigh, -0.4363F, 0.0F, 0.0F);
-        RThigh.texOffs(106, 176).addBox(-8.0F, -2.0F, -8.0F, 8.0F, 16.0F, 12.0F, 0.0F, false);
+        RThigh.texOffs(106, 176).addBox(-8.0F, 2.1555F, -15.9832F, 8.0F, 16.0F, 12.0F, 0.0F, false);
 
         RKnee = new ModelRenderer(this);
         RKnee.setPos(-2.0F, 7.7459F, -0.3546F);
         RLegParts.addChild(RKnee);
         setRotationAngle(RKnee, -0.0436F, 0.0F, 0.0F);
-        RKnee.texOffs(0, 198).addBox(-6.0F, 0.0F, -6.0F, 8.0F, 12.0F, 8.0F, 0.0F, false);
+        RKnee.texOffs(0, 198).addBox(-6.0F, 0.7844F, -14.9658F, 8.0F, 12.0F, 8.0F, 0.0F, false);
 
         RLeg = new ModelRenderer(this);
         RLeg.setPos(-2.0F, 18.7459F, 1.6454F);
         RLegParts.addChild(RLeg);
         setRotationAngle(RLeg, 0.4363F, 0.0F, 0.0F);
-        RLeg.texOffs(0, 33).addBox(-6.0F, 0.0F, -4.0F, 8.0F, 12.0F, 4.0F, 0.0F, false);
+        RLeg.texOffs(0, 33).addBox(-6.0F, -3.4442F, -12.3149F, 8.0F, 12.0F, 4.0F, 0.0F, false);
 
         RFoot = new ModelRenderer(this);
         RFoot.setPos(-2.0F, 24.7459F, 2.6454F);
         RLegParts.addChild(RFoot);
-        RFoot.texOffs(176, 181).addBox(-6.0F, 6.0F, -8.0F, 8.0F, 4.0F, 12.0F, 0.0F, false);
+        setRotationAngle(RFoot, 0.0F, 0.0F, 0.0F);
+        RFoot.texOffs(176, 181).addBox(-6.0F, 6.3928F, -16.9914F, 8.0F, 4.0F, 12.0F, 0.0F, false);
 
         LLegParts = new ModelRenderer(this);
-        LLegParts.setPos(8.0F, -7.0F, 30.0F);
+        LLegParts.setPos(8.0F, -7.0F, 28.0F);
         Bulldrake.addChild(LLegParts);
         setRotationAngle(LLegParts, -0.0436F, 0.0F, 0.0F);
 
@@ -111,27 +112,29 @@ public class AnathemaModel extends SegmentedModel<TaillessAnathemaEntity> {
         LThigh.setPos(0.0F, -5.0F, 6.0F);
         LLegParts.addChild(LThigh);
         setRotationAngle(LThigh, -0.4363F, 0.0F, 0.0F);
-        LThigh.texOffs(65, 169).addBox(0.0F, -2.0F, -8.0F, 8.0F, 16.0F, 12.0F, 0.0F, false);
+        LThigh.texOffs(65, 169).addBox(0.0F, 2.1555F, -15.9832F, 8.0F, 16.0F, 12.0F, 0.0F, false);
 
         LKnee = new ModelRenderer(this);
         LKnee.setPos(6.0F, 7.0F, 2.0F);
         LLegParts.addChild(LKnee);
         setRotationAngle(LKnee, -0.0436F, 0.0F, 0.0F);
-        LKnee.texOffs(147, 193).addBox(-6.0F, 0.0F, -6.0F, 8.0F, 12.0F, 8.0F, 0.0F, false);
+        LKnee.texOffs(147, 193).addBox(-6.0F, 0.7844F, -14.9658F, 8.0F, 12.0F, 8.0F, 0.0F, false);
 
         LLeg = new ModelRenderer(this);
         LLeg.setPos(6.0F, 19.0F, 3.0F);
         LLegParts.addChild(LLeg);
         setRotationAngle(LLeg, 0.4363F, 0.0F, 0.0F);
-        LLeg.texOffs(0, 0).addBox(-6.0F, 0.0F, -4.0F, 8.0F, 12.0F, 4.0F, 0.0F, false);
+        LLeg.texOffs(0, 0).addBox(-6.0F, -3.4442F, -12.3149F, 8.0F, 12.0F, 4.0F, 0.0F, false);
 
         LFoot = new ModelRenderer(this);
         LFoot.setPos(6.0F, 25.0F, 3.0F);
         LLegParts.addChild(LFoot);
-        LFoot.texOffs(147, 176).addBox(-6.0F, 6.0F, -8.0F, 8.0F, 4.0F, 12.0F, 0.0F, false);
+        setRotationAngle(LFoot, 0.0F, 0.0F, 0.0F);
+        LFoot.texOffs(147, 176).addBox(-6.0F, 6.3928F, -16.9914F, 8.0F, 4.0F, 12.0F, 0.0F, false);
 
         HeadParts = new ModelRenderer(this);
-        HeadParts.setPos(0.6666F, -18.0F, -20.6666F);
+        HeadParts.setPos(0.6666F, -18.0F, -11.6666F);
+
 
         Head_r1 = new ModelRenderer(this);
         Head_r1.setPos(1.3334F, -9.0F, -1.3334F);
@@ -142,6 +145,7 @@ public class AnathemaModel extends SegmentedModel<TaillessAnathemaEntity> {
         JawUp.setPos(1.3334F, -5.0F, -1.3334F);
         HeadParts.addChild(JawUp);
         JawUp.texOffs(105, 141).addBox(-12.0F, 2.0F, -22.0F, 20.0F, 10.0F, 24.0F, 0.0F, false);
+        JawUp.texOffs(82, 205).addBox(-12.0F, 2.0F, -22.0F, 20.0F, 8.0F, 24.0F, 0.0F, false);
 
         JawDown = new ModelRenderer(this);
         JawDown.setPos(1.3334F, 1.0F, -1.3334F);
@@ -168,35 +172,44 @@ public class AnathemaModel extends SegmentedModel<TaillessAnathemaEntity> {
         LEar.addChild(LEar_r1);
         LEar_r1.texOffs(105, 141).addBox(-2.0F, 1.0F, -4.0F, 4.0F, 8.0F, 4.0F, 0.0F, false);
 
-        RHorns = new ModelRenderer(this);
-        RHorns.setPos(5.3334F, 89.0F, -13.3334F);
-        HeadParts.addChild(RHorns);
+        horns = new ModelRenderer(this);
+        horns.setPos(-0.6666F, 52.0F, -5.3334F);
+        HeadParts.addChild(horns);
 
 
-        RHorn2_r1 = new ModelRenderer(this);
-        RHorn2_r1.setPos(-22.0F, -104.0F, 10.0F);
-        RHorns.addChild(RHorn2_r1);
-        RHorn2_r1.texOffs(0, 99).addBox(-2.0F, -6.0F, -4.0F, 4.0F, 16.0F, 4.0F, 0.0F, false);
-
-        RHorn1_r1 = new ModelRenderer(this);
-        RHorn1_r1.setPos(-24.0F, -99.0F, 10.0F);
-        RHorns.addChild(RHorn1_r1);
-        RHorn1_r1.texOffs(141, 33).addBox(4.0F, -3.0F, -4.0F, 4.0F, 12.0F, 4.0F, 0.0F, false);
-
-        LHorns = new ModelRenderer(this);
-        LHorns.setPos(5.3334F, 89.0F, -13.3334F);
-        HeadParts.addChild(LHorns);
+        lefthorns = new ModelRenderer(this);
+        lefthorns.setPos(13.4509F, -61.3241F, -0.674F);
+        horns.addChild(lefthorns);
 
 
-        LHorn2_r1 = new ModelRenderer(this);
-        LHorn2_r1.setPos(10.0F, -104.0F, 10.0F);
-        LHorns.addChild(LHorn2_r1);
-        LHorn2_r1.texOffs(0, 66).addBox(-2.0F, -6.0F, -4.0F, 4.0F, 16.0F, 4.0F, 0.0F, false);
+        cube_r6 = new ModelRenderer(this);
+        cube_r6.setPos(-0.6043F, 0.4661F, 0.491F);
+        lefthorns.addChild(cube_r6);
+        setRotationAngle(cube_r6, 0.0F, 1.0472F, -0.5672F);
+        cube_r6.texOffs(0, 70).addBox(0.5F, -0.5F, 0.5F, 4.0F, 1.0F, 1.0F, 2.0F, false);
 
-        LHorn1_r1 = new ModelRenderer(this);
-        LHorn1_r1.setPos(6.0F, -99.0F, 10.0F);
-        LHorns.addChild(LHorn1_r1);
-        LHorn1_r1.texOffs(0, 132).addBox(-2.0F, -3.0F, -4.0F, 4.0F, 12.0F, 4.0F, 0.0F, false);
+        cube_r7 = new ModelRenderer(this);
+        cube_r7.setPos(-1.6423F, 0.8622F, 1.174F);
+        lefthorns.addChild(cube_r7);
+        setRotationAngle(cube_r7, 0.0F, 0.0F, -0.3927F);
+        cube_r7.texOffs(0, 70).addBox(-1.0F, -0.5F, -0.5F, 3.0F, 1.0F, 1.0F, 2.0F, false);
+
+        righthorns = new ModelRenderer(this);
+        righthorns.setPos(-13.7588F, -61.3531F, -0.625F);
+        horns.addChild(righthorns);
+
+
+        cube_r8 = new ModelRenderer(this);
+        cube_r8.setPos(3.9122F, 0.4951F, -4.558F);
+        righthorns.addChild(cube_r8);
+        setRotationAngle(cube_r8, 0.0F, -1.0472F, 0.5672F);
+        cube_r8.texOffs(0, 70).addBox(-1.5F, 1.5F, 5.5F, 4.0F, 1.0F, 1.0F, 2.0F, false);
+
+        cube_r9 = new ModelRenderer(this);
+        cube_r9.setPos(4.9502F, 0.8912F, -3.875F);
+        righthorns.addChild(cube_r9);
+        setRotationAngle(cube_r9, 0.0F, 0.0F, 0.3927F);
+        cube_r9.texOffs(0, 70).addBox(-5.0F, 0.5F, 4.5F, 3.0F, 1.0F, 1.0F, 2.0F, false);
 
         Arrows = new ModelRenderer(this);
         Arrows.setPos(0.0F, -29.0F, 3.0F);
@@ -235,7 +248,7 @@ public class AnathemaModel extends SegmentedModel<TaillessAnathemaEntity> {
         cube_r5.texOffs(17, 99).addBox(-7.0F, -6.0F, -3.0F, 2.0F, 20.0F, 2.0F, 0.0F, false);
 
         RWings = new ModelRenderer(this);
-        RWings.setPos(-16.0F, -14.0F, -5.0F);
+        RWings.setPos(-16.0F, -14.0F, -10.0F);
         Bulldrake.addChild(RWings);
 
 
@@ -243,18 +256,16 @@ public class AnathemaModel extends SegmentedModel<TaillessAnathemaEntity> {
         RWing.setPos(2.0F, -10.0F, 1.0F);
         RWings.addChild(RWing);
         setRotationAngle(RWing, 0.0F, 0.0F, -0.7854F);
-        RWing.texOffs(141, 18).addBox(-62.0F, 6.0F, -8.0F, 60.0F, 4.0F, 4.0F, 0.0F, false);
-        RWing.texOffs(0, 99).addBox(-58.0F, 6.0F, -4.0F, 56.0F, 4.0F, 28.0F, 0.0F, false);
+        RWing.texOffs(0, 99).addBox(-58.0F, 10.0F, -4.0F, 56.0F, 0.0F, 28.0F, 0.0F, false);
 
         RWing2 = new ModelRenderer(this);
         RWing2.setPos(-27.0F, 33.0F, -3.0F);
         RWings.addChild(RWing2);
         setRotationAngle(RWing2, 0.0F, 0.7854F, 0.6109F);
-        RWing2.texOffs(85, 132).addBox(-62.0F, 6.0F, -8.0F, 60.0F, 4.0F, 4.0F, 0.0F, false);
-        RWing2.texOffs(0, 0).addBox(-58.0F, 6.0F, -4.0F, 56.0F, 4.0F, 28.0F, 0.0F, false);
+        RWing2.texOffs(0, 0).addBox(-64.0F, 7.0F, 7.0F, 56.0F, 0.0F, 28.0F, 0.0F, false);
 
         LWings = new ModelRenderer(this);
-        LWings.setPos(16.0F, -14.0F, -5.0F);
+        LWings.setPos(16.0F, -14.0F, -10.0F);
         Bulldrake.addChild(LWings);
 
 
@@ -262,15 +273,13 @@ public class AnathemaModel extends SegmentedModel<TaillessAnathemaEntity> {
         LWing.setPos(-2.0F, -11.0F, 1.0F);
         LWings.addChild(LWing);
         setRotationAngle(LWing, 0.0F, 0.0F, 0.7854F);
-        LWing.texOffs(141, 9).addBox(2.0F, 6.0F, -8.0F, 60.0F, 4.0F, 4.0F, 0.0F, false);
-        LWing.texOffs(0, 66).addBox(2.0F, 6.0F, -4.0F, 56.0F, 4.0F, 28.0F, 0.0F, false);
+        LWing.texOffs(0, 66).addBox(2.0F, 10.0F, -4.0F, 56.0F, 0.0F, 28.0F, 0.0F, false);
 
         LWing2 = new ModelRenderer(this);
         LWing2.setPos(27.0F, 32.0F, -3.0F);
         LWings.addChild(LWing2);
         setRotationAngle(LWing2, 0.0F, -0.7854F, -0.6109F);
-        LWing2.texOffs(141, 0).addBox(2.0F, 6.0F, -8.0F, 60.0F, 4.0F, 4.0F, 0.0F, false);
-        LWing2.texOffs(0, 33).addBox(2.0F, 6.0F, -4.0F, 56.0F, 4.0F, 28.0F, 0.0F, false);
+        LWing2.texOffs(0, 33).addBox(8.0F, 7.0F, 6.0F, 56.0F, 0.0F, 28.0F, 0.0F, false);
 
         Neck = new ModelRenderer(this);
         Neck.setPos(0.0F, 0.0F, 0.0F);

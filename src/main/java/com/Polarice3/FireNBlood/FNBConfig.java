@@ -72,6 +72,7 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> HexerSpawn;
     public static final ForgeConfigSpec.ConfigValue<Boolean> CultistsSpawn;
 
+    public static final ForgeConfigSpec.ConfigValue<Boolean> EvilEyeEvent;
     public static final ForgeConfigSpec.ConfigValue<Boolean> SoulRepair;
     public static final ForgeConfigSpec.ConfigValue<Boolean> TotemUndying;
     public static final ForgeConfigSpec.ConfigValue<Boolean> StarterTotem;
@@ -94,6 +95,8 @@ public class FNBConfig {
         BUILDER.push("General");
         MaxSouls = BUILDER.comment("Totem Maximum Soul Count, Default: 10000")
                 .defineInRange("maxSouls", 10000, 100, Integer.MAX_VALUE);
+        EvilEyeEvent = BUILDER.comment("If Players can obtain the Evil Eye, Default: false")
+                .define("evileye", false);
         SoulRepair = BUILDER.comment("Dark and Necro Robes repair themselves using Soul Energy, Default: true")
                 .define("soulrepair", true);
         TotemUndying = BUILDER.comment("Totem of Souls will save the Player if full of Soul Energy, Default: true")

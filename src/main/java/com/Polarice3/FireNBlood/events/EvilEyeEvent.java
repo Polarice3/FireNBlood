@@ -1,6 +1,6 @@
 package com.Polarice3.FireNBlood.events;
 
-import com.Polarice3.FireNBlood.FireNBlood;
+/*import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.entities.ai.MoveTowardsTargetGoal;
 import com.Polarice3.FireNBlood.entities.hostile.*;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.BlackBullEntity;
@@ -243,4 +243,4 @@ public class EvilEyeEvent {
         }
     }
 
-}
+}*/

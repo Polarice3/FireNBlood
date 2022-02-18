@@ -111,18 +111,20 @@ public class CallerEntity extends AbstractTaillessEntity implements IChargeableM
     }
 
     public void die(DamageSource cause) {
-        for (PlayerEntity entity : this.level.getEntitiesOfClass(PlayerEntity.class, this.getBoundingBox().inflate(64.0D, 64.0D, 64.0D), field_213690_b)) {
-            EffectInstance effectinstance1 = entity.getEffect(RegistryHandler.EVIL_EYE.get());
-            if (effectinstance1 == null) {
-                EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, 2);
-                entity.addEffect(effectinstance);
-            } else {
-                int amp = effectinstance1.getAmplifier();
-                int i = amp + 2;
-                i = MathHelper.clamp(i, 0, 5);
-                entity.removeEffectNoUpdate(RegistryHandler.EVIL_EYE.get());
-                EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, i);
-                entity.addEffect(effectinstance);
+        if (FNBConfig.EvilEyeEvent.get()) {
+            for (PlayerEntity entity : this.level.getEntitiesOfClass(PlayerEntity.class, this.getBoundingBox().inflate(64.0D, 64.0D, 64.0D), field_213690_b)) {
+                EffectInstance effectinstance1 = entity.getEffect(RegistryHandler.EVIL_EYE.get());
+                if (effectinstance1 == null) {
+                    EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, 2);
+                    entity.addEffect(effectinstance);
+                } else {
+                    int amp = effectinstance1.getAmplifier();
+                    int i = amp + 2;
+                    i = MathHelper.clamp(i, 0, 5);
+                    entity.removeEffectNoUpdate(RegistryHandler.EVIL_EYE.get());
+                    EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, i);
+                    entity.addEffect(effectinstance);
+                }
             }
         }
     }

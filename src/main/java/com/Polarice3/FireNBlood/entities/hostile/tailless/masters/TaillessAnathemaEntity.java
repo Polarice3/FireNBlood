@@ -59,7 +59,6 @@ public class TaillessAnathemaEntity extends ServantTaillessEntity {
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
         return MobEntity.createMobAttributes()
-                .add(Attributes.ATTACK_SPEED, 12.0D)
                 .add(Attributes.FOLLOW_RANGE, 32.0D)
                 .add(Attributes.MAX_HEALTH, 150.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.30D)

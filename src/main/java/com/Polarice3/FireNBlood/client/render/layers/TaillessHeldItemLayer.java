@@ -29,9 +29,9 @@ public class TaillessHeldItemLayer<T extends MobEntity, M extends EntityModel<T>
                 matrixStackIn.pushPose();
                 // y - = ^, + = v  z - = >, + = <
                 if (!entitylivingbaseIn.isAggressive()) {
-                    matrixStackIn.translate((flag ? -0.125D : 0.125D), 1.5D, -0.2D);
+                    matrixStackIn.translate((flag ? -0.125D : 0.125D), 1.05D, -0.2D);
                 } else {
-                    matrixStackIn.translate((flag ? -0.125D : 0.125D), 1.45D, -0.05D);
+                    matrixStackIn.translate((flag ? -0.125D : 0.125D), 1.0D, -0.05D);
                 }
                 this.func_229135_a_(entitylivingbaseIn, itemstack1, ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, HandSide.RIGHT, matrixStackIn, bufferIn, packedLightIn);
                 this.func_229135_a_(entitylivingbaseIn, itemstack, ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND, HandSide.LEFT, matrixStackIn, bufferIn, packedLightIn);

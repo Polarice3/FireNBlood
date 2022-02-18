@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.entities.hostile;
 
+import com.Polarice3.FireNBlood.entities.hostile.cultists.AbstractCultistEntity;
 import com.Polarice3.FireNBlood.entities.hostile.cultists.ChannellerEntity;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
@@ -34,7 +35,7 @@ public class NethernalEntity extends MonsterEntity {
     private int attackTimer;
     private static final Predicate<Entity> field_213690_b = Entity::isAlive;
     private static final Predicate<LivingEntity> TARGETS = (enemy) -> !(enemy instanceof WitchEntity)
-            && !(enemy instanceof ChannellerEntity) && !(enemy instanceof AbstractTaillessEntity)
+            && !(enemy instanceof AbstractCultistEntity) && !(enemy instanceof AbstractTaillessEntity)
             && !(enemy instanceof AbstractPiglinEntity) && !(enemy instanceof HoglinEntity)
             && !(enemy.fireImmune());
     private boolean limitedLifespan;

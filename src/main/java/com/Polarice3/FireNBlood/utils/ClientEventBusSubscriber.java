@@ -29,9 +29,9 @@ public class ClientEventBusSubscriber {
 
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event){
-        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.TAILLESS_WRETCH.get(), BullmanRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.TAILLESS_DRUID.get(), BullmanDruidRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.TAILLESS_HORROR.get(), BulldrakeRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.TAILLESS_WRETCH.get(), TaillessWretchRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.TAILLESS_DRUID.get(), TaillessDruidRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.TAILLESS_HORROR.get(), TaillessHorrorRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.BLACK_BULL.get(), BlackBullRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.BULLET.get(), BulletRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.MINOTAUR.get(), MinotaurRenderer::new);

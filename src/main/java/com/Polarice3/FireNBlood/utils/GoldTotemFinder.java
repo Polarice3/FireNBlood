@@ -6,17 +6,19 @@ import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import top.theillusivec4.curios.api.CuriosApi;
 
-public class FocusBagFinder {
+public class GoldTotemFinder {
     private static boolean isMatchingItem(ItemStack itemStack) {
-        return itemStack.getItem() == RegistryHandler.FOCUSBAG.get();
+        return itemStack.getItem() == RegistryHandler.GOLDTOTEM.get();
     }
-    public static ItemStack findBag(PlayerEntity playerEntity) {
-        ItemStack foundStack = ItemStack.EMPTY;
+
+    public static ItemStack FindTotem(PlayerEntity playerEntity){
         if (CuriosLoaded.CURIOS.isLoaded()) {
-            foundStack = CuriosApi.getCuriosHelper().findEquippedCurio(FocusBagFinder::isMatchingItem, playerEntity).map(
+            return CuriosApi.getCuriosHelper().findEquippedCurio(GoldTotemFinder::isMatchingItem, playerEntity).map(
                     ImmutableTriple::getRight).orElse(ItemStack.EMPTY);
         }
-        for (int i = 0; i <= playerEntity.inventory.getContainerSize(); i++) {
+        ItemStack foundStack = ItemStack.EMPTY;
+
+        for (int i = 0; i <= 9; i++) {
             ItemStack itemStack = playerEntity.inventory.getItem(i);
             if (!itemStack.isEmpty() && isMatchingItem(itemStack)) {
                 foundStack = itemStack;

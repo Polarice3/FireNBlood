@@ -6,9 +6,7 @@ import com.Polarice3.FireNBlood.inventory.container.WandandBagContainer;
 import com.Polarice3.FireNBlood.items.capability.SoulUsingItemCapability;
 import com.Polarice3.FireNBlood.items.handler.FocusBagItemHandler;
 import com.Polarice3.FireNBlood.spells.*;
-import com.Polarice3.FireNBlood.utils.FocusBagFinder;
-import com.Polarice3.FireNBlood.utils.ParticleUtil;
-import com.Polarice3.FireNBlood.utils.RegistryHandler;
+import com.Polarice3.FireNBlood.utils.*;
 import com.Polarice3.FireNBlood.items.handler.SoulUsingItemHandler;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -29,6 +27,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.network.NetworkHooks;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import top.theillusivec4.curios.api.CuriosApi;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -296,13 +296,7 @@ public class SoulWand extends Item{
     public void MagicResults(ItemStack stack, World worldIn, LivingEntity entityLiving) {
         ItemStack foundStack = ItemStack.EMPTY;
         PlayerEntity playerEntity = (PlayerEntity) entityLiving;
-        for (int i = 0; i <= 9; i++) {
-            ItemStack itemStack = playerEntity.inventory.getItem(i);
-            if (!itemStack.isEmpty() && itemStack.getItem() == RegistryHandler.GOLDTOTEM.get()) {
-                foundStack = itemStack;
-                break;
-            }
-        }
+        foundStack = GoldTotemFinder.FindTotem(playerEntity);
         if (this.getSpell(stack) != null && !foundStack.isEmpty() && GoldTotemItem.currentSouls(foundStack) >= SoulUse(entityLiving, stack)) {
             GoldTotemItem.decreaseSouls(foundStack, SoulUse(entityLiving, stack));
             assert stack.getTag() != null;

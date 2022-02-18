@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.entities.hostile.tailless;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
 import com.Polarice3.FireNBlood.entities.ally.SummonedEntity;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
@@ -51,7 +52,7 @@ public class AbstractTaillessEntity extends MonsterEntity {
     public void die(DamageSource cause) {
         Entity entity = cause.getEntity();
         PlayerEntity playerentity;
-        if (this.EvilEyeGiver()) {
+        if (this.EvilEyeGiver() && FNBConfig.EvilEyeEvent.get()) {
             if (entity instanceof PlayerEntity) {
                 playerentity = (PlayerEntity) entity;
                 int random = this.level.random.nextInt(this.getRandomInt());

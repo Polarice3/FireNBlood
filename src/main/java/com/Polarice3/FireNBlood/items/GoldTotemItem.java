@@ -10,10 +10,10 @@ import com.Polarice3.FireNBlood.entities.hostile.NeophyteEntity;
 import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEntity;
 import com.Polarice3.FireNBlood.entities.neutral.AcolyteEntity;
 import com.Polarice3.FireNBlood.entities.neutral.MutatedEntity;
+import com.Polarice3.FireNBlood.utils.GoldTotemFinder;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -84,7 +84,7 @@ public class GoldTotemItem extends Item {
         }
         if (entityIn instanceof PlayerEntity){
             if (stack.getTag().getInt(SOULSAMOUNT) == MAXSOULS){
-                ItemStack foundStack = FindTotem((PlayerEntity) entityIn);
+                ItemStack foundStack = GoldTotemFinder.FindTotem((PlayerEntity) entityIn);
                 if (!foundStack.isEmpty()) {
                     ((LivingEntity) entityIn).addEffect(new EffectInstance(RegistryHandler.DEATHPROTECT.get(), 20));
                 }
@@ -109,31 +109,13 @@ public class GoldTotemItem extends Item {
         return Soulcount == 0;
     }
 
-    private static boolean isMatchingItem(ItemStack itemStack) {
-        return itemStack.getItem() == RegistryHandler.GOLDTOTEM.get();
-    }
-
     public static int currentSouls(ItemStack itemStack){
         assert itemStack.getTag() != null;
         return itemStack.getTag().getInt(SOULSAMOUNT);
     }
 
-    public static ItemStack FindTotem(PlayerEntity playerEntity){
-        ItemStack foundStack = ItemStack.EMPTY;
-
-        for (int i = 0; i <= 9; i++) {
-            ItemStack itemStack = playerEntity.inventory.getItem(i);
-            if (!itemStack.isEmpty() && isMatchingItem(itemStack)) {
-                foundStack = itemStack;
-                break;
-            }
-        }
-
-        return foundStack;
-    }
-
     public static void handleKill(PlayerEntity playerEntity, LivingEntity victim) {
-        ItemStack foundStack = FindTotem(playerEntity);
+        ItemStack foundStack = GoldTotemFinder.FindTotem(playerEntity);
 
         if (!foundStack.isEmpty()) {
             if (!(victim instanceof SummonedEntity || victim instanceof FriendlyVexEntity)) {
@@ -161,7 +143,7 @@ public class GoldTotemItem extends Item {
     }
 
     public static void EmptySoulTotem(PlayerEntity playerEntity){
-        ItemStack foundStack = FindTotem(playerEntity);
+        ItemStack foundStack = GoldTotemFinder.FindTotem(playerEntity);
         foundStack.setCount(0);
         playerEntity.addItem(new ItemStack(RegistryHandler.SPENTTOTEM.get()));
     }
