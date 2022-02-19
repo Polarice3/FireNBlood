@@ -12,11 +12,11 @@ public class GoldTotemFinder {
     }
 
     public static ItemStack FindTotem(PlayerEntity playerEntity){
+        ItemStack foundStack = ItemStack.EMPTY;
         if (CuriosLoaded.CURIOS.isLoaded()) {
-            return CuriosApi.getCuriosHelper().findEquippedCurio(GoldTotemFinder::isMatchingItem, playerEntity).map(
+            foundStack = CuriosApi.getCuriosHelper().findEquippedCurio(GoldTotemFinder::isMatchingItem, playerEntity).map(
                     ImmutableTriple::getRight).orElse(ItemStack.EMPTY);
         }
-        ItemStack foundStack = ItemStack.EMPTY;
 
         for (int i = 0; i <= 9; i++) {
             ItemStack itemStack = playerEntity.inventory.getItem(i);

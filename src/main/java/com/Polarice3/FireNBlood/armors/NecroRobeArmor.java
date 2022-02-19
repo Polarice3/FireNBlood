@@ -3,6 +3,7 @@ package com.Polarice3.FireNBlood.armors;
 import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.client.model.RobeModel;
 import com.Polarice3.FireNBlood.items.GoldTotemItem;
+import com.Polarice3.FireNBlood.utils.GoldTotemFinder;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -38,14 +39,7 @@ public class NecroRobeArmor extends ArmorItem {
                 CompoundNBT compound = stack.getOrCreateTag();
                 compound.putInt(COOL, 0);
             }
-            ItemStack foundStack = ItemStack.EMPTY;
-            for (int i = 0; i <= 9; i++) {
-                ItemStack itemStack = player.inventory.getItem(i);
-                if (!itemStack.isEmpty() && itemStack.getItem() == RegistryHandler.GOLDTOTEM.get()) {
-                    foundStack = itemStack;
-                    break;
-                }
-            }
+            ItemStack foundStack = GoldTotemFinder.FindTotem(player);
             if (!foundStack.isEmpty() && GoldTotemItem.currentSouls(foundStack) > 0 && stack.isDamaged()) {
                 stack.getTag().putInt(COOL, stack.getTag().getInt(COOL) + 1);
                 if (stack.getTag().getInt(COOL) > 20) {
