@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.items;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.FireNBlood;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.entity.LivingEntity;
@@ -35,12 +36,21 @@ public class DarkSteak extends Item {
                 EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, 0);
                 entityLiving.addEffect(effectinstance);
             } else {
-                int amp = effectinstance1.getAmplifier();
-                int i = amp + 1;
-                i = MathHelper.clamp(i, 0, 5);
-                entityLiving.removeEffectNoUpdate(RegistryHandler.EVIL_EYE.get());
-                EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, i);
-                entityLiving.addEffect(effectinstance);
+                if (FNBConfig.EvilEyeEvent.get()) {
+                    int amp = effectinstance1.getAmplifier();
+                    int i = amp + 1;
+                    i = MathHelper.clamp(i, 0, 5);
+                    entityLiving.removeEffectNoUpdate(RegistryHandler.EVIL_EYE.get());
+                    EffectInstance effectinstance = new EffectInstance(RegistryHandler.EVIL_EYE.get(), 12000, i);
+                    entityLiving.addEffect(effectinstance);
+                } else {
+                    int amp = effectinstance1.getAmplifier();
+                    int i = amp + 1;
+                    i = MathHelper.clamp(i, 0, 5);
+                    entityLiving.removeEffectNoUpdate(RegistryHandler.CURSED.get());
+                    EffectInstance effectinstance = new EffectInstance(RegistryHandler.CURSED.get(), 12000, i);
+                    entityLiving.addEffect(effectinstance);
+                }
             }
         }
 

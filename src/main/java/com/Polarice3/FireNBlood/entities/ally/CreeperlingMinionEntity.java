@@ -45,7 +45,7 @@ public class CreeperlingMinionEntity extends SummonedEntity implements IChargeab
     private int oldSwell;
     private int swell;
     private int maxSwell = 15;
-    private int explosionRadius = 1;
+    private float explosionRadius = 1.0F;
 
     public CreeperlingMinionEntity(EntityType<? extends SummonedEntity> type, World worldIn) {
         super(type, worldIn);

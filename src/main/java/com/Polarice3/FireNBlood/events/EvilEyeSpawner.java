@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.events;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.entities.ai.MoveTowardsTargetGoal;
 import com.Polarice3.FireNBlood.entities.hostile.TankEntity;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.*;
@@ -24,89 +25,93 @@ public class EvilEyeSpawner {
     public int tick(ServerWorld world) {
         Random random = world.random;
         --this.ticksUntilSpawn;
-        if (this.ticksUntilSpawn > 0) {
-            return 0;
-        } else {
-            if (world.dimensionType().bedWorks()) {
-                int j = world.players().size();
-                if (j < 1) {
-                    return 0;
-                } else {
-                    PlayerEntity playerentity = world.players().get(random.nextInt(j));
-                    if (playerentity.isSpectator()){
+        if (FNBConfig.EvilEyeEvent.get()) {
+            if (this.ticksUntilSpawn > 0) {
+                return 0;
+            } else {
+                if (world.dimensionType().bedWorks()) {
+                    int j = world.players().size();
+                    if (j < 1) {
                         return 0;
-                    } else if (playerentity.hasEffect(RegistryHandler.EVIL_EYE.get())){
-                        int k = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
-                        int l = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
-                        BlockPos.Mutable blockpos$mutable = playerentity.blockPosition().mutable().move(k, 0, l);
-                        if (!world.hasChunksAt(blockpos$mutable.getX() - 10, blockpos$mutable.getY() - 10, blockpos$mutable.getZ() - 10, blockpos$mutable.getX() + 10, blockpos$mutable.getY() + 10, blockpos$mutable.getZ() + 10)) {
+                    } else {
+                        PlayerEntity playerentity = world.players().get(random.nextInt(j));
+                        if (playerentity.isSpectator()) {
                             return 0;
-                        } else {
-                            int i1 = 0;
-                            int randomfull = random.nextInt(8);
-                            int evileyeLevel = 0;
-                            evileyeLevel += playerentity.getEffect(RegistryHandler.EVIL_EYE.get()).getAmplifier() + 1;
-                            evileyeLevel = MathHelper.clamp(evileyeLevel, 0, 5);
-                            blockpos$mutable.setY(world.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockpos$mutable).getY());
-                            blockpos$mutable.setX(blockpos$mutable.getX() + random.nextInt(5) - random.nextInt(5));
-                            blockpos$mutable.setZ(blockpos$mutable.getZ() + random.nextInt(5) - random.nextInt(5));
-                            this.ticksUntilSpawn += world.random.nextInt(1200) + 1200/playerentity.getEffect(RegistryHandler.EVIL_EYE.get()).getAmplifier() + 1;
-                            if (evileyeLevel >= 1){
-                                int random2 = random.nextInt(3);
-                                if (random2 == 0 || random2 == 2) {
-                                    for (int k1 = 0; k1 < evileyeLevel; ++k1) {
-                                        ++i1;
-                                        if (k1 == 0) {
-                                            if (!this.spawnBlackBulls(world, blockpos$mutable, random)) {
-                                                break;
+                        } else if (playerentity.hasEffect(RegistryHandler.EVIL_EYE.get())) {
+                            int k = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
+                            int l = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
+                            BlockPos.Mutable blockpos$mutable = playerentity.blockPosition().mutable().move(k, 0, l);
+                            if (!world.hasChunksAt(blockpos$mutable.getX() - 10, blockpos$mutable.getY() - 10, blockpos$mutable.getZ() - 10, blockpos$mutable.getX() + 10, blockpos$mutable.getY() + 10, blockpos$mutable.getZ() + 10)) {
+                                return 0;
+                            } else {
+                                int i1 = 0;
+                                int randomfull = random.nextInt(8);
+                                int evileyeLevel = 0;
+                                evileyeLevel += playerentity.getEffect(RegistryHandler.EVIL_EYE.get()).getAmplifier() + 1;
+                                evileyeLevel = MathHelper.clamp(evileyeLevel, 0, 5);
+                                blockpos$mutable.setY(world.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockpos$mutable).getY());
+                                blockpos$mutable.setX(blockpos$mutable.getX() + random.nextInt(5) - random.nextInt(5));
+                                blockpos$mutable.setZ(blockpos$mutable.getZ() + random.nextInt(5) - random.nextInt(5));
+                                this.ticksUntilSpawn += world.random.nextInt(1200) + 1200 / (1 + playerentity.getEffect(RegistryHandler.EVIL_EYE.get()).getAmplifier());
+                                if (evileyeLevel >= 0) {
+                                    int random2 = random.nextInt(3);
+                                    if (random2 == 0 || random2 == 2) {
+                                        for (int k1 = 0; k1 < evileyeLevel; ++k1) {
+                                            ++i1;
+                                            if (k1 == 0) {
+                                                if (!this.spawnBlackBulls(world, blockpos$mutable, random)) {
+                                                    break;
+                                                }
+                                            } else {
+                                                this.spawnBlackBulls(world, blockpos$mutable, random);
                                             }
-                                        } else {
-                                            this.spawnBlackBulls(world, blockpos$mutable, random);
                                         }
                                     }
+                                    if (random2 == 1 || random2 == 2) {
+                                        this.spawnWretches(world, blockpos$mutable, random);
+                                    }
                                 }
-                                if (random2 == 1 || random2 == 2){
-                                    this.spawnWretches(world, blockpos$mutable, random);
+                                if (evileyeLevel >= 2) {
+                                    if (randomfull == 0 || randomfull == 2) {
+                                        BlockPos.Mutable blockpos$mutable2 = playerentity.blockPosition().mutable().move(k, 16, l);
+                                        blockpos$mutable2.setY(world.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockpos$mutable).getY());
+                                        blockpos$mutable2.setX(blockpos$mutable.getX() + random.nextInt(5) - random.nextInt(5));
+                                        blockpos$mutable2.setZ(blockpos$mutable.getZ() + random.nextInt(5) - random.nextInt(5));
+                                        this.spawnHorrors(world, blockpos$mutable2, random);
+                                    }
                                 }
-                            }
-                            if (evileyeLevel >= 2) {
-                                if (randomfull == 0 || randomfull == 2) {
-                                    BlockPos.Mutable blockpos$mutable2 = playerentity.blockPosition().mutable().move(k, 16, l);
-                                    blockpos$mutable2.setY(world.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockpos$mutable).getY());
-                                    blockpos$mutable2.setX(blockpos$mutable.getX() + random.nextInt(5) - random.nextInt(5));
-                                    blockpos$mutable2.setZ(blockpos$mutable.getZ() + random.nextInt(5) - random.nextInt(5));
-                                    this.spawnHorrors(world, blockpos$mutable2, random);
-                                }
-                            }
 
-                            if (evileyeLevel >= 3){
-                                if (randomfull == 2 || randomfull == 4) {
-                                    this.spawnDruids(world, blockpos$mutable, random);
+                                if (evileyeLevel >= 3) {
+                                    if (randomfull == 2 || randomfull == 4) {
+                                        this.spawnDruids(world, blockpos$mutable, random);
+                                    }
                                 }
-                            }
 
-                            if (evileyeLevel >= 4){
-                                if (randomfull == 0 || randomfull == 2 || randomfull == 3) {
-                                    this.spawnTanks(world, blockpos$mutable, random);
+                                if (evileyeLevel >= 4) {
+                                    if (randomfull == 0 || randomfull == 2 || randomfull == 3) {
+                                        this.spawnTanks(world, blockpos$mutable, random);
+                                    }
                                 }
-                            }
 
-                            if (evileyeLevel >= 5) {
-                                int random3 = random.nextInt(64);
-                                if (random3 == 0) {
-                                    this.spawnMaster(world, blockpos$mutable, random);
+                                if (evileyeLevel >= 5) {
+                                    int random3 = random.nextInt(64);
+                                    if (random3 == 0) {
+                                        this.spawnMaster(world, blockpos$mutable, random);
+                                    }
                                 }
-                            }
 
-                            return i1;
+                                return i1;
+                            }
+                        } else {
+                            return 0;
                         }
-                    } else {
-                        return 0;
                     }
+                } else {
+                    return 0;
                 }
-            } else {
-                return 0;
             }
+        } else {
+            return 0;
         }
     }
 

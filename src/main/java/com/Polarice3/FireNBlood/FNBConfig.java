@@ -70,6 +70,7 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> CallerSpawnMax;
     public static final ForgeConfigSpec.ConfigValue<Integer> WandVexLimit;
     public static final ForgeConfigSpec.ConfigValue<Integer> StaffVexLimit;
+    public static final ForgeConfigSpec.ConfigValue<Integer> UndeadMinionHealCost;
 
     public static final ForgeConfigSpec.ConfigValue<Float> HealAmount;
 
@@ -84,6 +85,8 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Boolean> UndeadTeleport;
     public static final ForgeConfigSpec.ConfigValue<Boolean> VexTeleport;
     public static final ForgeConfigSpec.ConfigValue<Boolean> ShowNum;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> MinionsAttackCreepers;
+    public static final ForgeConfigSpec.ConfigValue<Boolean> UndeadMinionHeal;
 
     public static final ForgeConfigSpec.ConfigValue<Boolean> ProfanedTowerGen;
     public static final ForgeConfigSpec.ConfigValue<Boolean> ProfanedShrineGen;
@@ -198,7 +201,7 @@ public class FNBConfig {
         DragonFireballDuration = BUILDER.comment("Time to cast Dragon Fireball Spell, Default: 30")
                 .defineInRange("dragonfireballtime", 30, 0, 72000);
         CreeperlingDuration = BUILDER.comment("Time to cast Creeperling Spell per second, Default: 10")
-                .defineInRange("creeperlingtime", 20, 0, 72000);
+                .defineInRange("creeperlingtime", 10, 0, 72000);
         BUILDER.pop();
         BUILDER.push("Summon Down Duration");
         VexCooldown = BUILDER.comment("Vex Spell Cooldown, Default: 340")
@@ -239,6 +242,12 @@ public class FNBConfig {
                 .define("undeadteleport", false);
         VexTeleport = BUILDER.comment("Whether Vex Minions can teleport to Players, Default: true")
                 .define("vexteleport", true);
+        MinionsAttackCreepers = BUILDER.comment("Whether Minions can attack Creepers if Mob Griefing Rule is False, Default: true")
+                .define("minionattackcreepers", true);
+        UndeadMinionHeal = BUILDER.comment("Whether Undead Minions can heal if summoned while wearing Necro Robes, Default: true")
+                .define("undeadminionheal", true);
+        UndeadMinionHealCost = BUILDER.comment("How much Soul Energy it cost per second for an Undead Minion to heal, Default: 5")
+                .defineInRange("undeadminionhealcost", 5, 1, Integer.MAX_VALUE);
         WandVexLimit = BUILDER.comment("Number of Vex Minions that can be spawn with a wand, without instantly dying, around the player, Default: 8")
                 .defineInRange("wandvexlimit", 8, 1, Integer.MAX_VALUE);
         StaffVexLimit = BUILDER.comment("Number of Vex Minions that can be spawn with a staff, without instantly dying, around the player, Default: 16")

@@ -63,9 +63,10 @@ public class WindTotemTileEntity extends TotemTileEntity {
         for (LivingEntity entity : this.getLevel().getEntitiesOfClass(LivingEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(10.0D, 10.0D, 10.0D))) {
             if (!entity.hasEffect(Effects.SLOW_FALLING)) {
                 if (entity instanceof PlayerEntity) {
-                    if (!((PlayerEntity) entity).isCreative()) {
-                        this.launch(entity);
-                        entity.addEffect(new EffectInstance(Effects.SLOW_FALLING, 100));
+                    PlayerEntity player = (PlayerEntity) entity;
+                    if (!player.isCreative()) {
+                        this.launch(player);
+                        player.addEffect(new EffectInstance(Effects.SLOW_FALLING, 100));
                     }
                 } else {
                     this.launch(entity);

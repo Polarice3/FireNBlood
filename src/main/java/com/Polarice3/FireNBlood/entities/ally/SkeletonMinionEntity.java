@@ -1,6 +1,10 @@
 package com.Polarice3.FireNBlood.entities.ally;
 
+import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.entities.ai.CreatureBowAttackGoal;
+import com.Polarice3.FireNBlood.items.GoldTotemItem;
+import com.Polarice3.FireNBlood.utils.GoldTotemFinder;
+import com.Polarice3.FireNBlood.utils.ParticleUtil;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,6 +29,7 @@ import net.minecraft.potion.Effects;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
@@ -43,6 +48,20 @@ public class SkeletonMinionEntity extends SummonedEntity implements IRangedAttac
         if (this.limitedLifespan && --this.limitedLifeTicks <= 0) {
             this.limitedLifeTicks = 20;
             this.hurt(DamageSource.STARVE, 1.0F);
+        }
+        if (this.isUpgraded() && FNBConfig.UndeadMinionHeal.get()){
+            if (this.getTrueOwner() != null && this.getTrueOwner() instanceof PlayerEntity) {
+                PlayerEntity owner = (PlayerEntity) this.getTrueOwner();
+                ItemStack foundStack = GoldTotemFinder.FindTotem(owner);
+                if (!foundStack.isEmpty() && GoldTotemItem.currentSouls(foundStack) > 0) {
+                    if (this.tickCount % 20 == 0) {
+                        this.heal(1.0F);
+                        Vector3d vector3d = this.getDeltaMovement();
+                        new ParticleUtil(ParticleTypes.SOUL, this.getRandomX(0.5D), this.getRandomY(), this.getRandomZ(0.5D), vector3d.x * -0.2D, 0.1D, vector3d.z * -0.2D);
+                        GoldTotemItem.decreaseSouls(foundStack, FNBConfig.UndeadMinionHealCost.get());
+                    }
+                }
+            }
         }
         super.tick();
     }

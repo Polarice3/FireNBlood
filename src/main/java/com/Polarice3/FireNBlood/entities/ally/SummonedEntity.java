@@ -52,8 +52,7 @@ public class SummonedEntity extends CreatureEntity {
         this.goalSelector.addGoal(8, new FollowOwnerGoal(this, 1.5D, 10.0F, 2.0F, false));
         this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, MobEntity.class, 5, true, false, (entity) ->
                 entity instanceof IMob
-                        && !(entity instanceof CreeperEntity && this.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING))
-                        && !(entity instanceof ParasiteEntity)
+                        && !(entity instanceof CreeperEntity && this.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && FNBConfig.MinionsAttackCreepers.get())
                         && !(entity instanceof SummonedEntity && ((SummonedEntity) entity).getTrueOwner() == this.getTrueOwner())));
         this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));

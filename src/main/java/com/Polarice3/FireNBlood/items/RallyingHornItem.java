@@ -63,37 +63,11 @@ public class RallyingHornItem extends Item {
             entity.summonedTimer = AbstractProtectorEntity.SummonedTimer();*/
             worldIn.addFreshEntity(entity);
         }
-        for (int i = 0; i < random1; ++i) {
-            SavagerEntity savagerEntity = new SavagerEntity(ModEntityType.SAVAGER.get(), worldIn);
-            savagerEntity.setPos(blockpos.getX(), blockpos.getY(), blockpos.getZ());
+        SavagerEntity savagerEntity = new SavagerEntity(ModEntityType.SAVAGER.get(), worldIn);
+        savagerEntity.setPos(blockpos.getX(), blockpos.getY(), blockpos.getZ());
 /*            savagerEntity.setSummoned(true);
             savagerEntity.summonedTimer = AbstractProtectorEntity.SummonedTimer();*/
-            worldIn.addFreshEntity(savagerEntity);
-            if (random2 == 1){
-                ProtectorEntity protectorEntity = new ProtectorEntity(ModEntityType.PROTECTOR.get(), worldIn);
-                protectorEntity.setItemInHand(Hand.MAIN_HAND, new ItemStack(Items.CROSSBOW));
-                protectorEntity.setPos(savagerEntity.getX(), savagerEntity.getY(), savagerEntity.getZ());
-                protectorEntity.startRiding(savagerEntity);
-/*                protectorEntity.setSummoned(true);
-                protectorEntity.summonedTimer = AbstractProtectorEntity.SummonedTimer();*/
-                worldIn.addFreshEntity(protectorEntity);
-            } else if (random2 == 2){
-                RedemptorEntity redemptorEntity = new RedemptorEntity(ModEntityType.REDEMPTOR.get(), worldIn);
-                redemptorEntity.setItemInHand(Hand.MAIN_HAND, new ItemStack(Items.IRON_AXE));
-                redemptorEntity.setPos(savagerEntity.getX(), savagerEntity.getY(), savagerEntity.getZ());
-                redemptorEntity.startRiding(savagerEntity);
-/*                redemptorEntity.setSummoned(true);
-                redemptorEntity.summonedTimer = AbstractProtectorEntity.SummonedTimer();*/
-                worldIn.addFreshEntity(redemptorEntity);
-            } else if (random2 == 3){
-                HexerEntity hexerEntity = new HexerEntity(ModEntityType.HEXER.get(), worldIn);
-                hexerEntity.setItemInHand(Hand.MAIN_HAND, new ItemStack(Items.CROSSBOW));
-                hexerEntity.startRiding(savagerEntity);
-/*                hexerEntity.setSummoned(true);
-                hexerEntity.summonedTimer = AbstractProtectorEntity.SummonedTimer();*/
-                worldIn.addFreshEntity(hexerEntity);
-            }
-        }
+        worldIn.addFreshEntity(savagerEntity);
         if (entityLiving instanceof PlayerEntity){
             if (!((PlayerEntity) entityLiving).isCreative()){
                 stack.setCount(0);

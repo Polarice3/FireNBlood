@@ -404,6 +404,9 @@ public class AbstractProtectorEntity extends CreatureEntity {
                 if (!this.isLoyal()){
                     --this.hiredTimer;
                 }
+                if (this.tickCount % 20 == 0) {
+                    this.heal(1.0F);
+                }
             }
             if (this.hiredTimer == 5){
                 IParticleData iparticledata = ParticleTypes.POOF;
