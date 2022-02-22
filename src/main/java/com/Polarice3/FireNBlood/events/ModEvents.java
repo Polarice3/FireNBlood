@@ -25,6 +25,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -191,7 +193,7 @@ public class ModEvents {
         if (KeyPressed.openWandandBag() && player.getMainHandItem().getItem() instanceof SoulWand){
             SoulWand.BagonKeyPressed(player.getMainHandItem(), player);
         }
-        if (KeyPressed.openWand()){
+        if (KeyPressed.openWand() && player.getMainHandItem().getItem() instanceof SoulWand){
             SoulWand.onKeyPressed(player.getMainHandItem(), player);
         }
         if (player.getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.FURRED_HELMET.get()
@@ -249,25 +251,63 @@ public class ModEvents {
     }
 
     @SubscribeEvent
+    public static void CursedEffect(LivingHurtEvent event){
+        LivingEntity entity = event.getEntityLiving();
+        if (entity.hasEffect(RegistryHandler.CURSED.get())){
+            EffectInstance effectInstance = entity.getEffect(RegistryHandler.CURSED.get());
+            assert effectInstance != null;
+            int i = effectInstance.getAmplifier() + 1;
+            event.setAmount(event.getAmount() * 0.5F + i);
+        }
+    }
+
+    @SubscribeEvent
     public static void GoldTouchDeath(LivingDeathEvent event){
         Entity killed = event.getEntity();
         if (killed instanceof CreatureEntity){
             if (((CreatureEntity) killed).hasEffect(RegistryHandler.GOLDTOUCHED.get())){
-                int amp = Objects.requireNonNull(((CreatureEntity) killed).getEffect(RegistryHandler.GOLDTOUCHED.get())).getAmplifier();
-                for(int i = 0; i < 8 * amp + 1; ++i) {
+                int amp = Objects.requireNonNull(((CreatureEntity) killed).getEffect(RegistryHandler.GOLDTOUCHED.get())).getAmplifier() + 1;
+                for(int i = 0; i < killed.level.random.nextInt(4) + amp * amp; ++i) {
                     killed.spawnAtLocation(new ItemStack(Items.GOLD_NUGGET));
                 }
             }
         }
     }
-    
+
+    @SubscribeEvent
+    public static void CosmicExpDrop(LivingExperienceDropEvent event){
+        if (event.getAttackingPlayer() != null) {
+            if (event.getAttackingPlayer().hasEffect(RegistryHandler.COSMIC.get())) {
+                int a = Objects.requireNonNull(event.getAttackingPlayer().getEffect(RegistryHandler.COSMIC.get())).getAmplifier() + 2;
+                int a1 = MathHelper.clamp(a, 2, 8);
+                event.setDroppedExperience(event.getDroppedExperience() * a1);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void AiryFocus(PotionEvent.PotionAddedEvent event){
+        if (event.getPotionEffect().getEffect() == Effects.LEVITATION){
+            if (event.getEntityLiving().getMainHandItem().getItem() == RegistryHandler.EMPTYCORE.get()){
+                event.getEntityLiving().removeEffect(Effects.LEVITATION);
+                event.getEntityLiving().getMainHandItem().setCount(0);
+                event.getEntityLiving().setItemInHand(Hand.MAIN_HAND, new ItemStack(RegistryHandler.AIRYCORE.get()));
+            }
+            if (event.getEntityLiving().getOffhandItem().getItem() == RegistryHandler.EMPTYCORE.get()){
+                event.getEntityLiving().removeEffect(Effects.LEVITATION);
+                event.getEntityLiving().getOffhandItem().setCount(0);
+                event.getEntityLiving().setItemInHand(Hand.OFF_HAND, new ItemStack(RegistryHandler.AIRYCORE.get()));
+            }
+        }
+    }
+
     @SubscribeEvent
     public static void Mutation(PotionEvent.PotionAddedEvent event){
         if (event.getPotionEffect().getEffect() == RegistryHandler.COSMIC.get()){
             World world = event.getEntityLiving().level;
             LivingEntity entity = event.getEntityLiving();
             for(int i = 0; i < world.random.nextInt(35) + 10; ++i) {
-                world.addParticle(ParticleTypes.DRAGON_BREATH, entity.getX(), entity.getEyeY(), entity.getZ(), 0.0F, 0.0F, 0.0F);
+                new ParticleUtil(ParticleTypes.DRAGON_BREATH, entity.getX(), entity.getEyeY(), entity.getZ(), 0.0F, 0.0F, 0.0F);
             }
             if (entity instanceof CowEntity){
                 MutatedCowEntity mutatedCowEntity = new MutatedCowEntity(ModEntityType.MUTATED_COW.get(), world);

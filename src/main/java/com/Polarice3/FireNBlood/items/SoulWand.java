@@ -217,8 +217,8 @@ public class SoulWand extends Item{
         } else if (getFocus(itemStack).getTag().getString(FOCUS).contains("osseous")) {
             this.setSpellConditions(new SkeletonSpell(), itemStack);
             this.setSpell(4, itemStack);
-        } else if (getFocus(itemStack).getTag().getString(FOCUS).contains("crippling")) {
-            this.setSpellConditions(new CrippleSpell(), itemStack);
+        } else if (getFocus(itemStack).getTag().getString(FOCUS).contains("witchgale")) {
+            this.setSpellConditions(new WitchGaleSpell(), itemStack);
             this.setSpell(5, itemStack);
         } else if (getFocus(itemStack).getTag().getString(FOCUS).contains("spiderling")) {
             this.setSpellConditions(new SpiderlingSpell(), itemStack);
@@ -238,6 +238,12 @@ public class SoulWand extends Item{
         } else if (getFocus(itemStack).getTag().getString(FOCUS).contains("tempting")) {
             this.setSpellConditions(new TemptingSpell(), itemStack);
             this.setSpell(11, itemStack);
+        } else if (getFocus(itemStack).getTag().getString(FOCUS).contains("dragon")) {
+            this.setSpellConditions(new DragonFireballSpell(), itemStack);
+            this.setSpell(12, itemStack);
+        } else if (getFocus(itemStack).getTag().getString(FOCUS).contains("creeperling")) {
+            this.setSpellConditions(new CreeperlingSpell(), itemStack);
+            this.setSpell(13, itemStack);
         }
     }
 
@@ -294,7 +300,7 @@ public class SoulWand extends Item{
     }
 
     public void MagicResults(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        ItemStack foundStack = ItemStack.EMPTY;
+        ItemStack foundStack;
         PlayerEntity playerEntity = (PlayerEntity) entityLiving;
         foundStack = GoldTotemFinder.FindTotem(playerEntity);
         if (this.getSpell(stack) != null && !foundStack.isEmpty() && GoldTotemItem.currentSouls(foundStack) >= SoulUse(entityLiving, stack)) {

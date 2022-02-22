@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "powered=false": { "model": "firenblood:block/wind_totem" },
+    "powered=true": {"model": "firenblood:block/wind_totem_activated"}
+  }
+}

@@ -14,6 +14,9 @@ import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.ShootableItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -32,8 +35,9 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
-public class SummonedEntity extends MonsterEntity {
+public class SummonedEntity extends CreatureEntity {
     protected static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.defineId(SummonedEntity.class, DataSerializers.OPTIONAL_UUID);
     public LivingEntity owner;
     public boolean limitedLifespan;
@@ -53,6 +57,21 @@ public class SummonedEntity extends MonsterEntity {
                         && !(entity instanceof SummonedEntity && ((SummonedEntity) entity).getTrueOwner() == this.getTrueOwner())));
         this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
+    }
+
+    public void aiStep() {
+        this.updateSwingTime();
+        super.aiStep();
+    }
+
+    public ItemStack getProjectile(ItemStack pShootable) {
+        if (pShootable.getItem() instanceof ShootableItem) {
+            Predicate<ItemStack> predicate = ((ShootableItem)pShootable.getItem()).getSupportedHeldProjectiles();
+            ItemStack itemstack = ShootableItem.getHeldProjectile(this, predicate);
+            return itemstack.isEmpty() ? new ItemStack(Items.ARROW) : itemstack;
+        } else {
+            return ItemStack.EMPTY;
+        }
     }
 
     public void tick(){
@@ -189,6 +208,10 @@ public class SummonedEntity extends MonsterEntity {
     public void setLimitedLife(int limitedLifeTicksIn) {
         this.limitedLifespan = true;
         this.limitedLifeTicks = limitedLifeTicksIn;
+    }
+
+    public boolean canBeAffected(EffectInstance pPotioneffect) {
+        return pPotioneffect.getEffect() != RegistryHandler.GOLDTOUCHED.get() && super.canBeAffected(pPotioneffect);
     }
 
     static class ZombieAttackGoal extends MeleeAttackGoal {

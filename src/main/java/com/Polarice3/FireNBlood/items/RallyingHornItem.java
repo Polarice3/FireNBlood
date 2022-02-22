@@ -53,7 +53,7 @@ public class RallyingHornItem extends Item {
         }
         for (int i = 0; i < random1; ++i) {
             HexerEntity entity = new HexerEntity(ModEntityType.HEXER.get(), worldIn);
-            if (random2 == 1 || random2 == 2 || random2 == 3 || random2 == 4 || random2 == 5){
+            if (random2 == 0 || random2 == 1 || random2 == 2 || random2 == 3 || random2 == 4){
                 entity.setItemInHand(Hand.MAIN_HAND, new ItemStack(Items.CROSSBOW));
             } else {
                 entity.setItemInHand(Hand.MAIN_HAND, new ItemStack(Items.IRON_SWORD));

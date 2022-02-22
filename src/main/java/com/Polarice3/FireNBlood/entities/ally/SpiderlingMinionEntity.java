@@ -16,7 +16,9 @@ import net.minecraft.pathfinding.ClimberPathNavigator;
 import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -28,7 +30,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 
 public class SpiderlingMinionEntity extends SummonedEntity {
-    private static final DataParameter<Byte> CLIMBING = EntityDataManager.defineId(SpiderEntity.class, DataSerializers.BYTE);
+    private static final DataParameter<Byte> CLIMBING = EntityDataManager.defineId(SpiderlingMinionEntity.class, DataSerializers.BYTE);
 
     public SpiderlingMinionEntity(EntityType<? extends SummonedEntity> type, World worldIn) {
         super(type, worldIn);
@@ -48,6 +50,7 @@ public class SpiderlingMinionEntity extends SummonedEntity {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(0, new SwimGoal(this));
+//        this.goalSelector.addGoal(2, new RidingMobGoal(this));
         this.goalSelector.addGoal(3, new LeapAtTargetGoal(this, 0.4F));
         this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(8, new WaterAvoidingRandomWalkingGoal(this, 1.0D, 10));
@@ -136,5 +139,47 @@ public class SpiderlingMinionEntity extends SummonedEntity {
     protected float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn) {
         return 0.65F;
     }
+
+/*    static class RidingMobGoal extends Goal{
+        public SpiderlingMinionEntity spiderlingMinion;
+        private LivingEntity target;
+        private int ticksUntilNextAttack;
+
+        public RidingMobGoal(SpiderlingMinionEntity spiderlingMinion){
+            this.spiderlingMinion = spiderlingMinion;
+        }
+
+        public boolean canUse() {
+            return this.spiderlingMinion.getTarget() != null;
+        }
+
+        public void start() {
+            this.target = this.spiderlingMinion.getTarget();
+            this.ticksUntilNextAttack = 0;
+        }
+
+        public void tick() {
+            if (this.target != null && this.spiderlingMinion.distanceTo(this.target) < 1.0D && !this.target.isVehicle() && !this.spiderlingMinion.isPassenger() && !this.target.isEyeInFluid(FluidTags.WATER)) {
+                this.spiderlingMinion.startRiding(this.target);
+            }
+            if (this.spiderlingMinion.isPassenger() && this.spiderlingMinion.getVehicle() == this.target){
+                this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
+                this.checkAndPerformAttack(this.target);
+            }
+        }
+
+        protected void checkAndPerformAttack(LivingEntity pEnemy) {
+            if (this.ticksUntilNextAttack <= 0) {
+                this.resetAttackCooldown();
+                this.spiderlingMinion.doHurtTarget(pEnemy);
+            }
+
+        }
+
+        protected void resetAttackCooldown() {
+            this.ticksUntilNextAttack = 20;
+        }
+
+    }*/
 
 }

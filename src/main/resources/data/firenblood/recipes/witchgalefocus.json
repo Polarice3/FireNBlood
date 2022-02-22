@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "sfs",
+    "fef",
+    "sfs"
+  ],
+  "key":
+  {
+    "e":
+    {
+      "item": "firenblood:airycore"
+    },
+    "f":
+    {
+      "item": "minecraft:fermented_spider_eye"
+    },
+    "s":
+    {
+      "item": "minecraft:sugar"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:witchgalefocus",
+    "count": 1
+  }
+}

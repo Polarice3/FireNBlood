@@ -20,11 +20,13 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.network.NetworkHooks;
+import top.theillusivec4.curios.api.SlotContext;
+import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class FocusBagItem extends Item {
+public class FocusBagItem extends Item implements ICurioItem {
     public FocusBagItem(){
         super(new Item.Properties()
                 .tab(FireNBlood.TAB)
@@ -32,6 +34,10 @@ public class FocusBagItem extends Item {
                 .setNoRepair()
                 .stacksTo(1)
         );
+    }
+
+    public boolean canEquipFromUse(SlotContext slot, ItemStack stack) {
+        return false;
     }
 
     @Nonnull

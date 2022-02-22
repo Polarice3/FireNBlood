@@ -1,5 +1,6 @@
 package com.Polarice3.FireNBlood.items;
 
+import com.Polarice3.FireNBlood.utils.GoldTotemFinder;
 import com.Polarice3.FireNBlood.utils.ParticleUtil;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import com.google.common.collect.ImmutableMultimap;
@@ -31,15 +32,9 @@ public class SoulStaff extends SoulWand{
     }
 
     public void MagicResults(ItemStack stack, World worldIn, LivingEntity entityLiving) {
-        ItemStack foundStack = ItemStack.EMPTY;
+        ItemStack foundStack;
         PlayerEntity playerEntity = (PlayerEntity) entityLiving;
-        for (int i = 0; i <= 9; i++) {
-            ItemStack itemStack = playerEntity.inventory.getItem(i);
-            if (!itemStack.isEmpty() && itemStack.getItem() == RegistryHandler.GOLDTOTEM.get()) {
-                foundStack = itemStack;
-                break;
-            }
-        }
+        foundStack = GoldTotemFinder.FindTotem(playerEntity);
         if (this.getSpell(stack) != null && !foundStack.isEmpty() && GoldTotemItem.currentSouls(foundStack) >= SoulUse(entityLiving, stack)) {
             GoldTotemItem.decreaseSouls(foundStack, SoulUse(entityLiving, stack));
             this.getSpell(stack).StaffResult(worldIn, entityLiving);

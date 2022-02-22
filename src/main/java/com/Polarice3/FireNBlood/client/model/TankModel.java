@@ -1,6 +1,6 @@
 package com.Polarice3.FireNBlood.client.model;
 
-import com.Polarice3.FireNBlood.entities.hostile.TankEntity;
+import com.Polarice3.FireNBlood.entities.ally.FriendlyTankEntity;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.entity.model.EntityModel;
@@ -119,7 +119,7 @@ public class TankModel <T extends LivingEntity> extends EntityModel<T> {
     @Override
     public void setupAnim(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         float f = ageInTicks / 60.0F;
-        float wheel = MathHelper.cos(limbSwing * 2F) * 1.4F;
+        float wheel = FrontLW.xRot + ageInTicks * 0.3F;
         this.Body.yRot = netHeadYaw * ((float)Math.PI /180F);
         this.Body.xRot = headPitch * ((float)Math.PI / 180F);
         this.BackRW.xRot = wheel;
@@ -130,7 +130,16 @@ public class TankModel <T extends LivingEntity> extends EntityModel<T> {
         this.UBackLW.xRot = wheel;
         this.UFrontLW.xRot = wheel;
         this.FrontLW.xRot = wheel;
-        this.Body.y = MathHelper.sin(f * 40.0F) + 0.4F;
+        if (entityIn instanceof FriendlyTankEntity){
+            if (((FriendlyTankEntity) entityIn).isQueuedToSit()){
+                this.Body.y = 0.4F;
+            } else {
+                this.Body.y = MathHelper.sin(f * 40.0F) + 0.4F;
+            }
+        } else {
+            this.Body.y = MathHelper.sin(f * 40.0F) + 0.4F;
+
+        }
     }
 
     @Override

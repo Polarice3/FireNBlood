@@ -87,7 +87,6 @@ public class SpearItem extends TieredItem implements IVanishable {
         stack.hurtAndBreak(1, attacker, (entity) -> {
             entity.broadcastBreakEvent(EquipmentSlotType.MAINHAND);
         });
-        target.setSecondsOnFire(30);
         return true;
     }
 

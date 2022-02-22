@@ -6,6 +6,7 @@ import com.Polarice3.FireNBlood.entities.bosses.PenanceEntity;
 import com.Polarice3.FireNBlood.entities.bosses.VizierEntity;
 import com.Polarice3.FireNBlood.entities.hostile.*;
 import com.Polarice3.FireNBlood.entities.hostile.cultists.*;
+import com.Polarice3.FireNBlood.entities.hostile.illagers.EnviokerEntity;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.*;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.masters.MinotaurEntity;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.masters.TaillessAnathemaEntity;
@@ -137,6 +138,12 @@ public class ModEntityType {
                     .updateInterval(1)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "soulskull").toString()));
 
+    public static final RegistryObject<EntityType<WitchGaleEntity>> WITCHGALE = ENTITY_TYPES.register("witchgale",
+            () -> EntityType.Builder.<WitchGaleEntity>of(WitchGaleEntity::new, EntityClassification.MISC)
+                    .sized(1.0f,1.0f)
+                    .clientTrackingRange(4)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "witchgale").toString()));
+
     public static final RegistryObject<EntityType<RedemptorEntity>> REDEMPTOR = ENTITY_TYPES.register("redemptor",
             () -> EntityType.Builder.of(RedemptorEntity::new, EntityClassification.MONSTER)
                     .sized(0.6F, 1.95F)
@@ -233,6 +240,13 @@ public class ModEntityType {
                     .clientTrackingRange(8)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "skeletonvillagerminion").toString()));
 
+    public static final RegistryObject<EntityType<EnviokerEntity>> ENVIOKER = ENTITY_TYPES.register("envioker",
+            () -> EntityType.Builder.of(EnviokerEntity::new, EntityClassification.MONSTER)
+                    .canSpawnFarFromPlayer()
+                    .sized(0.6F, 1.95F)
+                    .clientTrackingRange(8)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "envioker").toString()));
+
     public static final RegistryObject<EntityType<MutatedCowEntity>> MUTATED_COW = ENTITY_TYPES.register("mutatedcow",
             () -> EntityType.Builder.of(MutatedCowEntity::new, EntityClassification.MONSTER)
                     .sized(0.9F, 1.95F)
@@ -303,6 +317,12 @@ public class ModEntityType {
                     .sized(0.4F, 0.2F)
                     .clientTrackingRange(8)
                     .build(new ResourceLocation(FireNBlood.MOD_ID, "spiderling_minion").toString()));
+
+    public static final RegistryObject<EntityType<CreeperlingMinionEntity>> CREEPERLING_MINION = ENTITY_TYPES.register("creeperling_minion",
+            () -> EntityType.Builder.of(CreeperlingMinionEntity::new, EntityClassification.MONSTER)
+                    .sized(0.4F, 0.2F)
+                    .clientTrackingRange(8)
+                    .build(new ResourceLocation(FireNBlood.MOD_ID, "creeperling_minion").toString()));
 
     public static final RegistryObject<EntityType<VizierEntity>> VIZIER = ENTITY_TYPES.register("vizier",
             () -> EntityType.Builder.of(VizierEntity::new, EntityClassification.MONSTER)

@@ -180,22 +180,6 @@ public class TaillessHorrorEntity extends FlyingTaillessEntity {
         ATTACK;
     }
 
-    public boolean isAlliedTo(Entity entityIn) {
-        if (super.isAlliedTo(entityIn)) {
-            return true;
-        } else if (entityIn instanceof AbstractTaillessEntity) {
-            return this.getTeam() == null && entityIn.getTeam() == null;
-        } else if (entityIn instanceof WitchEntity) {
-            return this.getTeam() == null && entityIn.getTeam() == null;
-        } else if (entityIn instanceof AbstractCultistEntity) {
-            return this.getTeam() == null && entityIn.getTeam() == null;
-        } else if (entityIn instanceof AbstractPiglinEntity){
-            return this.isAlliedTo(entityIn);
-        }  else {
-            return false;
-        }
-    }
-
     class AttackPlayerGoal extends Goal {
         private final EntityPredicate field_220842_b = (new EntityPredicate()).range(64.0D);
         private int tickDelay = 20;

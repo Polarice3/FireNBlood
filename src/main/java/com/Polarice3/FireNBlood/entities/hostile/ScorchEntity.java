@@ -1,7 +1,6 @@
 package com.Polarice3.FireNBlood.entities.hostile;
 
 import com.Polarice3.FireNBlood.entities.hostile.cultists.AbstractCultistEntity;
-import com.Polarice3.FireNBlood.entities.hostile.cultists.ChannellerEntity;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
 import com.Polarice3.FireNBlood.entities.neutral.MinionEntity;
 import net.minecraft.entity.*;
@@ -204,7 +203,7 @@ public class ScorchEntity extends MinionEntity {
             LivingEntity livingentity = ScorchEntity.this.getTarget();
             Vector3d vector3d = livingentity.getEyePosition(1.0F);
             ScorchEntity.this.moveControl.setWantedPosition(vector3d.x, vector3d.y, vector3d.z, 1.0D);
-            ScorchEntity.this.setChargingCrossbow(true);
+            ScorchEntity.this.setIsCharging(true);
             ScorchEntity.this.playSound(SoundEvents.VEX_CHARGE, 1.0F, 1.0F);
         }
 
@@ -212,7 +211,7 @@ public class ScorchEntity extends MinionEntity {
          * Reset the task's internal state. Called when this task is interrupted by another one
          */
         public void stop() {
-            ScorchEntity.this.setChargingCrossbow(false);
+            ScorchEntity.this.setIsCharging(false);
         }
 
         /**
@@ -222,7 +221,7 @@ public class ScorchEntity extends MinionEntity {
             LivingEntity livingentity = ScorchEntity.this.getTarget();
             if (ScorchEntity.this.getBoundingBox().intersects(livingentity.getBoundingBox())) {
                 ScorchEntity.this.doHurtTarget(livingentity);
-                ScorchEntity.this.setChargingCrossbow(false);
+                ScorchEntity.this.setIsCharging(false);
             } else {
                 double d0 = ScorchEntity.this.distanceToSqr(livingentity);
                 if (d0 < 9.0D) {

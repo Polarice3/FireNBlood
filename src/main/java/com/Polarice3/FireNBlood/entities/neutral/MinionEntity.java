@@ -73,7 +73,7 @@ public class MinionEntity extends CreatureEntity {
         return this.getVexFlag(1);
     }
 
-    public void setChargingCrossbow(boolean charging) {
+    public void setIsCharging(boolean charging) {
         this.setVexFlag(1, charging);
     }
 

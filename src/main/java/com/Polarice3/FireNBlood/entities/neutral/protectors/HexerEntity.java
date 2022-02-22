@@ -411,6 +411,12 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
         ItemStack itemstack = p_230254_1_.getItemInHand(p_230254_2_);
         Item item = itemstack.getItem();
         ItemStack itemstack2 = this.getMainHandItem();
+        Item paying;
+        if (p_230254_1_.hasEffect(Effects.HERO_OF_THE_VILLAGE)){
+            paying = DiscountPayment();
+        } else {
+            paying = Payment();
+        }
         if (this.isDying()){
             if (item == Revive()){
                 if (!p_230254_1_.abilities.instabuild) {
@@ -432,7 +438,7 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
             } else {
                 return ActionResultType.PASS;
             }
-        } else if (item == Payment() && !this.isLoyal()) {
+        } else if (item == paying && !this.isLoyal()) {
             if (!this.isHired()) {
                 if (!p_230254_1_.abilities.instabuild) {
                     itemstack.shrink(1);
@@ -610,7 +616,7 @@ public class HexerEntity extends SpellcastingProtectorEntity implements ICrossbo
                         this.getOwner().sendMessage(new StringTextComponent(this.getDisplayName().getString() + " has been release from duty!"), Util.NIL_UUID);
                     }
                 }
-                this.func_233687_w_(!this.riding());
+                this.func_233687_w_(!this.isSitting());
                 this.jumping = false;
                 this.navigation.stop();
                 this.setTarget((LivingEntity)null);

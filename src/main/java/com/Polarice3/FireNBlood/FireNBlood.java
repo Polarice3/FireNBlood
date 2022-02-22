@@ -7,6 +7,7 @@ import com.Polarice3.FireNBlood.entities.bosses.PenanceEntity;
 import com.Polarice3.FireNBlood.entities.bosses.VizierEntity;
 import com.Polarice3.FireNBlood.entities.hostile.*;
 import com.Polarice3.FireNBlood.entities.hostile.cultists.*;
+import com.Polarice3.FireNBlood.entities.hostile.illagers.EnviokerEntity;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.*;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.masters.MinotaurEntity;
 import com.Polarice3.FireNBlood.entities.hostile.tailless.masters.TaillessAnathemaEntity;
@@ -152,11 +153,11 @@ public class FireNBlood
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.TANK.get(), TankEntity.setCustomAttributes().build());
+            GlobalEntityTypeAttributes.put(ModEntityType.TANK.get(), AbstractTankEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
-            GlobalEntityTypeAttributes.put(ModEntityType.FRIENDTANK.get(), FriendlyTankEntity.setCustomAttributes().build());
+            GlobalEntityTypeAttributes.put(ModEntityType.FRIENDTANK.get(), AbstractTankEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {
@@ -224,6 +225,10 @@ public class FireNBlood
         });
 
         DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.ENVIOKER.get(), EnviokerEntity.setCustomAttributes().build());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.MUTATED_COW.get(), MutatedCowEntity.setCustomAttributes().build());
         });
 
@@ -269,6 +274,10 @@ public class FireNBlood
 
         DeferredWorkQueue.runLater(() -> {
             GlobalEntityTypeAttributes.put(ModEntityType.SPIDERLING_MINION.get(), SpiderlingMinionEntity.setCustomAttributes().build());
+        });
+
+        DeferredWorkQueue.runLater(() -> {
+            GlobalEntityTypeAttributes.put(ModEntityType.CREEPERLING_MINION.get(), CreeperlingMinionEntity.setCustomAttributes().build());
         });
 
         DeferredWorkQueue.runLater(() -> {

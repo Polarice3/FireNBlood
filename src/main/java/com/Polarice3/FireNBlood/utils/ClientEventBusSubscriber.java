@@ -8,6 +8,8 @@ import com.Polarice3.FireNBlood.client.render.*;
 import com.Polarice3.FireNBlood.client.render.tileentities.FangTotemTileEntityRenderer;
 import com.Polarice3.FireNBlood.client.render.tileentities.MutateTotemTileEntityRenderer;
 import com.Polarice3.FireNBlood.client.render.tileentities.TLightningTotemTileEntityRenderer;
+import com.Polarice3.FireNBlood.client.render.tileentities.WindTotemTileEntityRenderer;
+import com.Polarice3.FireNBlood.entities.ally.CreeperlingMinionEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
 import com.Polarice3.FireNBlood.inventory.container.ModContainerType;
 import com.Polarice3.FireNBlood.items.ModSpawnEggItem;
@@ -48,6 +50,7 @@ public class ClientEventBusSubscriber {
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.SLOWBOMB.get(), SlowBombRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.NETHERBALL.get(), NetherBallRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.SOULSKULL.get(), SoulSkullRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.WITCHGALE.get(), WitchGaleRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.REDEMPTOR.get(), RedemptorRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.PROTECTOR.get(), ProtectorRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.BREWER.get(), BrewerRenderer::new);
@@ -63,6 +66,7 @@ public class ClientEventBusSubscriber {
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.APOSTLE.get(), ApostleRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.ZOMBIE_VILLAGER_MINION.get(), ZombieVillagerMinionRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.SKELETON_VILLAGER_MINION.get(), SkeletonVillagerMinionRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.ENVIOKER.get(), EnviokerRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.MUTATED_COW.get(), MutatedCowRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.MUTATED_CHICKEN.get(), MutatedChickenRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.MUTATED_SHEEP.get(), MutatedSheepRenderer::new);
@@ -75,6 +79,7 @@ public class ClientEventBusSubscriber {
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.ZOMBIE_MINION.get(), ZombieMinionRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.SKELETON_MINION.get(), SkeletonMinionRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.SPIDERLING_MINION.get(), SpiderlingMinionRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntityType.CREEPERLING_MINION.get(), CreeperlingMinionRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.VIZIER.get(), VizierRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.IRK.get(), IrkRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityType.SCORCH.get(), ScorchRenderer::new);
@@ -85,6 +90,7 @@ public class ClientEventBusSubscriber {
         ClientRegistry.bindTileEntityRenderer(ModTileEntityType.FANG_TOTEM.get(), FangTotemTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntityType.MUTATE_TOTEM.get(), MutateTotemTileEntityRenderer::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntityType.TLIGHTNING_TOTEM.get(), TLightningTotemTileEntityRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntityType.WIND_TOTEM.get(), WindTotemTileEntityRenderer::new);
         RenderTypeLookup.setRenderLayer(RegistryHandler.CURSED_CAGE_BLOCK.get(), RenderType.translucent());
         RenderTypeLookup.setRenderLayer(RegistryHandler.CURSED_BARS_BLOCK.get(), RenderType.translucent());
         ScreenManager.register(ModContainerType.WAND.get(), SoulItemScreen::new);

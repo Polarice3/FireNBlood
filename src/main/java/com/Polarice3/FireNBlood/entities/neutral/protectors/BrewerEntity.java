@@ -359,6 +359,12 @@ public class BrewerEntity extends AbstractProtectorEntity implements IRangedAtta
     public ActionResultType mobInteract(PlayerEntity p_230254_1_, Hand p_230254_2_) {
         ItemStack itemstack = p_230254_1_.getItemInHand(p_230254_2_);
         Item item = itemstack.getItem();
+        Item paying;
+        if (p_230254_1_.hasEffect(Effects.HERO_OF_THE_VILLAGE)){
+            paying = DiscountPayment();
+        } else {
+            paying = Payment();
+        }
         if (this.isDying()){
             if (item == Revive()){
                 if (!p_230254_1_.abilities.instabuild) {
@@ -380,15 +386,15 @@ public class BrewerEntity extends AbstractProtectorEntity implements IRangedAtta
             } else {
                 return ActionResultType.PASS;
             }
-        } else if (item == Payment() && !this.isLoyal()) {
+        } else if (item == paying && !this.isLoyal()) {
             if (!this.isHired()) {
                 if (!p_230254_1_.abilities.instabuild) {
                     itemstack.shrink(1);
                 }
-                if (p_230254_1_.getItemBySlot(EquipmentSlotType.HEAD).isEmpty()){
+                if (p_230254_1_.getItemBySlot(EquipmentSlotType.HEAD).isEmpty()) {
                     p_230254_1_.setItemSlot(EquipmentSlotType.HEAD, AbstractProtectorEntity.createProtectorBanner());
                 }
-                if (this.isSummoned()){
+                if (this.isSummoned()) {
                     this.setSummoned(false);
                 }
                 this.setHiredBy(p_230254_1_);
@@ -410,7 +416,7 @@ public class BrewerEntity extends AbstractProtectorEntity implements IRangedAtta
                     itemstack.shrink(1);
                 }
                 ++this.loyaltyPoints;
-                if (this.loyaltyPoints >= 10){
+                if (this.loyaltyPoints >= 10) {
                     this.setLoyal(true);
                     this.playSound(SoundEvents.WITCH_CELEBRATE, 1.0F, 1.0F);
                 }
@@ -423,7 +429,6 @@ public class BrewerEntity extends AbstractProtectorEntity implements IRangedAtta
                 }
                 return ActionResultType.SUCCESS;
             }
-
         } else {
             if (this.isHired() && !this.isDying()){
                 if (item == Items.MILK_BUCKET){
@@ -451,7 +456,7 @@ public class BrewerEntity extends AbstractProtectorEntity implements IRangedAtta
                         this.getOwner().sendMessage(new StringTextComponent(this.getDisplayName().getString() + " has been release from duty!"), Util.NIL_UUID);
                     }
                 }
-                this.func_233687_w_(!this.riding());
+                this.func_233687_w_(!this.isSitting());
                 this.jumping = false;
                 this.navigation.stop();
                 this.setTarget((LivingEntity)null);

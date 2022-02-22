@@ -253,7 +253,7 @@ public class FriendlyVexEntity extends MinionEntity {
             assert livingentity != null;
             Vector3d vector3d = livingentity.getEyePosition(1.0F);
             FriendlyVexEntity.this.moveControl.setWantedPosition(vector3d.x, vector3d.y, vector3d.z, 1.0D);
-            FriendlyVexEntity.this.setChargingCrossbow(true);
+            FriendlyVexEntity.this.setIsCharging(true);
             FriendlyVexEntity.this.playSound(SoundEvents.VEX_CHARGE, 1.0F, 1.0F);
         }
 
@@ -261,7 +261,7 @@ public class FriendlyVexEntity extends MinionEntity {
          * Reset the task's internal state. Called when this task is interrupted by another one
          */
         public void stop() {
-            FriendlyVexEntity.this.setChargingCrossbow(false);
+            FriendlyVexEntity.this.setIsCharging(false);
         }
 
         /**
@@ -272,7 +272,7 @@ public class FriendlyVexEntity extends MinionEntity {
             assert livingentity != null;
             if (FriendlyVexEntity.this.getBoundingBox().intersects(livingentity.getBoundingBox())) {
                 FriendlyVexEntity.this.doHurtTarget(livingentity);
-                FriendlyVexEntity.this.setChargingCrossbow(false);
+                FriendlyVexEntity.this.setIsCharging(false);
             } else {
                 double d0 = FriendlyVexEntity.this.distanceToSqr(livingentity);
                 if (d0 < 9.0D) {

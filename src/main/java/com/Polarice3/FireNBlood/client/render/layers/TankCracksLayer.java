@@ -21,12 +21,14 @@ public class TankCracksLayer <T extends MobEntity> extends LayerRenderer<T, Tank
     }
 
     public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, T entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        FriendlyTankEntity friendlyTank = (FriendlyTankEntity) entitylivingbaseIn;
-        if (!entitylivingbaseIn.isInvisible()) {
-            FriendlyTankEntity.Cracks tankentity$cracks = friendlyTank.func_226512_l_();
-            if (tankentity$cracks != FriendlyTankEntity.Cracks.NONE) {
-                ResourceLocation resourcelocation = field_229134_a_.get(tankentity$cracks);
-                renderColoredCutoutModel(this.getParentModel(), resourcelocation, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, 1.0F, 1.0F, 1.0F);
+        if (entitylivingbaseIn instanceof FriendlyTankEntity) {
+            FriendlyTankEntity friendlyTank = (FriendlyTankEntity) entitylivingbaseIn;
+            if (!entitylivingbaseIn.isInvisible()) {
+                FriendlyTankEntity.Cracks tankentity$cracks = friendlyTank.func_226512_l_();
+                if (tankentity$cracks != FriendlyTankEntity.Cracks.NONE) {
+                    ResourceLocation resourcelocation = field_229134_a_.get(tankentity$cracks);
+                    renderColoredCutoutModel(this.getParentModel(), resourcelocation, matrixStackIn, bufferIn, packedLightIn, entitylivingbaseIn, 1.0F, 1.0F, 1.0F);
+                }
             }
         }
     }

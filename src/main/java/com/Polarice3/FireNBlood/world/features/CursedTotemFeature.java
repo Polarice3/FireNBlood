@@ -20,7 +20,7 @@ public class CursedTotemFeature extends Feature<NoFeatureConfig> {
     private final BlockState cursedtotem = RegistryHandler.CURSED_TOTEM_BLOCK.get().defaultBlockState();
     private final BlockState fanghead = RegistryHandler.FANG_TOTEM.get().defaultBlockState();
     private final BlockState mutatehead = RegistryHandler.MUTATE_TOTEM.get().defaultBlockState();
-    private final BlockState undeadhead = RegistryHandler.UNDEAD_TOTEM.get().defaultBlockState();
+    private final BlockState windhead = RegistryHandler.WIND_TOTEM.get().defaultBlockState();
 
     public CursedTotemFeature(Codec<NoFeatureConfig> codec) {
         super(codec);
@@ -44,7 +44,7 @@ public class CursedTotemFeature extends Feature<NoFeatureConfig> {
                 reader.setBlock(pos.offset(0, h, 0), this.mutatehead, 2);
                 break;
             case 2:
-                reader.setBlock(pos.offset(0, h, 0), this.undeadhead, 2);
+                reader.setBlock(pos.offset(0, h, 0), this.windhead, 2);
         }
 
         return true;

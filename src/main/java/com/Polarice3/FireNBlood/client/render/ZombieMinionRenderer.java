@@ -10,12 +10,12 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.layers.BipedArmorLayer;
 import net.minecraft.util.ResourceLocation;
 
-public class ZombieMinionRenderer extends BipedRenderer<ZombieMinionEntity, ZombieMinionModel> {
+public class ZombieMinionRenderer extends BipedRenderer<ZombieMinionEntity, ZombieMinionModel<ZombieMinionEntity>> {
     protected static final ResourceLocation TEXTURE = new ResourceLocation(FireNBlood.MOD_ID, "textures/entity/zombieminion.png");
 
     public ZombieMinionRenderer(EntityRendererManager entityRendererManager) {
-        super(entityRendererManager, new ZombieMinionModel(0.0F, false),0.5F);
-        this.addLayer(new BipedArmorLayer<>(this, new ZombieMinionModel(0.5F, true), new ZombieMinionModel(1.0F, true)));
+        super(entityRendererManager, new ZombieMinionModel<>(0.0F, false),0.5F);
+        this.addLayer(new BipedArmorLayer<>(this, new ZombieMinionModel<>(0.5F, true), new ZombieMinionModel<>(1.0F, true)));
         this.addLayer(new ZombieMinionClothingLayer(this));
     }
 

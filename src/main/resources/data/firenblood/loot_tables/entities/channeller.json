@@ -1,7 +1,7 @@
 {
-  "type": "minecraft:entity",
   "pools": [
     {
+      "name": "channeller",
       "rolls": {
         "min": 1.0,
         "max": 3.0,

@@ -94,7 +94,7 @@ public class CallerEntity extends AbstractTaillessEntity implements IChargeableM
     public void push(Entity entityIn) {
     }
 
-    private final EntityPredicate ally = (new EntityPredicate().range(10.0D));
+    private final EntityPredicate ally = (new EntityPredicate().range(10.0D).allowSameTeam());
 
     public boolean hurt(DamageSource source, float amount){
         List<TaillessDruidEntity> list = CallerEntity.this.level.getNearbyEntities(TaillessDruidEntity.class, this.ally, CallerEntity.this, CallerEntity.this.getBoundingBox().inflate(10.0D, 8.0D, 10.0D));

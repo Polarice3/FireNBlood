@@ -15,7 +15,7 @@ public class ParasiteRenderer extends MobRenderer<ParasiteEntity, EndermiteModel
         super(renderManagerIn, new EndermiteModel<>(), 0.3F);
     }
 
-    protected float getDeathMaxRotation(EndermiteEntity entityLivingBaseIn) {
+    protected float getFlipDegrees(ParasiteEntity pLivingEntity) {
         return 180.0F;
     }
 

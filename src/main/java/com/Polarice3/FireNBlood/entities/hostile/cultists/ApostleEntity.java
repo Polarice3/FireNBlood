@@ -38,13 +38,15 @@ import java.util.function.Predicate;
 public class ApostleEntity extends SpellcastingCultistEntity {
     private int f;
     private int cooldown;
+    private int spellcycle;
     private final Predicate<Entity> field_213690_b = Entity::isAlive;
     private boolean roarparticles;
 
     public ApostleEntity(EntityType<? extends SpellcastingCultistEntity> type, World worldIn) {
         super(type, worldIn);
         this.f = 0;
-        this.cooldown = 0;
+        this.cooldown = 200;
+        this.spellcycle = 0;
     }
 
     protected void registerGoals() {
@@ -70,7 +72,7 @@ public class ApostleEntity extends SpellcastingCultistEntity {
         return MobEntity.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 26.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
-                .add(Attributes.ATTACK_DAMAGE, 3.0D);
+                .add(Attributes.ATTACK_DAMAGE, 1.0D);
     }
 
     protected SoundEvent getAmbientSound() {
@@ -134,8 +136,10 @@ public class ApostleEntity extends SpellcastingCultistEntity {
 
     public void aiStep() {
         super.aiStep();
-        if (this.cooldown <= 0){
+        if (this.cooldown < 200){
             ++this.cooldown;
+        } else {
+            this.spellcycle = 0;
         }
         if (this.isFiring()) {
             ++this.f;
@@ -193,7 +197,7 @@ public class ApostleEntity extends SpellcastingCultistEntity {
             } else if (ApostleEntity.this.getTarget() == null) {
                 return false;
             } else return ApostleEntity.this.getTarget().getId() != this.lastTargetId
-                    && ApostleEntity.this.cooldown >= 60;
+                    && ApostleEntity.this.cooldown >= 60 && ApostleEntity.this.spellcycle == 0;
         }
 
         public void start() {
@@ -225,6 +229,8 @@ public class ApostleEntity extends SpellcastingCultistEntity {
                 if (!ApostleEntity.this.isSilent()) {
                     ApostleEntity.this.level.levelEvent(null, 1016, ApostleEntity.this.blockPosition(), 0);
                 }
+                ApostleEntity.this.cooldown = 0;
+                ++ApostleEntity.this.spellcycle;
             }
         }
 
@@ -250,7 +256,7 @@ public class ApostleEntity extends SpellcastingCultistEntity {
             } else if (ApostleEntity.this.getTarget() == null) {
                 return false;
             } else return ApostleEntity.this.getTarget().getId() != this.lastTargetId &&
-                    ApostleEntity.this.cooldown >= FNBConfig.ZombieCooldown.get();
+                    ApostleEntity.this.cooldown >= 180 && ApostleEntity.this.spellcycle == 1;
         }
 
         public void start() {
@@ -282,6 +288,8 @@ public class ApostleEntity extends SpellcastingCultistEntity {
                 summonedentity.finalizeSpawn((IServerWorld) ApostleEntity.this.level, ApostleEntity.this.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
                 summonedentity.setTarget(livingentity);
                 ApostleEntity.this.level.addFreshEntity(summonedentity);
+                ApostleEntity.this.cooldown = 0;
+                ++ApostleEntity.this.spellcycle;
             }
         }
 
@@ -307,7 +315,7 @@ public class ApostleEntity extends SpellcastingCultistEntity {
             } else if (ApostleEntity.this.getTarget() == null) {
                 return false;
             } else return ApostleEntity.this.getTarget().getId() != this.lastTargetId &&
-                    ApostleEntity.this.cooldown >= FNBConfig.SkeletonCooldown.get();
+                    ApostleEntity.this.cooldown >= 180 && ApostleEntity.this.spellcycle == 1;
         }
 
         public void start() {
@@ -342,6 +350,8 @@ public class ApostleEntity extends SpellcastingCultistEntity {
                 summonedentity.finalizeSpawn((IServerWorld) ApostleEntity.this.level, ApostleEntity.this.level.getCurrentDifficultyAt(blockpos), SpawnReason.MOB_SUMMONED, (ILivingEntityData) null, (CompoundNBT) null);
                 summonedentity.setTarget(livingentity);
                 ApostleEntity.this.level.addFreshEntity(summonedentity);
+                ApostleEntity.this.cooldown = 0;
+                ++ApostleEntity.this.spellcycle;
             }
         }
 
@@ -387,7 +397,8 @@ public class ApostleEntity extends SpellcastingCultistEntity {
 
         public void castSpell() {
             ApostleEntity.this.setFiring(true);
-            ApostleEntity.this.playSound(SoundEvents.GENERIC_EXPLODE, 1.0F, 1.0F);
+            ApostleEntity.this.cooldown = 0;
+            ApostleEntity.this.playSound(SoundEvents.RAVAGER_ROAR, 1.0F, 1.0F);
         }
 
         protected SoundEvent getSpellPrepareSound() {

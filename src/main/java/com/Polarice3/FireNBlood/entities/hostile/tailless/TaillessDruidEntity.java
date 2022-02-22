@@ -3,6 +3,7 @@ package com.Polarice3.FireNBlood.entities.hostile.tailless;
 import com.Polarice3.FireNBlood.entities.hostile.NeophyteEntity;
 import com.Polarice3.FireNBlood.entities.hostile.cultists.AbstractCultistEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
+import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -178,21 +179,7 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         return this.CallerTarget;
     }
 
-    private final EntityPredicate ally = (new EntityPredicate().range(64.0D));
-
-    public boolean isAlliedTo(Entity entityIn) {
-        if (super.isAlliedTo(entityIn)) {
-            return true;
-        } else if (entityIn instanceof WitchEntity) {
-            return this.getTeam() == null && entityIn.getTeam() == null;
-        } else if (entityIn instanceof AbstractCultistEntity) {
-            return this.getTeam() == null && entityIn.getTeam() == null;
-        } else if (entityIn instanceof AbstractPiglinEntity){
-            return this.isAlliedTo(entityIn);
-        }  else {
-            return false;
-        }
-    }
+    private final EntityPredicate ally = (new EntityPredicate().range(64.0D).allowSameTeam());
 
     public boolean hurt(DamageSource source, float amount){
         List<ServantTaillessEntity> list = TaillessDruidEntity.this.level.getNearbyEntities(ServantTaillessEntity.class, this.ally, TaillessDruidEntity.this, TaillessDruidEntity.this.getBoundingBox().inflate(32.0D, 8.0D, 32.0D));
@@ -416,7 +403,7 @@ public class TaillessDruidEntity extends SpellcastingTaillessEntity implements I
         }
 
         public void castSpell() {
-            TaillessDruidEntity.this.getTarget().addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 2000));
+            TaillessDruidEntity.this.getTarget().addEffect(new EffectInstance(RegistryHandler.CURSED.get(), 600));
         }
 
         protected SoundEvent getSpellPrepareSound() {

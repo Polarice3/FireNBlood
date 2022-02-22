@@ -170,6 +170,10 @@ public class NethernalEntity extends MonsterEntity {
         return true;
     }
 
+    public boolean ignoreExplosion(){
+        return this.tickCount < 20;
+    }
+
     public boolean doHurtTarget(Entity entityIn) {
         this.attackTimer = 10;
         this.level.broadcastEntityEvent(this, (byte)4);

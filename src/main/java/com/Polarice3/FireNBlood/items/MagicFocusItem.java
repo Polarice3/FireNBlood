@@ -39,17 +39,6 @@ public class MagicFocusItem extends Item{
     }
 
     @Override
-    public boolean hasContainerItem(ItemStack stack) {
-        return true;
-    }
-
-    @Nonnull
-    @Override
-    public ItemStack getContainerItem(ItemStack itemStack) {
-        return itemStack.copy();
-    }
-
-    @Override
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         if (soulcost != 0) {

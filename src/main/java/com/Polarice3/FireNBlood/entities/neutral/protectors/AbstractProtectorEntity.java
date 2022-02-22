@@ -6,6 +6,7 @@ import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
 import com.Polarice3.FireNBlood.entities.ally.SummonedEntity;
 import com.Polarice3.FireNBlood.entities.utilities.FakeSeatEntity;
 import com.Polarice3.FireNBlood.init.ModEntityType;
+import com.Polarice3.FireNBlood.utils.ParticleUtil;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
@@ -35,9 +36,7 @@ import net.minecraft.potion.Effects;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.tileentity.BannerPattern;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.Util;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -90,16 +89,16 @@ public class AbstractProtectorEntity extends CreatureEntity {
         return 12000;
     }
 
-    public static int ShieldDurability(){
-        return 336;
-    }
-
     public static float HealAmount(){
         return FNBConfig.HealAmount.get();
     }
 
     public static Item Payment(){
         return Items.EMERALD_BLOCK;
+    }
+
+    public static Item DiscountPayment(){
+        return Items.EMERALD;
     }
 
     public static Item Food(){
@@ -203,7 +202,7 @@ public class AbstractProtectorEntity extends CreatureEntity {
             double d0 = this.random.nextGaussian() * 0.02D;
             double d1 = this.random.nextGaussian() * 0.02D;
             double d2 = this.random.nextGaussian() * 0.02D;
-            this.level.addParticle(iparticledata, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
+            new ParticleUtil(iparticledata, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
         }
 
     }
@@ -343,7 +342,7 @@ public class AbstractProtectorEntity extends CreatureEntity {
         }
     }
 
-    public boolean riding() {
+    public boolean isSitting() {
         return this.field_233683_bw_;
     }
 
@@ -388,7 +387,7 @@ public class AbstractProtectorEntity extends CreatureEntity {
                     double d2 = this.random.nextGaussian() * 0.02D;
                     this.level.addParticle(ParticleTypes.CRIT, this.getRandomX(1.0D), this.getRandomY() - 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                 }
-                if (!this.riding() && this.tickCount % 2 == 0){
+                if (!this.isSitting() && this.tickCount % 2 == 0){
                     FakeSeatEntity fakeseat = new FakeSeatEntity(ModEntityType.FAKESEAT.get(), level);
                     fakeseat.moveTo(this.getX(), this.getY(), this.getZ(), this.yRot, this.xRot);
                     level.addFreshEntity(fakeseat);
@@ -412,7 +411,7 @@ public class AbstractProtectorEntity extends CreatureEntity {
                     double d0 = this.random.nextGaussian() * 0.02D;
                     double d1 = this.random.nextGaussian() * 0.02D;
                     double d2 = this.random.nextGaussian() * 0.02D;
-                    this.level.addParticle(iparticledata, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
+                    new ParticleUtil(iparticledata, this.getRandomX(1.0D), this.getRandomY() + 0.5D, this.getRandomZ(1.0D), d0, d1, d2);
                 }
             }
             if (this.hiredTimer == 0){
@@ -468,7 +467,7 @@ public class AbstractProtectorEntity extends CreatureEntity {
         }
 
         public boolean canContinueToUse() {
-            return this.hireable.riding();
+            return this.hireable.isSitting();
         }
 
         public boolean canUse() {
@@ -483,7 +482,7 @@ public class AbstractProtectorEntity extends CreatureEntity {
                 if (livingentity == null) {
                     return true;
                 } else {
-                    return (!(this.hireable.distanceToSqr(livingentity) < 144.0D) || livingentity.getLastHurtByMob() == null) && this.hireable.riding();
+                    return (!(this.hireable.distanceToSqr(livingentity) < 144.0D) || livingentity.getLastHurtByMob() == null) && this.hireable.isSitting();
                 }
             }
         }
@@ -553,7 +552,7 @@ public class AbstractProtectorEntity extends CreatureEntity {
                 return false;
             } else if (livingentity.isSpectator()) {
                 return false;
-            } else if (this.hireable.riding()) {
+            } else if (this.hireable.isSitting()) {
                 return false;
             } else if (this.hireable.distanceToSqr(livingentity) < (double)(this.minDist * this.minDist)) {
                 return false;
@@ -569,7 +568,7 @@ public class AbstractProtectorEntity extends CreatureEntity {
         public boolean canContinueToUse() {
             if (this.navigation.isDone()) {
                 return false;
-            } else if (this.hireable.riding()) {
+            } else if (this.hireable.isSitting()) {
                 return false;
             } else {
                 return !(this.hireable.distanceToSqr(this.owner) <= (double)(this.maxDist * this.maxDist));
@@ -675,7 +674,7 @@ public class AbstractProtectorEntity extends CreatureEntity {
          * method as well.
          */
         public boolean canUse() {
-            if (this.hireable.isHired() && !this.hireable.riding()) {
+            if (this.hireable.isHired() && !this.hireable.isSitting()) {
                 LivingEntity livingentity = this.hireable.getOwner();
                 if (livingentity == null) {
                     return false;
@@ -719,7 +718,7 @@ public class AbstractProtectorEntity extends CreatureEntity {
         }
 
         public boolean canUse() {
-            if (this.hireable.isHired() && !this.hireable.riding()) {
+            if (this.hireable.isHired() && !this.hireable.isSitting()) {
                 LivingEntity livingentity = this.hireable.getOwner();
                 if (livingentity == null) {
                     return false;

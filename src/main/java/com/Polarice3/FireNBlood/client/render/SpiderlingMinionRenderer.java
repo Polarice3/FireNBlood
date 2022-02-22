@@ -21,7 +21,7 @@ public class SpiderlingMinionRenderer <T extends SpiderlingMinionEntity> extends
         matrixStackIn.scale(0.4F, 0.4F, 0.4F);
     }
 
-    protected float getDeathMaxRotation(T entityLivingBaseIn) {
+    protected float getFlipDegrees(T pLivingEntity) {
         return 180.0F;
     }
 

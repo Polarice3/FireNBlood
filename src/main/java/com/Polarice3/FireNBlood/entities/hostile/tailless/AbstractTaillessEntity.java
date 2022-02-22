@@ -3,11 +3,15 @@ package com.Polarice3.FireNBlood.entities.hostile.tailless;
 import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.entities.ally.FriendlyVexEntity;
 import com.Polarice3.FireNBlood.entities.ally.SummonedEntity;
+import com.Polarice3.FireNBlood.entities.hostile.TankEntity;
+import com.Polarice3.FireNBlood.entities.hostile.cultists.AbstractCultistEntity;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.monster.WitchEntity;
+import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.EffectInstance;
@@ -34,7 +38,7 @@ public class AbstractTaillessEntity extends MonsterEntity {
     }
 
     public void setrandom(int random) {
-        random = random;
+        randomint = random;
     }
 
     public boolean EvilEyeGiver(){
@@ -47,6 +51,24 @@ public class AbstractTaillessEntity extends MonsterEntity {
 
     public void setTarget(@Nullable LivingEntity TargetIn) {
         this.Target = TargetIn;
+    }
+
+    public boolean isAlliedTo(Entity entityIn) {
+        if (super.isAlliedTo(entityIn)) {
+            return true;
+        } else if (entityIn instanceof AbstractTaillessEntity) {
+            return this.getTeam() == null && entityIn.getTeam() == null;
+        } else if (entityIn instanceof WitchEntity) {
+            return this.getTeam() == null && entityIn.getTeam() == null;
+        } else if (entityIn instanceof AbstractCultistEntity) {
+            return this.getTeam() == null && entityIn.getTeam() == null;
+        } else if (entityIn instanceof TankEntity){
+            return this.getTeam() == null && entityIn.getTeam() == null;
+        } else if (entityIn instanceof AbstractPiglinEntity){
+            return this.isAlliedTo(entityIn);
+        }  else {
+            return false;
+        }
     }
 
     public void die(DamageSource cause) {

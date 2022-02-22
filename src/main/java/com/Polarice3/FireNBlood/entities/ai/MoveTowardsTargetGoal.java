@@ -1,6 +1,6 @@
 package com.Polarice3.FireNBlood.entities.ai;
 
-import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
+import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -10,7 +10,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import java.util.EnumSet;
 import java.util.List;
 
-public class MoveTowardsTargetGoal<T extends AbstractTaillessEntity> extends Goal {
+public class MoveTowardsTargetGoal<T extends CreatureEntity> extends Goal {
     private final T tailless;
     private final EntityPredicate target = (new EntityPredicate().range(128.0D));
 

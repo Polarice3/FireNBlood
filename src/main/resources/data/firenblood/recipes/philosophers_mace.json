@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    " p ",
+    " c ",
+    " c "
+  ],
+  "key":
+  {
+    "p":
+    {
+      "item": "firenblood:philosophersstone"
+    },
+    "c":
+    {
+      "item": "firenblood:cursed_ingot"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:philosophers_mace",
+    "count": 1
+  }
+}

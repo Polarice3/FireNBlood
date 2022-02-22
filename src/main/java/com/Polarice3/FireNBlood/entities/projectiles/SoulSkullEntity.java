@@ -2,6 +2,7 @@ package com.Polarice3.FireNBlood.entities.projectiles;
 
 import com.Polarice3.FireNBlood.FNBConfig;
 import com.Polarice3.FireNBlood.init.ModEntityType;
+import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -13,11 +14,14 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -73,18 +77,18 @@ public class SoulSkullEntity extends DamagingProjectileEntity {
             boolean flag;
             if (entity1 instanceof LivingEntity) {
                 LivingEntity livingentity = (LivingEntity)entity1;
-                flag = entity.hurt(DamageSource.MAGIC, 6.0F);
+                flag = entity.hurt(DamageSource.indirectMagic(this, livingentity), 6.0F);
                 if (flag) {
                     if (entity.isAlive()) {
                         this.doEnchantDamageEffects(livingentity, entity);
-                        if (this.isUpgraded()){
+                        if (this.isUpgraded()) {
                             entity.setSecondsOnFire(30);
                         }
                     } else {
                         if (this.isUpgraded()){
-                            livingentity.heal(2.0F);
+                            livingentity.heal(5.0F);
                         } else {
-                            livingentity.heal(1.0F);
+                            livingentity.heal(2.0F);
                         }
                     }
                 }

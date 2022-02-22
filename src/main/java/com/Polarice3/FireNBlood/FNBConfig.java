@@ -17,24 +17,28 @@ public class FNBConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> RoarCost;
     public static final ForgeConfigSpec.ConfigValue<Integer> ZombieCost;
     public static final ForgeConfigSpec.ConfigValue<Integer> SkeletonCost;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CrippleCost;
+    public static final ForgeConfigSpec.ConfigValue<Integer> WitchGaleCost;
     public static final ForgeConfigSpec.ConfigValue<Integer> SpiderlingCost;
     public static final ForgeConfigSpec.ConfigValue<Integer> BrainEaterCost;
     public static final ForgeConfigSpec.ConfigValue<Integer> TeleportCost;
     public static final ForgeConfigSpec.ConfigValue<Integer> SoulSkullCost;
     public static final ForgeConfigSpec.ConfigValue<Integer> FeastCost;
     public static final ForgeConfigSpec.ConfigValue<Integer> TemptingCost;
+    public static final ForgeConfigSpec.ConfigValue<Integer> DragonFireballCost;
+    public static final ForgeConfigSpec.ConfigValue<Integer> CreeperlingCost;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> VexDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> FangDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> RoarDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> ZombieDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> SkeletonDuration;
-    public static final ForgeConfigSpec.ConfigValue<Integer> CrippleDuration;
+    public static final ForgeConfigSpec.ConfigValue<Integer> WitchGaleDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> SpiderlingDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> BrainEaterDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> FeastDuration;
     public static final ForgeConfigSpec.ConfigValue<Integer> TemptingDuration;
+    public static final ForgeConfigSpec.ConfigValue<Integer> DragonFireballDuration;
+    public static final ForgeConfigSpec.ConfigValue<Integer> CreeperlingDuration;
 
     public static final ForgeConfigSpec.ConfigValue<Integer> BrainEaterXPCost;
 
@@ -149,14 +153,14 @@ public class FNBConfig {
                 .defineInRange("zombiecost", 5, 0, Integer.MAX_VALUE);
         SkeletonCost = BUILDER.comment("Osseous Spell Cost, Default: 8")
                 .defineInRange("skeletoncost", 8, 0, Integer.MAX_VALUE);
-        CrippleCost = BUILDER.comment("Crippling Spell Cost, Default: 15")
+        WitchGaleCost = BUILDER.comment("Witch's Gale Spell Cost, Default: 15")
                 .defineInRange("cripplecost", 15, 0, Integer.MAX_VALUE);
         SpiderlingCost = BUILDER.comment("Spiderling Spell Cost per second, Default: 2")
                 .defineInRange("spiderlingcost", 2, 0, Integer.MAX_VALUE);
         BrainEaterCost = BUILDER.comment("Brain Eater Spell Cost per second, Default: 5")
                 .defineInRange("braincost", 5, 0, Integer.MAX_VALUE);
-        BrainEaterXPCost = BUILDER.comment("How much Experience the above spell Cost per heal, Default: 10")
-                .defineInRange("brainxpcost", 10, 0, 1000);
+        BrainEaterXPCost = BUILDER.comment("How much Experience the above spell Cost per heal, Default: 40")
+                .defineInRange("brainxpcost", 40, 0, 1000);
         TeleportCost = BUILDER.comment("Teleport Spell Cost, Default: 5")
                 .defineInRange("teleportcost", 5, 0, Integer.MAX_VALUE);
         SoulSkullCost = BUILDER.comment("Soul Skull Spell Cost, Default: 16")
@@ -165,6 +169,10 @@ public class FNBConfig {
                 .defineInRange("feastcost", 8, 0, Integer.MAX_VALUE);
         TemptingCost = BUILDER.comment("Tempting Spell Cost, Default: 2")
                 .defineInRange("temptingcost", 2, 0, Integer.MAX_VALUE);
+        DragonFireballCost = BUILDER.comment("Dragon Fireball Spell Cost, Default: 64")
+                .defineInRange("dragonfireballcost", 64, 0, Integer.MAX_VALUE);
+        CreeperlingCost = BUILDER.comment("Creeperling Spell Cost per second, Default: 8")
+                .defineInRange("creeperlingcost", 8, 0, Integer.MAX_VALUE);
         BUILDER.pop();
         BUILDER.push("Casting Time");
         VexDuration = BUILDER.comment("Time to cast Vex Spell, Default: 100")
@@ -177,7 +185,7 @@ public class FNBConfig {
                 .defineInRange("zombietime", 60, 0, 72000);
         SkeletonDuration = BUILDER.comment("Time to cast Osseous Spell, Default: 60")
                 .defineInRange("skeletontime", 60, 0, 72000);
-        CrippleDuration = BUILDER.comment("Time to cast Crippling Spell, Default: 20")
+        WitchGaleDuration = BUILDER.comment("Time to cast Witch's Gale Spell, Default: 20")
                 .defineInRange("crippletime", 20, 0, 72000);
         SpiderlingDuration = BUILDER.comment("Time to cast Spiderling Spell per second, Default: 10")
                 .defineInRange("spiderlingtime", 10, 0, 72000);
@@ -187,6 +195,10 @@ public class FNBConfig {
                 .defineInRange("feasttime", 20, 0, 72000);
         TemptingDuration = BUILDER.comment("Time to cast Tempting Spell per second, Default: 20")
                 .defineInRange("temptingtime", 20, 0, 72000);
+        DragonFireballDuration = BUILDER.comment("Time to cast Dragon Fireball Spell, Default: 30")
+                .defineInRange("dragonfireballtime", 30, 0, 72000);
+        CreeperlingDuration = BUILDER.comment("Time to cast Creeperling Spell per second, Default: 10")
+                .defineInRange("creeperlingtime", 20, 0, 72000);
         BUILDER.pop();
         BUILDER.push("Summon Down Duration");
         VexCooldown = BUILDER.comment("Vex Spell Cooldown, Default: 340")

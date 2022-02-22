@@ -20,7 +20,7 @@ public class CastSpells {
             case 4:
                 return new SkeletonSpell();
             case 5:
-                return new CrippleSpell();
+                return new WitchGaleSpell();
             case 6:
                 return new SpiderlingSpell();
             case 7:
@@ -33,6 +33,10 @@ public class CastSpells {
                 return new FeastSpell();
             case 11:
                 return new TemptingSpell();
+            case 12:
+                return new DragonFireballSpell();
+            case 13:
+                return new CreeperlingSpell();
             default:
                 return null;
         }

@@ -10,20 +10,20 @@
   {
     "e":
     {
-      "item": "firenblood:emptycore"
+      "item": "firenblood:spiderlingfocus"
     },
     "f":
     {
-      "item": "minecraft:fermented_spider_eye"
+      "tag": "minecraft:tnt"
     },
     "s":
     {
-      "item": "minecraft:sugar"
+      "tag": "minecraft:leaves"
     }
   },
   "result":
   {
-    "item": "firenblood:cripplingfocus",
+    "item": "firenblood:creeperlingfocus",
     "count": 1
   }
 }

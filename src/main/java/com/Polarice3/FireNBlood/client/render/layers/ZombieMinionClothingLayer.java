@@ -9,11 +9,11 @@ import net.minecraft.client.renderer.entity.IEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.util.ResourceLocation;
 
-public class ZombieMinionClothingLayer extends LayerRenderer<ZombieMinionEntity, ZombieMinionModel> {
+public class ZombieMinionClothingLayer extends LayerRenderer<ZombieMinionEntity, ZombieMinionModel<ZombieMinionEntity>> {
     private static final ResourceLocation TEXTURES = new ResourceLocation(FireNBlood.MOD_ID, "textures/entity/zombieminion_overlay.png");
     private final ZombieMinionModel layerModel = new ZombieMinionModel(0.25F, false);
 
-    public ZombieMinionClothingLayer(IEntityRenderer<ZombieMinionEntity, ZombieMinionModel> p_i50919_1_) {
+    public ZombieMinionClothingLayer(IEntityRenderer<ZombieMinionEntity, ZombieMinionModel<ZombieMinionEntity>> p_i50919_1_) {
         super(p_i50919_1_);
     }
 

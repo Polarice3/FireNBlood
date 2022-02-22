@@ -1,6 +1,7 @@
 package com.Polarice3.FireNBlood.entities.ally;
 
 import com.Polarice3.FireNBlood.entities.hostile.TankEntity;
+import com.Polarice3.FireNBlood.entities.neutral.AbstractTankEntity;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
@@ -19,9 +20,14 @@ import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.*;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -33,21 +39,17 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class FriendlyTankEntity extends TankEntity {
-    private static final Predicate<Entity> field_213690_b = (p_213685_0_) -> {
-        return p_213685_0_.isAlive() && !(p_213685_0_ instanceof FriendlyTankEntity);
-    };
-    private PlayerEntity owner;
+public class FriendlyTankEntity extends AbstractTankEntity {
+    protected static final DataParameter<Optional<UUID>> OWNER_UNIQUE_ID = EntityDataManager.defineId(FriendlyTankEntity.class, DataSerializers.OPTIONAL_UUID);
     public int attackTimer;
     public int attackTimes = 0;
     public int attackStep = 0;
     public boolean FireCharging;
     private boolean sitting;
 
-    public FriendlyTankEntity(EntityType<? extends TankEntity> type, World worldIn) {
+    public FriendlyTankEntity(EntityType<? extends AbstractTankEntity> type, World worldIn) {
         super(type, worldIn);
         this.setPathfindingMalus(PathNodeType.WATER, -1.0F);
         this.setPathfindingMalus(PathNodeType.DANGER_FIRE, 0.0F);
@@ -77,6 +79,66 @@ public class FriendlyTankEntity extends TankEntity {
         }));
         this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
+    }
+
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(OWNER_UNIQUE_ID, Optional.empty());
+    }
+
+    public void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
+        if (this.getOwnerId() != null) {
+            compound.putUUID("Owner", this.getOwnerId());
+        }
+        compound.putBoolean("Sitting", this.sitting);
+    }
+
+    public void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
+        UUID uuid;
+        if (compound.hasUUID("Owner")) {
+            uuid = compound.getUUID("Owner");
+        } else {
+            String s = compound.getString("Owner");
+            uuid = PreYggdrasilConverter.convertMobOwnerIfNecessary(this.getServer(), s);
+        }
+
+        if (uuid != null) {
+            try {
+                this.setOwnerId(uuid);
+
+            } catch (Throwable ignored) {
+
+            }
+        }
+
+        this.sitting = compound.getBoolean("Sitting");
+        this.setSitting(this.sitting);
+    }
+
+    @Nullable
+    public UUID getOwnerId() {
+        return this.entityData.get(OWNER_UNIQUE_ID).orElse((UUID)null);
+    }
+
+    public void setOwnerId(@Nullable UUID p_184754_1_) {
+        this.entityData.set(OWNER_UNIQUE_ID, Optional.ofNullable(p_184754_1_));
+    }
+
+    public void setOwner(PlayerEntity player) {
+        this.setOwnerId(player.getUUID());
+
+    }
+
+    @Nullable
+    public LivingEntity getOwner() {
+        try {
+            UUID uuid = this.getOwnerId();
+            return uuid == null ? null : this.level.getPlayerByUUID(uuid);
+        } catch (IllegalArgumentException illegalargumentexception) {
+            return null;
+        }
     }
 
     public Team getTeam() {
@@ -138,21 +200,18 @@ public class FriendlyTankEntity extends TankEntity {
         this.playSound(SoundEvents.IRON_GOLEM_STEP, 0.25F, 1.0F);
     }
 
-    public boolean canBeSteered() {
+    public boolean canBeControlledByRider() {
         return this.getControllingPassenger() instanceof LivingEntity;
+    }
+
+    @Override
+    public boolean isControlledByLocalInstance() {
+        return super.isControlledByLocalInstance() && this.canBeControlledByRider();
     }
 
     @Nullable
     public Entity getControllingPassenger() {
         return this.getPassengers().isEmpty() ? null : this.getPassengers().get(0);
-    }
-
-    public PlayerEntity getOwner() {
-        return this.owner;
-    }
-
-    public void setOwner(PlayerEntity ownerIn) {
-        this.owner = ownerIn;
     }
 
     public boolean removeWhenFarAway(double distanceToClosestPlayer) {
@@ -212,7 +271,7 @@ public class FriendlyTankEntity extends TankEntity {
 
     public void travel(Vector3d travelVector) {
         if (this.isAlive()) {
-            if (this.isVehicle() && this.canBeSteered()) {
+            if (this.isVehicle() && this.canBeControlledByRider()) {
                 if (this.attackTimer < 20) {
                     ++this.attackTimer;
                 }

@@ -105,22 +105,6 @@ public class TaillessWretchEntity extends ServantTaillessEntity {
         this.playSound(SoundEvents.COW_STEP, 0.25F, 1.0F);
     }
 
-    public boolean isAlliedTo(Entity entityIn) {
-        if (super.isAlliedTo(entityIn)) {
-            return true;
-        } else if (entityIn instanceof AbstractTaillessEntity) {
-            return this.getTeam() == null && entityIn.getTeam() == null;
-        } else if (entityIn instanceof WitchEntity) {
-            return this.getTeam() == null && entityIn.getTeam() == null;
-        } else if (entityIn instanceof AbstractCultistEntity) {
-            return this.getTeam() == null && entityIn.getTeam() == null;
-        } else if (entityIn instanceof AbstractPiglinEntity){
-            return this.isAlliedTo(entityIn);
-        }  else {
-            return false;
-        }
-    }
-
     @Nullable
     public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
         this.populateDefaultEquipmentSlots(difficultyIn);

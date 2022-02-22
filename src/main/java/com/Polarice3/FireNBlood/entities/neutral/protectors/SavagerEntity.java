@@ -38,6 +38,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMount{
@@ -173,8 +174,13 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
         return ilivingentitydata;
     }
 
-    public boolean canBeSteered() {
-        return !this.isNoAi() && this.getControllingPassenger() instanceof LivingEntity;
+    public boolean canBeControlledByRider() {
+        return this.getControllingPassenger() instanceof LivingEntity;
+    }
+
+    @Override
+    public boolean isControlledByLocalInstance() {
+        return super.isControlledByLocalInstance() && this.canBeControlledByRider();
     }
 
     public boolean isSavagerJumping() {
@@ -245,6 +251,12 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
     public ActionResultType mobInteract(PlayerEntity p_230254_1_, Hand p_230254_2_) {
         ItemStack itemstack = p_230254_1_.getItemInHand(p_230254_2_);
         Item item = itemstack.getItem();
+        Item paying;
+        if (p_230254_1_.hasEffect(Effects.HERO_OF_THE_VILLAGE)){
+            paying = DiscountPayment();
+        } else {
+            paying = Payment();
+        }
         if (this.isDying()){
             if (item == Revive()){
                 if (!p_230254_1_.abilities.instabuild) {
@@ -266,7 +278,7 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
             } else {
                 return ActionResultType.PASS;
             }
-        } else if (item == Payment() && !this.isLoyal() && !this.isVehicle()) {
+        } else if (item == paying && !this.isLoyal() && !this.isVehicle()) {
             if (!this.isHired()) {
                 if (!p_230254_1_.abilities.instabuild) {
                     itemstack.shrink(1);
@@ -351,10 +363,10 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
                     }
                 }
                 if (!p_230254_1_.isCrouching() && p_230254_1_.getMainHandItem().getItem() == Items.AIR){
-                    this.mountTo(p_230254_1_);
+                    this.doPlayerRide(p_230254_1_);
                     this.func_233687_w_(false);
                 } else {
-                    this.func_233687_w_(!this.riding());
+                    this.func_233687_w_(!this.isSitting());
                 }
                 this.jumping = false;
                 this.navigation.stop();
@@ -370,7 +382,7 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
         return super.isImmobile() || this.attackTick > 0 || this.roarTick > 0 || this.isDying();
     }
 
-    protected void mountTo(PlayerEntity player) {
+    protected void doPlayerRide(PlayerEntity player) {
         if (!this.level.isClientSide) {
             player.yRot = this.yRot;
             player.xRot = this.xRot;
@@ -379,10 +391,10 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
 
     }
 
-    public void travel(Vector3d travelVector) {
+    public void travel(Vector3d pTravelVector) {
         if (this.isAlive()) {
-            if (this.isVehicle() && this.canBeSteered() && this.getControllingPassenger() instanceof PlayerEntity) {
-                LivingEntity livingentity = (LivingEntity) this.getControllingPassenger();
+            if (this.isVehicle() && this.canBeControlledByRider()) {
+                LivingEntity livingentity = (LivingEntity)this.getControllingPassenger();
                 assert livingentity != null;
                 this.yRot = livingentity.yRot;
                 this.yRotO = this.yRot;
@@ -397,10 +409,10 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
                 }
 
                 if (this.jumpPower > 0.0F && !this.isSavagerJumping() && this.onGround) {
-                    double d0 = 0.7F * (double)this.jumpPower * (double)this.getJumpPower();
+                    double d0 = 0.7D * (double)this.jumpPower * (double)this.getBlockJumpFactor();
                     double d1;
                     if (this.hasEffect(Effects.JUMP)) {
-                        d1 = d0 + (double)((float)(this.getEffect(Effects.JUMP).getAmplifier() + 1) * 0.1F);
+                        d1 = d0 + (double)((float)(Objects.requireNonNull(this.getEffect(Effects.JUMP)).getAmplifier() + 1) * 0.1F);
                     } else {
                         d1 = d0;
                     }
@@ -421,8 +433,9 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
 
                 this.flyingSpeed = this.getSpeed() * 0.1F;
                 if (this.isControlledByLocalInstance()) {
-                    this.setSpeed((float) this.getAttributeValue(Attributes.MOVEMENT_SPEED));
-                    super.travel(new Vector3d((double) f, travelVector.y, (double) f1));
+                    this.setSpeed((float)this.getAttributeValue(Attributes.MOVEMENT_SPEED));
+                    super.travel(new Vector3d(f, pTravelVector.y, f1));
+                    this.lerpSteps = 0;
                 } else if (livingentity instanceof PlayerEntity) {
                     this.setDeltaMovement(Vector3d.ZERO);
                 }
@@ -435,7 +448,7 @@ public class SavagerEntity extends AbstractProtectorEntity implements IJumpingMo
                 this.calculateEntityAnimation(this, false);
             } else {
                 this.flyingSpeed = 0.02F;
-                super.travel(travelVector);
+                super.travel(pTravelVector);
             }
         }
     }
