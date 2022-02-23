@@ -35,7 +35,7 @@ public class TemptingSpell extends ChargingSpells{
         int j = (int) entityLiving.getY();
         int k = (int) entityLiving.getZ();
         for (AnimalEntity entity : worldIn.getEntitiesOfClass(AnimalEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(8.0D))) {
-            entity.getNavigation().moveTo(entityLiving, 1.0F);
+            entity.getNavigation().moveTo(entityLiving, 1.25F);
         }
         for(int i1 = 0; i1 < entityLiving.level.random.nextInt(35) + 10; ++i1) {
             new ParticleUtil(ParticleTypes.NOTE, entityLiving.getX(), entityLiving.getEyeY(), entityLiving.getZ(), 0.0F, 0.0F, 0.0F);

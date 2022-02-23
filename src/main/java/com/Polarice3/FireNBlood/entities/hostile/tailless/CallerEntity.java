@@ -159,6 +159,7 @@ public class CallerEntity extends AbstractTaillessEntity implements IChargeableM
         if (itementity != null) {
             itementity.setExtendedLifetime();
             itementity.fireImmune();
+            itementity.ignoreExplosion();
         }
     }
 
@@ -302,6 +303,7 @@ public class CallerEntity extends AbstractTaillessEntity implements IChargeableM
                             if (itemEntity != null){
                                 itemEntity.fireImmune();
                                 itemEntity.setExtendedLifetime();
+                                itemEntity.ignoreExplosion();
                             }
                             CallerEntity.this.kill();
                         }

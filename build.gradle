@@ -23,7 +23,7 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.8.1'
+version = '1.8.2'
 group = 'com.Polarice3.FireNBlood'
 archivesBaseName = 'FireNBlood'
 

@@ -1,13 +1,15 @@
 package com.Polarice3.FireNBlood.items;
 
 import com.Polarice3.FireNBlood.FireNBlood;
+import com.Polarice3.FireNBlood.enchantments.ModEnchantmentsType;
+import com.Polarice3.FireNBlood.utils.GoldTotemFinder;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.enchantment.IVanishable;
+import net.minecraft.block.material.Material;
+import net.minecraft.enchantment.*;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -17,6 +19,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.SwordItem;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -24,6 +27,7 @@ import net.minecraft.world.World;
 
 public class PhilosophersMaceItem extends Item implements IVanishable {
     private final Multimap<Attribute, AttributeModifier> maceAttributes;
+    private int tickCount;
 
     public PhilosophersMaceItem() {
         super(new Item.Properties().durability(128).tab(FireNBlood.TAB));
@@ -33,12 +37,28 @@ public class PhilosophersMaceItem extends Item implements IVanishable {
         this.maceAttributes = builder.build();
     }
 
-    public boolean canAttackBlock(BlockState state, World worldIn, BlockPos pos, PlayerEntity player) {
-        return !player.isCreative();
+    @Override
+    public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        if (entityIn instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) entityIn;
+            if (stack.isDamaged()) {
+                ++ this.tickCount;
+                ItemStack foundStack = GoldTotemFinder.FindTotem(player);
+                if (!foundStack.isEmpty()){
+                    if (this.tickCount % 20 == 0) {
+                        this.tickCount = 0;
+                        stack.setDamageValue(stack.getDamageValue() - 1);
+                        GoldTotemItem.decreaseSouls(foundStack, 5);
+                    }
+                }
+
+            }
+        }
+        super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
     }
 
-    public boolean isValidRepairItem(ItemStack pToRepair, ItemStack pRepair) {
-        return pRepair.getItem() == Items.GOLD_INGOT || super.isValidRepairItem(pToRepair, pRepair);
+    public boolean canAttackBlock(BlockState state, World worldIn, BlockPos pos, PlayerEntity player) {
+        return !player.isCreative();
     }
 
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
@@ -65,14 +85,23 @@ public class PhilosophersMaceItem extends Item implements IVanishable {
         return true;
     }
 
-    public boolean mineBlock(ItemStack stack, World worldIn, BlockState state, BlockPos pos, LivingEntity entityLiving) {
-        if ((double)state.getDestroySpeed(worldIn, pos) != 0.0D) {
-            stack.hurtAndBreak(2, entityLiving, (entity) -> {
-                entity.broadcastBreakEvent(EquipmentSlotType.MAINHAND);
+    public boolean mineBlock(ItemStack pStack, World pLevel, BlockState pState, BlockPos pPos, LivingEntity pEntityLiving) {
+        if (!pLevel.isClientSide && pState.getDestroySpeed(pLevel, pPos) != 0.0F) {
+            pStack.hurtAndBreak(1, pEntityLiving, (p_220038_0_) -> {
+                p_220038_0_.broadcastBreakEvent(EquipmentSlotType.MAINHAND);
             });
         }
 
         return true;
+    }
+
+    public int getEnchantmentValue() {
+        return 15;
+    }
+
+    public boolean canApplyAtEnchantingTable(ItemStack stack, net.minecraft.enchantment.Enchantment enchantment)
+    {
+        return enchantment.category == EnchantmentType.WEAPON;
     }
 
     public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlotType equipmentSlot) {
