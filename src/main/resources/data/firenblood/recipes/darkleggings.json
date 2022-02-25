@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern":
+  [
+    "lal",
+    "f f",
+    "y y"
+  ],
+  "key":
+  {
+    "f":
+    {
+      "item": "firenblood:darkfabric"
+    },
+    "y":
+    {
+      "item": "firenblood:magicfabric"
+    },
+    "l":
+    {
+      "item": "minecraft:leather"
+    },
+    "a":
+    {
+      "item": "minecraft:lapis_lazuli"
+    }
+  },
+  "result":
+  {
+    "item": "firenblood:darkleggings",
+    "count": 1
+  }
+}

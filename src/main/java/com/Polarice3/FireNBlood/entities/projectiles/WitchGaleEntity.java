@@ -88,10 +88,12 @@ public class WitchGaleEntity extends DamagingProjectileEntity {
                 if (this.isUpgraded()) {
                     entity.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 1800, 1));
                     entity.addEffect(new EffectInstance(Effects.WEAKNESS, 1800, 1));
+                    entity.addEffect(new EffectInstance(Effects.POISON, 432, 1));
                     this.upgradedlaunch(entity);
                 } else {
                     entity.addEffect(new EffectInstance(Effects.MOVEMENT_SLOWDOWN, 1800));
                     entity.addEffect(new EffectInstance(Effects.WEAKNESS, 1800));
+                    entity.addEffect(new EffectInstance(Effects.POISON, 900));
                     this.launch(entity);
                 }
             }
@@ -102,14 +104,14 @@ public class WitchGaleEntity extends DamagingProjectileEntity {
         double d0 = p_213688_1_.getX() - this.getX();
         double d1 = p_213688_1_.getZ() - this.getZ();
         double d2 = Math.max(d0 * d0 + d1 * d1, 0.001D);
-        p_213688_1_.push(d0 / d2 * 2.0D, 0.1D, d1 / d2 * 2.0D);
+        p_213688_1_.push(d0 / d2 * 2.0D, 0.2D, d1 / d2 * 2.0D);
     }
 
     private void upgradedlaunch(Entity p_213688_1_) {
         double d0 = p_213688_1_.getX() - this.getX();
         double d1 = p_213688_1_.getZ() - this.getZ();
         double d2 = Math.max(d0 * d0 + d1 * d1, 0.001D);
-        p_213688_1_.push(d0 / d2 * 4.0D, 0.2D, d1 / d2 * 4.0D);
+        p_213688_1_.push(d0 / d2 * 4.0D, 0.4D, d1 / d2 * 4.0D);
     }
 
     public double AreaofEffect(){

@@ -1,6 +1,7 @@
 package com.Polarice3.FireNBlood.tileentities;
 
 import com.Polarice3.FireNBlood.blocks.TLightningTotemBlock;
+import com.Polarice3.FireNBlood.entities.projectiles.SoulSkullEntity;
 import com.Polarice3.FireNBlood.entities.utilities.LightningTrapEntity;
 import com.Polarice3.FireNBlood.particles.ModParticleTypes;
 import com.Polarice3.FireNBlood.utils.RegistryHandler;
@@ -20,6 +21,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -121,6 +123,12 @@ public class TLightningTotemTileEntity extends TileEntity implements ITickableTi
                 }
             } else {
                 this.level.setBlock(this.worldPosition, this.level.getBlockState(this.worldPosition).setValue(TLightningTotemBlock.POWERED, false), 3);
+            }
+            for (SoulSkullEntity soulSkullEntity: this.level.getEntitiesOfClass(SoulSkullEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(16.0D, 16.0D, 16.0D))){
+                if (soulSkullEntity.isDangerous()){
+                    soulSkullEntity.level.explode(soulSkullEntity, soulSkullEntity.getX(), soulSkullEntity.getY(), soulSkullEntity.getZ(), 1.0F, Explosion.Mode.NONE);
+                    soulSkullEntity.remove();
+                }
             }
         }
     }

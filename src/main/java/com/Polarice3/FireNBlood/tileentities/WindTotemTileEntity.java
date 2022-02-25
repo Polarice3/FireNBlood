@@ -1,6 +1,5 @@
 package com.Polarice3.FireNBlood.tileentities;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.EffectInstance;
@@ -60,6 +59,7 @@ public class WindTotemTileEntity extends TotemTileEntity {
         int j = this.worldPosition.getY();
         int k = this.worldPosition.getZ();
         this.playSound(SoundEvents.FIREWORK_ROCKET_LAUNCH);
+        assert this.getLevel() != null;
         for (LivingEntity entity : this.getLevel().getEntitiesOfClass(LivingEntity.class, (new AxisAlignedBB(i, j, k, i, j - 4, k)).inflate(10.0D, 10.0D, 10.0D))) {
             if (!entity.hasEffect(Effects.SLOW_FALLING)) {
                 if (entity instanceof PlayerEntity) {
@@ -76,11 +76,11 @@ public class WindTotemTileEntity extends TotemTileEntity {
         }
     }
 
-    private void launch(Entity p_213688_1_) {
+    private void launch(LivingEntity p_213688_1_) {
         double d0 = p_213688_1_.getX() - this.getBlockPos().getX();
         double d1 = p_213688_1_.getZ() - this.getBlockPos().getZ();
         double d2 = Math.max(d0 * d0 + d1 * d1, 0.001D);
-        p_213688_1_.push(d0 / d2, 2.0D, d1 / d2);
+        p_213688_1_.push(0.0D, 2.0D, 0.0D);
     }
 
 

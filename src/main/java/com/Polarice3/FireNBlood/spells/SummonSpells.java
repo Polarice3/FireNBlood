@@ -17,6 +17,10 @@ public abstract class SummonSpells extends Spells{
         return entityLiving.getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.NECROHELM.get() || entityLiving.getItemBySlot(EquipmentSlotType.HEAD).getItem() == RegistryHandler.NECROARMOREDHELM.get();
     }
 
+    public boolean SummonMastery(LivingEntity entityLiving){
+        return entityLiving.getItemBySlot(EquipmentSlotType.LEGS).getItem() == RegistryHandler.DARKLEGGINGS.get() || entityLiving.getItemBySlot(EquipmentSlotType.LEGS).getItem() == RegistryHandler.DARKARMOREDLEGGINGS.get();
+    }
+
     public void SummonDown(LivingEntity entityLiving){
         EffectInstance effectinstance1 = entityLiving.getEffect(RegistryHandler.SUMMONDOWN.get());
         int i = 1;
@@ -28,7 +32,18 @@ public abstract class SummonSpells extends Spells{
         }
 
         i = MathHelper.clamp(i, 0, 4);
-        EffectInstance effectinstance = new EffectInstance(RegistryHandler.SUMMONDOWN.get(), SummonDownDuration(), i, false, false, true);
+        int s;
+        if (SummonMastery(entityLiving)){
+            int random = entityLiving.level.random.nextInt(2);
+            if (random == 0){
+                s = 0;
+            } else {
+                s = SummonDownDuration();
+            }
+        } else {
+            s = SummonDownDuration();
+        }
+        EffectInstance effectinstance = new EffectInstance(RegistryHandler.SUMMONDOWN.get(), s, i, false, false, true);
         entityLiving.addEffect(effectinstance);
     }
 }

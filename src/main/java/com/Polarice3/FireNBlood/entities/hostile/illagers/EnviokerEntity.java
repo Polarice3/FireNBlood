@@ -1,5 +1,7 @@
 package com.Polarice3.FireNBlood.entities.hostile.illagers;
 
+import com.Polarice3.FireNBlood.entities.hostile.tailless.AbstractTaillessEntity;
+import com.Polarice3.FireNBlood.entities.neutral.protectors.AbstractProtectorEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
@@ -52,6 +54,8 @@ public class EnviokerEntity extends SpellcastingIllagerEntity {
         this.targetSelector.addGoal(2, (new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true)).setUnseenMemoryTicks(300));
         this.targetSelector.addGoal(3, (new NearestAttackableTargetGoal<>(this, AbstractVillagerEntity.class, false)).setUnseenMemoryTicks(300));
         this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, IronGolemEntity.class, false));
+        this.targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(this, AbstractTaillessEntity.class, false));
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, AbstractProtectorEntity.class, false));
     }
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){

@@ -2,24 +2,24 @@
   "type": "minecraft:crafting_shaped",
   "pattern":
   [
-    "cpc",
-    " c ",
-    " c "
+    "ccc",
+    "cdc",
+    "c c"
   ],
   "key":
   {
-    "p":
-    {
-      "item": "firenblood:philosophersstone"
-    },
     "c":
     {
       "item": "firenblood:cursed_ingot"
+    },
+    "d":
+    {
+      "item": "firenblood:darkleggings"
     }
   },
   "result":
   {
-    "item": "firenblood:philosophers_mace",
+    "item": "firenblood:darkarmoredleggings",
     "count": 1
   }
 }

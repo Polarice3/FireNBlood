@@ -289,12 +289,10 @@ public class ModEvents {
     public static void AiryFocus(PotionEvent.PotionAddedEvent event){
         if (event.getPotionEffect().getEffect() == Effects.LEVITATION){
             if (event.getEntityLiving().getMainHandItem().getItem() == RegistryHandler.EMPTYCORE.get()){
-                event.getEntityLiving().removeEffectNoUpdate(Effects.LEVITATION);
                 event.getEntityLiving().getMainHandItem().setCount(0);
                 event.getEntityLiving().setItemInHand(Hand.MAIN_HAND, new ItemStack(RegistryHandler.AIRYCORE.get()));
             }
             if (event.getEntityLiving().getOffhandItem().getItem() == RegistryHandler.EMPTYCORE.get()){
-                event.getEntityLiving().removeEffectNoUpdate(Effects.LEVITATION);
                 event.getEntityLiving().getOffhandItem().setCount(0);
                 event.getEntityLiving().setItemInHand(Hand.OFF_HAND, new ItemStack(RegistryHandler.AIRYCORE.get()));
             }

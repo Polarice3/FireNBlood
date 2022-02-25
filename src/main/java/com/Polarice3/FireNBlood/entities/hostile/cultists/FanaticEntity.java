@@ -60,7 +60,7 @@ public class FanaticEntity extends AbstractCultistEntity {
         return MobEntity.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
-                .add(Attributes.ATTACK_DAMAGE, 3.0D);
+                .add(Attributes.ATTACK_DAMAGE, 1.0D);
     }
 
     protected SoundEvent getAmbientSound() {

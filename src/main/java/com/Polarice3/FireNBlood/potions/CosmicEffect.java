@@ -79,9 +79,4 @@ public class CosmicEffect extends ModEffects{
         }
     }
 
-    @Override
-    public List<ItemStack> getCurativeItems() {
-        return new ArrayList<>();
-    }
-
 }

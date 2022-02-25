@@ -70,9 +70,9 @@ public class ApostleEntity extends SpellcastingCultistEntity {
 
     public static AttributeModifierMap.MutableAttribute setCustomAttributes(){
         return MobEntity.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 26.0D)
+                .add(Attributes.MAX_HEALTH, 32.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.35D)
-                .add(Attributes.ATTACK_DAMAGE, 1.0D);
+                .add(Attributes.ATTACK_DAMAGE, 3.0D);
     }
 
     protected SoundEvent getAmbientSound() {
@@ -197,7 +197,7 @@ public class ApostleEntity extends SpellcastingCultistEntity {
             } else if (ApostleEntity.this.getTarget() == null) {
                 return false;
             } else return ApostleEntity.this.getTarget().getId() != this.lastTargetId
-                    && ApostleEntity.this.cooldown >= 60 && ApostleEntity.this.spellcycle == 0;
+                    && ApostleEntity.this.spellcycle == 0;
         }
 
         public void start() {
@@ -378,8 +378,7 @@ public class ApostleEntity extends SpellcastingCultistEntity {
                 return false;
             } else if (ApostleEntity.this.getTarget().getId() == this.lastTargetId) {
                 return false;
-            } else return ApostleEntity.this.distanceTo(ApostleEntity.this.getTarget()) < 4.0F &&
-                    ApostleEntity.this.cooldown >= 120;
+            } else return ApostleEntity.this.distanceTo(ApostleEntity.this.getTarget()) < 4.0F;
         }
 
         public void start() {

@@ -125,18 +125,22 @@ public class RegistryHandler {
             new DarkRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.HEAD, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> DARKROBE = ITEMS.register("darkrobe", () ->
             new DarkRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.CHEST, new Item.Properties().tab(FireNBlood.TAB)));
+    public static final RegistryObject<Item> DARKLEGGINGS = ITEMS.register("darkleggings", () ->
+            new DarkRobeArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.LEGS, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> DARKBOOTSOFWANDER = ITEMS.register("darkbootsofwander", () ->
-            new WanderBootsArmor(ModArmorMaterial.DARKMAGE, EquipmentSlotType.FEET, new Item.Properties().tab(FireNBlood.TAB)));
+            new WanderBootsArmor(ModArmorMaterial.DARKARMOREDMAGE, EquipmentSlotType.FEET, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> NECROHELM = ITEMS.register("necrohelm", () ->
             new NecroRobeArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.HEAD, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> NECROROBE = ITEMS.register("necrorobe", () ->
             new NecroRobeArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.CHEST, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> NECROBOOTSOFWANDER = ITEMS.register("necrobootsofwander", () ->
-            new WanderBootsArmor(ModArmorMaterial.NECROTURGE, EquipmentSlotType.FEET, new Item.Properties().tab(FireNBlood.TAB)));
+            new WanderBootsArmor(ModArmorMaterial.ARMOREDNECROTURGE, EquipmentSlotType.FEET, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> DARKARMOREDHELM = ITEMS.register("darkarmoredhelm", () ->
             new DarkArmoredRobeArmor(ModArmorMaterial.DARKARMOREDMAGE, EquipmentSlotType.HEAD, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> DARKARMOREDROBE = ITEMS.register("darkarmoredrobe", () ->
             new DarkArmoredRobeArmor(ModArmorMaterial.DARKARMOREDMAGE, EquipmentSlotType.CHEST, new Item.Properties().tab(FireNBlood.TAB)));
+    public static final RegistryObject<Item> DARKARMOREDLEGGINGS = ITEMS.register("darkarmoredleggings", () ->
+            new DarkArmoredRobeArmor(ModArmorMaterial.DARKARMOREDMAGE, EquipmentSlotType.LEGS, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> NECROARMOREDHELM = ITEMS.register("necroarmoredhelm", () ->
             new NecroArmoredRobeArmor(ModArmorMaterial.ARMOREDNECROTURGE, EquipmentSlotType.HEAD, new Item.Properties().tab(FireNBlood.TAB)));
     public static final RegistryObject<Item> NECROARMOREDROBE = ITEMS.register("necroarmoredrobe", () ->
@@ -261,4 +265,6 @@ public class RegistryHandler {
             CosmicEffect::new);
     public static final RegistryObject<Effect> CURSED = EFFECTS.register("cursed",
             CursedEffect::new);
+    public static final RegistryObject<Effect> ILLAGUE = EFFECTS.register("illague",
+            IllagueEffect::new);
 }

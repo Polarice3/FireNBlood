@@ -200,9 +200,7 @@ public class DiscipleEntity extends SpellcastingCultistEntity {
                 return false;
             } else if (DiscipleEntity.this.getTarget() == null) {
                 return false;
-            } else if (DiscipleEntity.this.getTarget().getId() == this.lastTargetId) {
-                return false;
-            } else return DiscipleEntity.this.getSpellInt() == 0;
+            } else return DiscipleEntity.this.getTarget().getId() != this.lastTargetId;
         }
 
         public void start() {
@@ -258,9 +256,7 @@ public class DiscipleEntity extends SpellcastingCultistEntity {
                 return false;
             } else if (DiscipleEntity.this.getTarget() == null) {
                 return false;
-            } else if (DiscipleEntity.this.getTarget().getId() == this.lastTargetId) {
-                return false;
-            } else return DiscipleEntity.this.getSpellInt() == 1;
+            } else return DiscipleEntity.this.getTarget().getId() != this.lastTargetId;
         }
 
         public void start() {
@@ -311,9 +307,7 @@ public class DiscipleEntity extends SpellcastingCultistEntity {
                 return false;
             } else if (DiscipleEntity.this.getTarget() == null) {
                 return false;
-            } else if (DiscipleEntity.this.getTarget().getId() == this.lastTargetId) {
-                return false;
-            } else return DiscipleEntity.this.getSpellInt() == 2;
+            } else return DiscipleEntity.this.getTarget().getId() != this.lastTargetId;
         }
 
         public void start() {
@@ -366,7 +360,7 @@ public class DiscipleEntity extends SpellcastingCultistEntity {
                 return false;
             } else if (DiscipleEntity.this.getTarget().getId() == this.lastTargetId) {
                 return false;
-            } else return DiscipleEntity.this.getSpellInt() == 3 && DiscipleEntity.this.distanceTo(DiscipleEntity.this.getTarget()) < 4.0F;
+            } else return DiscipleEntity.this.distanceTo(DiscipleEntity.this.getTarget()) < 4.0F;
         }
 
         public void start() {

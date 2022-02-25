@@ -21,6 +21,11 @@ public class RobeModel<T extends LivingEntity> extends BipedModel<T> {
     public final ModelRenderer LeftLeg;
     public final ModelRenderer RightFeet;
     public final ModelRenderer LeftFeet;
+    public final ModelRenderer Pants;
+    public final ModelRenderer cube_r1;
+    public final ModelRenderer cube_r2;
+    public final ModelRenderer cube_r3;
+    public final ModelRenderer Belt;
 
     public RobeModel(float modelSize) {
         super(modelSize, 0, 64, 128);
@@ -98,10 +103,40 @@ public class RobeModel<T extends LivingEntity> extends BipedModel<T> {
         LeftLeg.addChild(LeftFeet);
         LeftFeet.texOffs(0, 64).addBox(-2.2F, -2.0F, -2.0F, 4.0F, 4.0F, 4.0F, 1.0F, false);
 
+        Pants = new ModelRenderer(this);
+        Pants.setPos(0.0F, 26.0F, 0.0F);
+        darkrobe.addChild(Pants);
+
+        cube_r1 = new ModelRenderer(this);
+        cube_r1.setPos(-5.3126F, -11.4235F, 0.0F);
+        Pants.addChild(cube_r1);
+        setRotationAngle(cube_r1, 0.0F, 0.0F, 0.2618F);
+        cube_r1.texOffs(50, 98).addBox(-0.5F, -3.0F, -3.0F, 1.0F, 8.0F, 6.0F, 0.0F, true);
+
+        cube_r2 = new ModelRenderer(this);
+        cube_r2.setPos(5.3126F, -11.4235F, 0.0F);
+        Pants.addChild(cube_r2);
+        setRotationAngle(cube_r2, 0.0F, 0.0F, -0.2618F);
+        cube_r2.texOffs(50, 98).addBox(-0.5F, -3.0F, -3.0F, 1.0F, 8.0F, 6.0F, 0.0F, false);
+
+        cube_r3 = new ModelRenderer(this);
+        cube_r3.setPos(0.0F, -11.1647F, 4.3467F);
+        Pants.addChild(cube_r3);
+        setRotationAngle(cube_r3, 0.2618F, 0.0F, 0.0F);
+        cube_r3.texOffs(45, 74).addBox(-4.0F, -4.0F, -1.5F, 8.0F, 8.0F, 1.0F, 0.0F, true);
+
+        Belt = new ModelRenderer(this);
+        Belt.setPos(1.0F, -15.0F, 0.0F);
+        Pants.addChild(Belt);
+        Belt.texOffs(32, 88).addBox(-6.0F, -2.0F, -3.0F, 10.0F, 3.0F, 6.0F, 0.0F, false);
+
         this.head.addChild(hat);
         this.body.addChild(Body);
+        this.body.addChild(Pants);
         this.leftArm.addChild(LeftArm);
         this.rightArm.addChild(RightArm);
+        this.leftLeg.addChild(LeftLeg);
+        this.rightLeg.addChild(RightLeg);
         this.leftLeg.addChild(LeftFeet);
         this.rightLeg.addChild(RightFeet);
     }
@@ -111,8 +146,11 @@ public class RobeModel<T extends LivingEntity> extends BipedModel<T> {
         super.setupAnim(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         this.hat.copyFrom(this.head);
         this.Body.copyFrom(this.body);
+        this.Pants.copyFrom(this.body);
         this.RightArm.copyFrom(this.rightArm);
         this.LeftArm.copyFrom(this.leftArm);
+        this.RightLeg.copyFrom(this.rightLeg);
+        this.LeftLeg.copyFrom(this.leftLeg);
         this.RightFeet.copyFrom(this.rightLeg);
         this.LeftFeet.copyFrom(this.leftLeg);
     }

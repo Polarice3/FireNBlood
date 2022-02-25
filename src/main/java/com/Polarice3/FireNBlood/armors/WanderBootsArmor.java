@@ -71,6 +71,8 @@ public class WanderBootsArmor extends ArmorItem {
     @Override
     public <A extends BipedModel<?>> A getArmorModel(LivingEntity entityLiving, ItemStack itemStack, EquipmentSlotType armorSlot, A _default) {
         RobeModel model = new RobeModel(1.0F);
+        model.RightLeg.visible = false;
+        model.LeftLeg.visible = false;
         model.RightFeet.visible = armorSlot == EquipmentSlotType.FEET;
         model.LeftFeet.visible = armorSlot == EquipmentSlotType.FEET;
 

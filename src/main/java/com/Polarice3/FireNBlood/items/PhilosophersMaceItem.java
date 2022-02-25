@@ -95,13 +95,22 @@ public class PhilosophersMaceItem extends Item implements IVanishable {
         return true;
     }
 
+    public boolean isCorrectToolForDrops(BlockState pBlock) {
+        Material material = pBlock.getMaterial();
+        return material == Material.STONE || material == Material.METAL || material == Material.HEAVY_METAL;
+    }
+
+    public float getDestroySpeed(ItemStack pStack, BlockState pState) {
+        return 8.0F;
+    }
+
     public int getEnchantmentValue() {
         return 15;
     }
 
     public boolean canApplyAtEnchantingTable(ItemStack stack, net.minecraft.enchantment.Enchantment enchantment)
     {
-        return enchantment.category == EnchantmentType.WEAPON;
+        return enchantment.category == EnchantmentType.DIGGER || enchantment.category == EnchantmentType.WEAPON || enchantment.category == EnchantmentType.BREAKABLE;
     }
 
     public Multimap<Attribute, AttributeModifier> getDefaultAttributeModifiers(EquipmentSlotType equipmentSlot) {

@@ -247,7 +247,7 @@ public class FNBConfig {
         UndeadMinionHeal = BUILDER.comment("Whether Undead Minions can heal if summoned while wearing Necro Robes, Default: true")
                 .define("undeadminionheal", true);
         UndeadMinionHealCost = BUILDER.comment("How much Soul Energy it cost per second for an Undead Minion to heal, Default: 5")
-                .defineInRange("undeadminionhealcost", 5, 1, Integer.MAX_VALUE);
+                .defineInRange("undeadminionhealcost", 1, 1, Integer.MAX_VALUE);
         WandVexLimit = BUILDER.comment("Number of Vex Minions that can be spawn with a wand, without instantly dying, around the player, Default: 8")
                 .defineInRange("wandvexlimit", 8, 1, Integer.MAX_VALUE);
         StaffVexLimit = BUILDER.comment("Number of Vex Minions that can be spawn with a staff, without instantly dying, around the player, Default: 16")
